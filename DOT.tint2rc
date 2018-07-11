@@ -1,0 +1,88 @@
+# BACKGROUND/BORDER
+# -----------------
+
+# GENERAL PANEL SETTINGS
+  rounded          = 0
+  border_width     = 0
+  background_color = #222222 100
+  border_color     = #000000 0
+
+# AUTOHIDE
+# --------
+  autohide     = 0
+  strut_policy = minimum
+
+# TOOLTIP
+# -------
+  tooltip = 0
+
+# MOUSE
+# -----
+  mouse_middle = close
+  mouse_right  = maximize_restore
+
+# PANEL
+# -----
+  wm_menu             = 1
+  panel_items         = LTS
+  panel_monitor       = 1
+  panel_position      = top center
+  panel_size          = 0 16
+  panel_margin        = 0 12
+  panel_padding       = 0 0 16
+  panel_layer         = bottom
+  panel_background_id = 1
+  font_shadow         = 0
+
+# LAUNCHER
+# --------
+  launcher_padding       = 0 0 1
+  launcher_background_id = 1
+  launcher_icon_size     = 14
+  launcher_item_app      = /home/vermaden/.apps/caja.desktop
+  launcher_item_app      = /home/vermaden/.apps/thunar.desktop
+  launcher_item_app      = /home/vermaden/.apps/nfs.desktop
+  launcher_item_app      = /home/vermaden/.apps/terminal.desktop
+  launcher_item_app      = /home/vermaden/.apps/geany.desktop
+  launcher_item_app      = /home/vermaden/.apps/leafpad.desktop
+  launcher_item_app      = /home/vermaden/.apps/pidgin.desktop
+  launcher_item_app      = /home/vermaden/.apps/thunderbird.desktop
+  launcher_item_app      = /home/vermaden/.apps/firefox.desktop
+  launcher_item_app      = /home/vermaden/.apps/chromium.desktop
+  launcher_item_app      = /home/vermaden/.apps/gimp.desktop
+  launcher_item_app      = /home/vermaden/.apps/galculator.desktop
+  launcher_item_app      = /home/vermaden/.apps/deadbeef.desktop
+  launcher_item_app      = /home/vermaden/.apps/transmission.desktop
+  launcher_item_app      = /home/vermaden/.apps/cpu_L.desktop
+  launcher_item_app      = /home/vermaden/.apps/cpu_M.desktop
+  launcher_item_app      = /home/vermaden/.apps/cpu_H.desktop
+  launcher_item_app      = /home/vermaden/.apps/wallpaper.desktop
+
+# TASKBAR
+# -------
+  taskbar_mode                   = multi_desktop
+  taskbar_padding                = 0 0 1
+  taskbar_background_id          = 1
+  taskbar_active_background_id   = 1
+  taskbar_distribute_size        = 0
+  taskbar_name                   = 1
+  taskbar_name_font              = Ubuntu Mono 8
+  taskbar_name_font_color        = #aaaaaa 100
+  taskbar_name_active_font_color = #dd0000 100
+
+# TASKS
+# -----
+  task_icon                 = 1
+  task_text                 = 0
+  task_width                = 14
+  task_centered             = 1
+  task_padding              = 0 0 1
+  task_background_id        = 0
+  task_active_background_id = 0
+  task_iconified_icon_asb   = 40 0 0
+
+# SYSTRAY
+# -------
+  systray           = 1
+  systray_padding   = 0 0 1
+  systray_icon_size = 14
