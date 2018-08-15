@@ -35,9 +35,8 @@ export DISPLAY=:0
 
 export PATH=${PATH}:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 
-STATE=$( acpiconf -i 0 \
-           | grep -E "^Remaining capacity" \
-           | awk '{ sub(/%/,""); print $3; }' )
+# FREEBSD FIRST USES bat1 THEN bat0 SO USING -i 0 IS SUFFICIENT HERE
+STATE=$( acpiconf -i 0 | awk '/^Remaining capacity/ { sub(/%/,""); print $3; }' )
 
 case ${STATE} in
   (''|*[!0-9]*)
@@ -47,9 +46,9 @@ esac
 
 [ ${STATE} -lt 6 ] && [ $( sysctl -n hw.acpi.acline ) -eq 0 ] && {
   zenity --title "WARNING!" \
-   --warning \
-   --text="BATTERY: 5%" \
-   1> /dev/null 2> /dev/null
+    --warning \
+    --text="BATTERY: 5%" \
+    1> /dev/null 2> /dev/null
 }
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

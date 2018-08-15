@@ -34,4 +34,4 @@
 # ~/scripts/random_wallpaper.sh "$( cat ~/.fehbg | awk -F \' '{print $2}' )"
   ~/scripts/random_wallpaper.sh "$( awk -F\' '/feh/ {print $(NF-1)}' ~/.fehbg )"
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

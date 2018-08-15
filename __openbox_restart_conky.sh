@@ -48,4 +48,4 @@ nice -n 20 conky -c /home/vermaden/.conkyrc.1.9.${PROFILE}.LOG.7 1> /dev/null 2>
 nice -n 20 conky -c /home/vermaden/.conkyrc.1.9.${PROFILE}.LOG.8 1> /dev/null 2> /dev/null &
 nice -n 20 conky -c /home/vermaden/.conkyrc.1.9.${PROFILE}.LOG.9 1> /dev/null 2> /dev/null &
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

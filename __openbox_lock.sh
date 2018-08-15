@@ -51,7 +51,7 @@ else
     -background gray30 \
     -dpmsoff 1 \
     -message ' ' \
-    -info ' ' 
+    -info ' '
 fi
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

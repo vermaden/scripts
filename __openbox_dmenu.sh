@@ -39,7 +39,7 @@ then
 fi
 
 CMD=$( which "${CHOICE}" )
-TITLE=$( basename "${CMD}" )
+TITLE=${CMD##*/}
 
 # XTERM OR NOT EXCEPTIONS
 if echo "${CMD}" | grep -q -i virtualbox; then "${CMD}" & exit 0; fi
@@ -55,4 +55,4 @@ else
   xterm -title "${TITLE}" -e "${CMD};read" &
 fi
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

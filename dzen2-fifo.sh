@@ -68,7 +68,7 @@ while true
 do
   tail -1 ~/.dzen2-fifo
 done | dzen2 \
-      -w 3600 \
+      -w 4096 \
       -fg "${FG}" \
       -bg "${BG}" \
       -fn "${FONT}" \
@@ -78,4 +78,4 @@ done | dzen2 \
 # RUN FITST dzen2(1) UPDATE
 ~/scripts/dzen2-update.sh > ~/.dzen2-fifo &
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

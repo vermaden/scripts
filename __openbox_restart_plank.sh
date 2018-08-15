@@ -59,4 +59,7 @@ case ${COUNT} in
     ;;
 esac
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+# PLANK DISABLE TOOLTIPS
+gsettings set net.launchpad.plank.dock.settings:/net/launchpad/plank/docks/dock1/ tooltips-enabled false
+
+echo '1' >> ~/scripts/stats/${0##*/}

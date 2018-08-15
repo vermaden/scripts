@@ -31,52 +31,57 @@
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
+export DISPLAY=:0
+
+__usage() {
+  echo "usage: ${0##*/} DIR/FILE"
+  exit 1
+}
+
+__absolute() {
+  if [ -f "/${1}" ]
+  then
+    echo "${1}"
+  else
+    echo "$( pwd )/${1}"
+  fi
+}
+
+[ ${#} -ne 1 ]             && __usage
+[ -d "${1}" -o -f "${1}" ] || __usage
+
+# DISABLE WHEN xfdesktop IS RUNNING
 PS=$( ps axwww -o command | grep xfdesktop | grep -v grep )
 if [ "${PS}" != "" ]
 then
   exit 0
 fi
 
-export DISPLAY=:0
-
-__usage() {
-  echo "usage $( basename ${0} ) DIR/FILE"
-  exit 1
-  }
-
-__absolute() {
-  if [ -f /${1} ]
-  then
-    echo "${1}"
-  else
-    echo "$( pwd )/${1}"
-  fi
-  }
-
-[ ${#} -ne 1 ] && __usage
-[ -d ${1} -o -f ${1} ] || __usage
-
-[ -f ${1} ] && {
+# SINGLE FILE
+if [ -f "${1}" ]
+then
   FILE="${@}"
-  WALL="/tmp/$( basename ${0} )_$( basename ${FILE} ).jpg"
-}
+  WALL="/tmp/${0##*/}_${FILE##*/}.jpg"
+fi
 
-[ -d ${1} ] && {
-  WALLS_LIST=$( find ${1} | egrep "^.*\.[pPjJgG][nNpPiI][gGeEfF][gG]*$" )
-
-  for WALL in ${WALLS_LIST} ;do
-    WALLS_COUNT=$(( ${WALLS_COUNT} + 1 ));
-  done
-
+# DIRECTORY
+if [ -d "${1}" ]
+then
+  WALLS_LIST=$( find "${1}" | egrep "^.*\.[pPjJgG][nNpPiI][gGeEfF][gG]*$" )
+  WALLS_COUNT=$( echo "${WALLS_LIST}" | wc -l )
   RANDOM=$( head -c 256 /dev/urandom | env LC_ALL=C tr -c -d '1-9' )
   WINNER=$(( ${RANDOM} % ${WALLS_COUNT} + 1 ))
   FILE="$( echo "${WALLS_LIST}" | sed -n ${WINNER}p )"
-}
+fi
 
-/bin/cp ~/.fehbg ~/.fehbg.BCK
-case ${FILE} in
-  (*/TILE-*) /usr/local/bin/feh --bg-tile  $( __absolute ${FILE} ) 1> /dev/null 2> /dev/null ;;
-  (*)        /usr/local/bin/feh --bg-scale $( __absolute ${FILE} ) 1> /dev/null 2> /dev/null ;;
+# MAKE BACKUP
+cp ~/.fehbg ~/.fehbg.BCK
+
+# SET WALLPAPER
+case "${FILE}" in
+  (*/TILE-*) feh --bg-tile  $( __absolute "${FILE}" ) 1> /dev/null 2> /dev/null ;;
+  (*)        feh --bg-scale $( __absolute "${FILE}" ) 1> /dev/null 2> /dev/null ;;
 esac
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}
+

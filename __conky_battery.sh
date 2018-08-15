@@ -65,7 +65,7 @@ __color_life() { # 1=LIFE
 }
 
 __usage() {
-  echo "usage: $(basename ${0} ) TYPE"
+  echo "usage: ${0##*/} TYPE"
   echo
   echo "type: dzen2 | conky"
   echo
@@ -109,4 +109,4 @@ case $( sysctl -n hw.acpi.acline ) in
     ;;
 esac
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

@@ -50,36 +50,40 @@ __math() {
 }
 
 # GATHER DATA
-DATE=$(    date +%Y/%m/%d/%a/%H:%M )
-FREQ=$(    sysctl -n dev.cpu.0.freq )
-TEMP=$(    sysctl -n hw.acpi.thermal.tz0.temperature )
-LOAD=$(    sysctl -n vm.loadavg | awk '{print $2}' )
-MEM=$(( $( sysctl -n vm.stats.vm.v_inactive_count )
-      + $( sysctl -n vm.stats.vm.v_free_count )
-      + $( sysctl -n vm.stats.vm.v_cache_count ) ))
-MEM=$(     __math ${MEM} \* 4 / 1024 / 1024 )
-IF_IP=$(   ~/scripts/__conky_if_ip.sh )
-IF_GW=$(   ~/scripts/__conky_if_gw.sh )
-IF_DNS=$(  ~/scripts/__conky_if_dns.sh )
-IF_PING=$( ~/scripts/__conky_if_ping.sh dzen2 )
-VOL=$(     mixer -s vol | awk -F ':' '{printf("%s",$2)}' )
-PCM=$(     mixer -s pcm | awk -F ':' '{printf("%s",$2)}' )
-FS=$(      zfs list -H -d 0 -o name,avail | awk '{printf("%s/%s ",$1,$2)}' )
-BAT=$(     ~/scripts/__conky_battery.sh dzen2 )
-PS=$(      ps ax -o %cpu,rss,comm | sed 1d | bsdgrep -v 'idle$' | sort -r -n \
-             | head -3 | awk '{printf("%s/%d%%/%.1fGB ",$3,$1,$2/1024/1024)}' )
+  SMP=$(     sysctl -n kern.smp.cpus )
+  SMP=$((    ${SMP} * 100 ))
+  PS=$(      ps ax -o %cpu,rss,command -c )
+  CPU=$(     echo "${PS}" | awk -v SMP=${SMP} '/\ idle$/ {printf("%.1f%%",SMP-$1)}' )
+# LOAD=$(    sysctl -n vm.loadavg | awk '{print $2}' )
+  DATE=$(    date +%Y/%m/%d/%a/%H:%M )
+  FREQ=$(    sysctl -n dev.cpu.0.freq )
+# TEMP=$(    sysctl -n hw.acpi.thermal.tz0.temperature )
+  TEMP=$(    sysctl -n dev.cpu.0.temperature )
+  MEM=$(( $( sysctl -n vm.stats.vm.v_inactive_count )
+        + $( sysctl -n vm.stats.vm.v_free_count )
+        + $( sysctl -n vm.stats.vm.v_cache_count ) ))
+  MEM=$(     __math ${MEM} \* 4 / 1024 / 1024 )
+  IF_IP=$(   ~/scripts/__conky_if_ip.sh )
+  IF_GW=$(   ~/scripts/__conky_if_gw.sh )
+  IF_DNS=$(  ~/scripts/__conky_if_dns.sh )
+  IF_PING=$( ~/scripts/__conky_if_ping.sh dzen2 )
+  VOL=$(     mixer -s vol | awk -F ':' '{printf("%s",$2)}' )
+  FS=$(      zfs list -H -d 0 -o name,avail | awk '{printf("%s/%s ",$1,$2)}' )
+  BAT=$(     ~/scripts/__conky_battery_separate.sh dzen2 )
+  TOP=$(     echo "${PS}" | bsdgrep -v -E '(COMMAND|idle)$' | sort -r -n \
+               | head -3 | awk '{printf("%s/%d%%/%.1fGB ",$3,$1,$2/1024/1024)}' )
 
 # PRESENT DATA
 echo -n        " ${CLA}date: ${CVA}${DATE} "
-echo -n "${CDE}| ${CLA}sys: ${CVA}${FREQ}MHz/${TEMP}/${LOAD}/${MEM}GB "
-echo -n "${CDE}| ${CLA}ip: ${CVA}${IF_IP}"            # NO SPACE AT THE END
+echo -n "${CDE}| ${CLA}sys: ${CVA}${FREQ}MHz/${TEMP}/${CPU}/${MEM}GB "
+echo -n "${CDE}| ${CLA}ip: ${CVA}${IF_IP}"      # NO SPACE AT THE END
 echo -n "${CDE}| ${CLA}gw: ${CVA}${IF_GW} "
 echo -n "${CDE}| ${CLA}dns: ${CVA}${IF_DNS} "
 echo -n "${CDE}| ${CLA}ping: ${CVA}${IF_PING} "
-echo -n "${CDE}| ${CLA}vol/pcm: ${CVA}${VOL}/${PCM} "
-echo -n "${CDE}| ${CLA}fs: ${CVA}${FS}"               # NO SPACE AT THE END
+echo -n "${CDE}| ${CLA}vol: ${CVA}${VOL} "
+echo -n "${CDE}| ${CLA}fs: ${CVA}${FS}"         # NO SPACE AT THE END
 echo -n "${CDE}| ${CLA}bat: ${CVA}${BAT} "
-echo -n "${CDE}| ${CLA}top: ${CVA}${PS}"              # NO SPACE AT THE END
+echo -n "${CDE}| ${CLA}top: ${CVA}${TOP}"       # NO SPACE AT THE END
 echo
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

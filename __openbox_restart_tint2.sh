@@ -54,10 +54,11 @@ case ${COUNT} in
     ENABLED=$( echo "${XRANDR}" | grep " connected " | grep -c -E "[0-9]+mm\ x\ [0-9]+mm" )
     case ${ENABLED} in
       (2)
-        __right
+        # __right
+        :
         ;;
     esac
     ;;
 esac
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

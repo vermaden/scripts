@@ -4,4 +4,4 @@
 /usr/bin/find ~/.cache/mozilla/firefox/*/OfflineCache -exec /bin/rm -f {} ';'
 /bin/rm -rf ~/.mozilla/firefox/*/storage
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

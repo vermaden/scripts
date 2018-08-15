@@ -85,7 +85,7 @@ unset DOAS_WHICH
 unset ROOT
 
 __usage() {
-  echo "usage: $( basename ${0} ) MIN MAX"
+  echo "usage: ${0##*/} MIN MAX"
   echo
   exit 1
 }
@@ -120,4 +120,4 @@ case ${#} in
 
 esac
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

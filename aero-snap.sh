@@ -66,10 +66,10 @@ snap() {
       wmctrl -r :ACTIVE: -e 0,${X},$(( ${Y} - 8 )),$(( ${SCREEN_W} - ${MARGIN_LEFT} - 4 )),$(( ${H} - 20 ))
       ;;
     (C)
-      X=$(( ${SCREEN_W} / 12 ))
-      Y=$(( ${SCREEN_H} / 11 ))
-      W=$( echo "${SCREEN_W} / 1.20" | bc -l | awk -F '.' '{print $1}' )
-      H=$( echo "${SCREEN_H} / 1.25" | bc -l | awk -F '.' '{print $1}' )
+      X=$(( ${SCREEN_W} / 7 ))
+      Y=$(( ${SCREEN_H} / 6 ))
+      W=$( echo "${SCREEN_W} / 1.40" | bc -l | awk -F '.' '{print $1}' )
+      H=$( echo "${SCREEN_H} / 1.50" | bc -l | awk -F '.' '{print $1}' )
       wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
       wmctrl -r :ACTIVE: -e 0,${X},${Y},${W},${H}
       ;;
@@ -124,5 +124,4 @@ snap() {
 # wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
 snap ${1}
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
-
+echo '1' >> ~/scripts/stats/${0##*/}

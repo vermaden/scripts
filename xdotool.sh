@@ -32,7 +32,7 @@
 # https://vermaden.wordpress.com
 
 __usage() {
-  echo "usage: $( basename ${0} ) ACTION"
+  echo "usage: ${0##*/} ACTION"
   exit 1
 }
 
@@ -72,4 +72,4 @@ case ${1} in
 
 esac
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

@@ -37,6 +37,8 @@
 
 killall -9 dzen2
 
+sleep 0.3
+
 ~/scripts/dzen2-fifo.sh &
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

@@ -59,4 +59,4 @@ ${CMD} fc-cache -sf
 echo "Reload USER Font Cache ..."
 fc-cache -f
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

@@ -39,7 +39,7 @@ WLAN_PH=iwn0
 WLAN_RANDOM_MAC=0
 WWAN_IF=tun0
 WWAN_PROFILE=WWAN
-NAME=$( basename ${0} )
+NAME=${0##*/}
 NETFS="nfs,smbfs,fusefs.sshfs"
 TIMEOUT=16
 DELAY=0.5
@@ -637,4 +637,4 @@ __EOF
 
 esac
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

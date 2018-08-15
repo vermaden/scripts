@@ -46,4 +46,4 @@ esac
 
 scrot ${OPTS} ${FILE}
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}

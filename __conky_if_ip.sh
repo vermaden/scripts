@@ -99,4 +99,4 @@ case $( ifconfig -u | grep -v '127.0.0.1' | grep -c 'inet ' ) in
     ;;
 esac
 
-echo '1' >> ~/scripts/stats/$( basename ${0} )
+echo '1' >> ~/scripts/stats/${0##*/}
