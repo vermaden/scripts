@@ -1,0 +1,5 @@
+<match target="pattern">
+  <test name="family"    qual="any"><string>arial</string></test>
+  <edit name="family" mode="assign"><string>trebuchet ms</string></edit>
+  </match>
+
