@@ -38,6 +38,7 @@ __usage() {
   echo "  -a  -  Do pause/resume active window."
   echo "  -s  -  Do pause/resume interactively selected window."
   echo "  -p  -  Do pause/resume specified PID."
+  echo "  -l  -  Do list paused processes/windows."
   echo
   echo "ARGUMENT:"
   echo "  PID for '-p' option."
@@ -68,6 +69,15 @@ case ${1} in
 
   (-s)
     PID=$( xprop | awk '/^_NET_WM_PID/ {print $3}' )
+    ;;
+
+  (-l)
+    ps -U ${USER} -o state,comm \
+      | grep '^T' \
+      | grep -v 'Ts+' \
+      | sort -u \
+      | awk '{print $2}'
+    exit 0
     ;;
 
   (*)
