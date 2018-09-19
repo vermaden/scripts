@@ -95,8 +95,8 @@ fi
 STATE=$( ps -o state ${PID} | sed 1d )
 
 case ${STATE} in
-  (I*|S*|R*) SIGNAL=17 ;; # 17 - SIGSTOP
-  (T*)       SIGNAL=19 ;; # 19 - SIGCONT
+  (I*|S*|R*) SIGNAL=SIGSTOP ;;
+  (T*)       SIGNAL=SIGCONT ;;
   (*)
     zenity --info --text "NOPE: not supported '${STATE}' process state." \
       1> /dev/null 2> /dev/null
