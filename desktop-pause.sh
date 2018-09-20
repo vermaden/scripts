@@ -55,13 +55,14 @@ case ${1} in
   (-p)
     if ! expr ${2} + 1 1> /dev/null 2> /dev/null
     then
-      if [ ${2} -gt 0 -a ${2} -lt 100000 ]
-      then
-        echo "NOPE: PID must be in the 1-99999 number range."
-      fi
+      echo "NOPE: PID must be a number."
       exit 1
     else
-      echo "NOPE: PID must be a number."
+      if [ ${2} -lt 1 -o ${2} -gt 99999 ]
+      then
+        echo "NOPE: PID must be in the 1-99999 number range."
+        exit 1
+      fi
     fi
 
     if ! ps -o pid ${2} 1> /dev/null 2> /dev/null
