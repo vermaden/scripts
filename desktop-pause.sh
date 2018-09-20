@@ -36,7 +36,9 @@ __usage() {
   echo
   echo "OPTIONS:"
   echo "  -a  -  Do pause/resume active window."
+  echo "  -A  -  Do pause/resume active window and minimize it."
   echo "  -s  -  Do pause/resume interactively selected window."
+  echo "  -S  -  Do pause/resume interactively selected window and minimize it."
   echo "  -p  -  Do pause/resume specified PID."
   echo "  -l  -  Do list paused processes/windows."
   echo "  -L  -  Do list paused processes/windows with PIDs."
@@ -50,6 +52,11 @@ __usage() {
 case ${1} in
   (-a)
     PID=$( xdotool getactivewindow getwindowpid )
+    ;;
+
+  (-A)
+    PID=$( xdotool getactivewindow getwindowpid )
+    MIN=1
     ;;
 
   (-p)
@@ -76,6 +83,11 @@ case ${1} in
 
   (-s)
     PID=$( xprop | awk '/^_NET_WM_PID/ {print $3}' )
+    ;;
+
+  (-S)
+    PID=$( xprop | awk '/^_NET_WM_PID/ {print $3}' )
+    MIN=1
     ;;
 
   (-l)
@@ -120,11 +132,21 @@ case ${STATE} in
     ;;
 esac
 
+if [ "${MIN}" = "1" -a "${SIGNAL}" = "STOP" ]
+then
+  xdotool windowminimize $( xdotool search --pid ${PID} )
+  echo "INFO: xdotool windowminimize \$( xdotool search --pid ${PID} )"
+fi
 kill -${SIGNAL} ${PID}
 echo "INFO: kill -${SIGNAL} ${PID}"
 pgrep -P ${PID} \
   | while read I
     do
+      if [ "${MIN}" = "1" -a "${SIGNAL}" = "STOP" ]
+      then
+        xdotool windowminimize $( xdotool search --pid ${PID} )
+        echo "INFO: xdotool windowminimize \$( xdotool search --pid ${PID} )"
+      fi
       kill -${SIGNAL} ${I}
       echo "INFO: kill -${SIGNAL} ${I}"
     done
