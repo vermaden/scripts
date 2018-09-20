@@ -39,6 +39,7 @@ __usage() {
   echo "  -s  -  Do pause/resume interactively selected window."
   echo "  -p  -  Do pause/resume specified PID."
   echo "  -l  -  Do list paused processes/windows."
+  echo "  -L  -  Do list paused processes/windows with PIDs."
   echo
   echo "ARGUMENT:"
   echo "  PID for '-p' option."
@@ -54,8 +55,13 @@ case ${1} in
   (-p)
     if ! expr ${2} + 1 1> /dev/null 2> /dev/null
     then
-      echo "NOPE: PID must be in the 1-65535 number range."
+      if [ ${2} -gt 0 -a ${2} -lt 100000 ]
+      then
+        echo "NOPE: PID must be in the 1-99999 number range."
+      fi
       exit 1
+    else
+      echo "NOPE: PID must be a number."
     fi
 
     if ! ps -o pid ${2} 1> /dev/null 2> /dev/null
@@ -80,6 +86,14 @@ case ${1} in
     exit 0
     ;;
 
+  (-L)
+    ps -U ${USER} -o state,pid,comm \
+      | grep '^T' \
+      | grep -v 'Ts+' \
+      | awk '{print substr($0, index($0, $2))}'
+    exit 0
+    ;;
+
   (*)
     __usage
     ;;
@@ -93,10 +107,23 @@ then
 fi
 
 STATE=$( ps -o state ${PID} | sed 1d )
+UNAME=$( uname )
 
 case ${STATE} in
-  (I*|S*|R*) SIGNAL=SIGSTOP ;;
-  (T*)       SIGNAL=SIGCONT ;;
+  (I*|S*|R*)
+    case ${UNAME} in
+      (FreeBSD) SIGNAL=SIGSTOP ;;
+      (Linux)   SIGNAL=19      ;;
+    esac
+    ;;
+
+  (T*)
+    case ${UNAME} in
+      (FreeBSD) SIGNAL=SIGCONT ;;
+      (Linux)   SIGNAL=18      ;;
+    esac
+    ;;
+
   (*)
     zenity --info --text "NOPE: not supported '${STATE}' process state." \
       1> /dev/null 2> /dev/null
