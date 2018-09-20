@@ -108,23 +108,10 @@ then
 fi
 
 STATE=$( ps -o state ${PID} | sed 1d )
-UNAME=$( uname )
 
 case ${STATE} in
-  (I*|S*|R*)
-    case ${UNAME} in
-      (FreeBSD) SIGNAL=SIGSTOP ;;
-      (Linux)   SIGNAL=19      ;;
-    esac
-    ;;
-
-  (T*)
-    case ${UNAME} in
-      (FreeBSD) SIGNAL=SIGCONT ;;
-      (Linux)   SIGNAL=18      ;;
-    esac
-    ;;
-
+  (I*|S*|R*) SIGNAL=STOP ;;
+  (T*)       SIGNAL=CONT ;;
   (*)
     zenity --info --text "NOPE: not supported '${STATE}' process state." \
       1> /dev/null 2> /dev/null
