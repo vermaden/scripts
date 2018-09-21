@@ -134,11 +134,11 @@ esac
 
 if [ "${MIN}" = "1" -a "${SIGNAL}" = "STOP" ]
 then
-  for I in $( xdotool search --pid ${PID} )
+  for WINDOW in $( xdotool search --pid ${PID} )
   do
-    xdotool windowminimize ${I}
+    xdotool windowminimize ${WINDOW}
+    echo "INFO: xdotool windowminimize ${WINDOW} (PID: ${PID})"
   done
-  echo "INFO: xdotool windowminimize \$( xdotool search --pid ${PID} )"
 fi
 kill -${SIGNAL} ${PID}
 echo "INFO: kill -${SIGNAL} ${PID}"
@@ -147,11 +147,11 @@ pgrep -P ${PID} \
     do
       if [ "${MIN}" = "1" -a "${SIGNAL}" = "STOP" ]
       then
-        for I in $( xdotool search --pid ${PID} )
+        for WINDOW in $( xdotool search --pid ${I} )
         do
-          xdotool windowminimize ${I}
+          xdotool windowminimize ${WINDOW}
+          echo "INFO: xdotool windowminimize ${WINDOW} (PID: ${I})"
         done
-        echo "INFO: xdotool windowminimize \$( xdotool search --pid ${PID} )"
       fi
       kill -${SIGNAL} ${I}
       echo "INFO: kill -${SIGNAL} ${I}"
