@@ -134,7 +134,10 @@ esac
 
 if [ "${MIN}" = "1" -a "${SIGNAL}" = "STOP" ]
 then
-  xdotool windowminimize $( xdotool search --pid ${PID} )
+  for I in $( xdotool search --pid ${PID} )
+  do
+    xdotool windowminimize ${I}
+  done
   echo "INFO: xdotool windowminimize \$( xdotool search --pid ${PID} )"
 fi
 kill -${SIGNAL} ${PID}
@@ -144,7 +147,10 @@ pgrep -P ${PID} \
     do
       if [ "${MIN}" = "1" -a "${SIGNAL}" = "STOP" ]
       then
-        xdotool windowminimize $( xdotool search --pid ${PID} )
+        for I in $( xdotool search --pid ${PID} )
+        do
+          xdotool windowminimize ${I}
+        done
         echo "INFO: xdotool windowminimize \$( xdotool search --pid ${PID} )"
       fi
       kill -${SIGNAL} ${I}
