@@ -163,14 +163,14 @@ __network_reset() {
   echo ${CMD} killall -9 dhclient
   #DOAS# permit nopass :network as root cmd ifconfig
   #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-  ${CMD} ifconfig ${WLAN_IF} destroy 2> /dev/null
-  echo ${CMD} ifconfig ${WLAN_IF} destroy
-  #DOAS# permit nopass :network as root cmd ifconfig
-  #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
   ${CMD} ifconfig ${LAN_IF} down
   echo ${CMD} ifconfig ${LAN_IF} down
   #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
   #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
+# ${CMD} ifconfig ${WLAN_IF} destroy 2> /dev/null    # PANIC
+# echo ${CMD} ifconfig ${WLAN_IF} destroy            # PANIC
+# #DOAS# permit nopass :network as root cmd ifconfig # PANIC
+# #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *   # PANIC
   echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
   echo "echo | ${CMD} tee /etc/resolv.conf"
   #DOAS# permit nopass :network as root cmd /etc/rc.d/netif args onerestart
@@ -269,6 +269,11 @@ __usage_wlan() {
   echo "EXAMPLE CONFIG:"
   echo
   echo "\$ cat /etc/wpa_supplicant.conf"
+  echo
+  echo "  network={"
+  echo "    key_mgmt=NONE"
+  echo "    priority=0"
+  echo "  }"
   echo
   echo "  network={"
   echo "    ssid=\"network\""
@@ -451,8 +456,14 @@ case ${1} in
           echo ${CMD} ifconfig ${WLAN_IF} ether ${MAC}
           MAC=0
         fi
+        #DOAS# permit nopass :network as root cmd ifconfig
+        #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
         ${CMD} ifconfig ${WLAN_IF} up
         echo ${CMD} ifconfig ${WLAN_IF} up
+        #DOAS# permit nopass :network as root cmd ifconfig
+        #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
+        ${CMD} ifconfig ${WLAN_IF} ssid -
+        echo ${CMD} ifconfig ${WLAN_IF} ssid -
         if [ ${3} ]
         then
           #DOAS# permit nopass :network as root cmd ifconfig
