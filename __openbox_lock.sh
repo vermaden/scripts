@@ -42,16 +42,48 @@ if pgrep -q mate-screensaver 1> /dev/null 2> /dev/null
 then
   mate-screensaver-command --lock 1> /dev/null 2> /dev/null
 else
+  FONT='-*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2'
+  FONT='-*-fixed-*-*-*-*-10-*-*-*-*-*-iso8859-2'
   xlock \
-    -mode blank \
-    -planfontset '-*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2' \
-    -fontset '-*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2' \
-    -username 'USERNAME: ' \
-    -password 'PASSWORD: ' \
-    -background gray30 \
+    -mode image \
+    -planfontset "${FONT}" \
+    -fontset     "${FONT}" \
+    -username 'user: ' \
+    -password 'pass:' \
+    -info ' ' \
+    -validate 'Checking.' \
+    -invalid 'Nope. ' \
+    -background gray20 \
+    -foreground gray60 \
     -dpmsoff 1 \
-    -message ' ' \
-    -info ' '
+    -icongeometry 64x64 \
+    -echokeys \
+    -echokey '*' \
+    -bitmap /home/vermaden/.icons/vermaden/xlock.xpm \
+    -count 1 \
+    -delay 10000000 \
+    -erasemode no_fade \
+    +showdate \
+    +description
+
+# xlock \
+#   -mode blank \
+#   -planfontset "${FONT}" \
+#   -fontset     "${FONT}" \
+#   -username 'user: ' \
+#   -password 'pass:' \
+#   -info ' ' \
+#   -validate 'Checking.' \
+#   -invalid 'Nope. ' \
+#   -background gray20 \
+#   -foreground gray60 \
+#   -dpmsoff 1 \
+#   -icongeometry 1x1 \
+#   -echokeys \
+#   -echokey '*' \
+#   +showdate \
+#   +description
+
 fi
 
 echo '1' >> ~/scripts/stats/${0##*/}
