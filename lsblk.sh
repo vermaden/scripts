@@ -64,7 +64,7 @@ fi
     FORMAT_L0="%-14s %3s:%-3s %4s %-18s %12s %s\n"
   FORMAT_L1="  %-12s %3s:%-3s %4s %-18s %12s %s\n"
 FORMAT_L2="    %-10s %3s:%-3s %4s %-18s %12s %s\n"
-printf "${FORMAT_L0}" DEVICE MA MI SIZE TYPE LABEL MOUNT
+printf "${FORMAT_L0}" DEVICE MAJ MIN SIZE TYPE LABEL MOUNT
 
 # PARSE DISKS
 echo "${DISKS}" \
