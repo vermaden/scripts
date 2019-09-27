@@ -34,7 +34,40 @@
 PATH=${PATH}:/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
 __usage() {
-  echo "usage: $( basename ${0} ) [DISK]"
+  local NAME="${0##*/}"
+  echo "usage:"
+  echo
+  echo "  BASIC USAGE INFORMATION"
+  echo "  ======================="
+  echo "  # ${NAME} [DISK]"
+  echo
+  echo "example(s):"
+  echo
+  echo "  LIST ALL BLOCK DEVICES IN SYSTEM"
+  echo "  --------------------------------"
+  echo "  # ${NAME}"
+  echo "  DEVICE         MAJ:MIN SIZE TYPE                      LABEL MOUNT"
+  echo "  ada0             0:5b  932G GPT                           - -"
+  echo "    ada0p1         0:64  200M efi                    efiboot0 <UNMOUNTED>"
+  echo "    ada0p2         0:65  512K freebsd-boot           gptboot0 -"
+  echo "    <FREE>         -:-   492K -                             - -"
+  echo "    ada0p3         0:66  931G freebsd-zfs                zfs0 <ZFS>"
+  echo
+  echo "  LIST ONLY da1 BLOCK DEVICE"
+  echo "  --------------------------"
+  echo "  # ${NAME} da1"
+  echo "  DEVICE         MAJ:MIN SIZE TYPE                      LABEL MOUNT"
+  echo "  da1              0:80  2.0G MBR                           - -"
+  echo "    da1s1          0:80  2.0G freebsd                       - -"
+  echo "      da1s1a       0:81  1.0G freebsd-ufs                root /"
+  echo "      da1s1b       0:82  1.0G freebsd-swap               swap SWAP"
+  echo
+  echo "hint(s):"
+  echo
+  echo "  DISPLAY ALL DISKS IN SYSTEM"
+  echo "  ---------------------------"
+  echo "  # sysctl kern.disks"
+  echo "  kern.disks: ada0 da0 da1"
   echo
   exit 1
 }
@@ -46,14 +79,21 @@ then
   DISKS=$( sysctl -n kern.disks | tr ' ' '\n' )
 elif [ ${#} -eq 1 ]
 then
+  # SINGLE ARGUMENT = SINGLE DISK OR HELP
+  # DISPLAY USAGE/EXAMPLES
+  case ${1} in
+    (h|-h|--h|help|-help|--help)
+      __usage
+      ;;
+  esac
   # SINGLE ARGUMENT = SINGLE DISK
-  if sysctl -n kern.disks | grep -q "${1}"
+  if sysctl -n kern.disks | grep -q -- "${1}"
   then
     DISKS="${1}"
   else
     echo "NOPE: disk '${1}' does not exist in the system"
     echo
-    exit 1
+    __usage
   fi
 else
   # SPECIFIED DISK DOES NOT EXIST IN THE SYSTEM
