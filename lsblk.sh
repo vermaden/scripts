@@ -89,7 +89,7 @@ __major_minor() { # 1=DEV
 
 # GET SIZE FOR PROVIDER
 __get_size() { # 1=LINE
-  LINE="${1}"
+  local LINE="${1}"
   SIZE=$( echo "${LINE}" | awk '{print $NF}' | tr -d '()' )
   if [ "${SIZE}" = "" ]
   then
@@ -132,6 +132,57 @@ __swap_detect() { # 1=TYPE
 }
 # __swap_detect() ENDED
 
+__mount_label() { # 1=TARGET
+  local TARGET="${1}"
+  LABEL="-"
+  MOUNT="-"
+
+  # TRY CLASSIC MOUNT POINT WITH DEVICE NAME
+  local MOUNT_FOUND=0
+  MOUNT=$( mount | grep "/dev/${TARGET} " | awk 'END{print $3}' )
+  if [ "${MOUNT}" = "" ]
+  then
+    MOUNT="-"
+  else
+    local MOUNT_FOUND=1
+  fi
+
+  # GET LABEL FOR UFS FILESYSTEM
+  case ${TYPE} in
+    (freebsd-ufs)
+      LABEL=$( tunefs -p /dev/${TARGET} 2>&1 | awk '/volume label/ {print $NF}' )
+      if [ "${LABEL}" = "(-L)" ]
+      then
+        LABEL="-"
+      fi
+      ;;
+  esac
+
+  # TRY LABEL MOUNTPOINT
+  if [ "${MOUNT_FOUND}" != "1" ]
+  then
+    # TRY GLABEL MOUNTPOINT AS MSDOSFS MOUNT IS NOT POSSIBLE WITHOUT GPT/MBR
+    local GLABEL=$( glabel status | grep -v ufsid | grep ${TARGET}\$ )
+    if [ "${GLABEL}" = "" ]
+    then
+      LABEL="-"
+    else
+      while read PROVIDER STATUS DEVICE
+      do
+        MOUNT=$( mount | grep "${PROVIDER}" | awk 'END{print $3}' )
+        if [ "${MOUNT}" = "" ]
+        then
+          MOUNT="-"
+        fi
+        LABEL=$( echo "${GLABEL}" | grep -m 1 "${TARGET}" | awk '{print $1}' )
+      done << EOF
+        $( echo "${GLABEL}" | sed '/^s*$/d' )
+EOF
+    fi
+  fi
+}
+# __mount_label() ENDED
+
 # WHEN GPART OUTPUT EXISTS (partition table / not entire device)
 __gpart_present() {
   # ------------------------------------------------------------------------- #
@@ -152,12 +203,28 @@ __gpart_present() {
         # ------------------------------------------------------------------- #
         if [ "${PREFIX}" = "" ]
         then
+          # GET MAJOR/MINOR DATA
           __major_minor ${DEV}
+
+          # GET PROVIDER SIZE
           __get_size "${LINE}"
 
+          # GET PROVIDER TYPE
           TYPE=$( echo "${LINE}" | awk 'END{print $4}' )
+
+          # GET LABEL AND MOUNT
+          __mount_label ${DEV}
+
           # OUTPUT
-          printf "${FORMAT_L0}" ${DEV} ${MAJ} ${MIN} ${SIZE} ${TYPE} - -
+          printf "${FORMAT_L0}" ${DEV} ${MAJ} ${MIN} ${SIZE} ${TYPE} ${LABEL} ${MOUNT}
+          if [ -e /dev/${DEV}.eli ]
+          then
+            # GET GELI MOUNT/LABEL/MAJOR/MINOR
+            __major_minor ${DEV}.eli
+            __mount_label ${DEV}.eli
+            printf "${FORMAT_L0}" ${DEV}.eli ${MAJ} ${MIN} ${SIZE} ${TYPE} ${LABEL} ${MOUNT}
+          fi
+
           # DETECT PARTITION SCHEMA (GPT/MBR)
           case "${LINE}" in
             (*GPT*) PREFIX=p; continue ;;
@@ -170,10 +237,12 @@ __gpart_present() {
         # GPART PARTITIONS                                                    #
         # VISITED MANY TIMES EACH TIME FOR EACH PARTITION/SLICE               #
         # ------------------------------------------------------------------- #
+        # GET PROVIDER SIZE
         __get_size "${LINE}"
+
+        # PRINT FREE SPACE
         if echo "${LINE}" | grep -q -- "- free -" 1> /dev/null 2> /dev/null
         then
-          # FREE
           printf "${FORMAT_L1}" "<FREE>" - - ${SIZE} - - -
           continue
         fi
@@ -188,179 +257,125 @@ __gpart_present() {
           NAME="${DEV}${PREFIX}${NAME}"
         fi
 
-        # LABEL/MOUNT WITH LABEL
-        LABEL="-"
-        MOUNT="-"
-        GLABEL=$( glabel status | grep -v ufsid | grep ${NAME}\$ )
-        if [ "${GLABEL}" != "" ]
+        # GET LABEL AND MOUNT
+        __mount_label ${NAME}
+
+        # SWAP ON/OFF DETECTION
+        __swap_detect "${TYPE}"
+
+        # ZFS TYPE SETUP
+        if [ "${TYPE}" = "freebsd-zfs" ]
         then
-          while read PROVIDER STATUS DEVICE
-          do
-            MOUNT=$( mount | grep "${PROVIDER}" | awk 'END{print $3}' )
-            if [ "${MOUNT}" = "" ]
-            then
-              MOUNT="-"
-            fi
-          done << EOF
-                $( echo "${GLABEL}" )
-EOF
-      LABEL=$( echo "${GLABEL}" | grep -m 1 "${NAME}" | awk '{print $1}' )
-      if [ "${LABEL}" = "" ]
-      then
-        LABEL="-"
-      fi
-    fi
+          MOUNT="<ZFS>"
+        fi
 
-    # DEBUG
-    # case ${TYPE} in
-    #   (\!0) TYPE="<UNSET>" ;;
-    # esac
+        # GET MAJOR/MINOR DATA
+        __major_minor ${NAME}
 
-    # SWAP ON/OFF DETECTION
-    __swap_detect "${TYPE}"
+        # OUTPUT
+        printf "${FORMAT_L1}" ${NAME} ${MAJ} ${MIN} ${SIZE} ${TYPE} ${LABEL} ${MOUNT}
+        if [ -e /dev/${NAME}.eli ]
+        then
+          # GET GELI MOUNT/LABEL/MAJOR/MINOR
+          __major_minor ${NAME}.eli
+          __mount_label ${NAME}.eli
+          printf "${FORMAT_L1}" ${NAME}.eli ${MAJ} ${MIN} ${SIZE} ${TYPE} ${LABEL} ${MOUNT}
+        fi
 
-    # ZFS TYPE SETUP
-    if [ "${TYPE}" = "freebsd-zfs" ]
-    then
-      MOUNT="<ZFS>"
-    fi
+        # ----------------------------------------------------------------------- #
+        # USED / bsdlabel(8)                                                      #
+        # ----------------------------------------------------------------------- #
+        if [ "${TYPE}" = "freebsd" -a "${PREFIX}" != "p" ]
+        then
+          BSDGPART=$( gpart show ${NAME} 2> /dev/null )
+          if [ "${BSDGPART}" != "" ]
+          then
+            echo "${BSDGPART}" \
+              | grep -v '=>' \
+              | while read BSDLINE
+                do
+                  # SKIP EMPTY LINES
+                  if [ "${BSDLINE}" = "" ]
+                  then
+                    continue
+                  fi
+                  # ------------------------------------------------------------- #
+                  # bsdlabel(8) PARTITIONS                                        #
+                  # VISITED MANY TIMES EACH TIME FOR EACH PARTITION               #
+                  # ------------------------------------------------------------- #
+                  # PRINT FREE SPACE
+                  if echo "${BSDLINE}" | grep -q -- "- free -" 1> /dev/null 2> /dev/null
+                  then
+                    # DO NOT DISPLAY 16 SECTORS LONG <FREE> IN EACH bsdlabel(8) SCHEMA
+                    BEG=$( echo "${BSDLINE}" | awk 'END{print $1}' )
+                    END=$( echo "${BSDLINE}" | awk 'END{print $2}' )
+                    if [ "$(( ${END} - ${BEG} ))" = "16" ]
+                    then
+                      continue
+                    fi
 
-    __major_minor ${NAME}
+                    # GET PROVIDER SIZE
+                    __get_size "${BSDLINE}"
 
-    # OUTPUT
-    printf "${FORMAT_L1}" ${NAME} ${MAJ} ${MIN} ${SIZE} ${TYPE} ${LABEL} ${MOUNT}
+                    # OUTPUT
+                    printf "${FORMAT_L2}" "<FREE>" - - ${SIZE} - - -
+                    continue
+                  else
+                    # USED SPACE
+                    __get_size "${BSDLINE}"
+                    PART=$( echo "${BSDLINE}" | awk 'END{print $3}' )
+                    TYPE=$( echo "${BSDLINE}" | awk 'END{print $4}' )
 
-    # ----------------------------------------------------------------------- #
-    # USED / bsdlabel(8)                                                      #
-    # ----------------------------------------------------------------------- #
-    if [ "${TYPE}" = "freebsd" -a "${PREFIX}" != "p" ]
-    then
-      BSDGPART=$( gpart show ${NAME} 2> /dev/null )
-      if [ "${BSDGPART}" != "" ]
-      then
-        echo "${BSDGPART}" \
-          | grep -v '=>' \
-          | while read BSDLINE
-            do
-              # SKIP EMPTY LINES
-              if [ "${BSDLINE}" = "" ]
-              then
-                continue
-              fi
-              # ------------------------------------------------------------- #
-              # bsdlabel(8) PARTITIONS                                        #
-              # VISITED MANY TIMES EACH TIME FOR EACH PARTITION               #
-              # ------------------------------------------------------------- #
-              if echo "${BSDLINE}" | grep -q -- "- free -" 1> /dev/null 2> /dev/null
-              then
-                # FREE SPACE
-                # DO NOT DISPLAY 16 SECTORS LONG <FREE> IN EACH bsdlabel(8) SCHEMA
-                BEG=$( echo "${BSDLINE}" | awk 'END{print $1}' )
-                END=$( echo "${BSDLINE}" | awk 'END{print $2}' )
-                if [ "$(( ${END} - ${BEG} ))" = "16" ]
-                then
-                  continue
-                fi
+                    # SET APPROPRIATE LETTER FOR EACH PARTITION
+                    case ${PART} in
+                      (1) BSDPREFIX=a ;;
+                      (2) BSDPREFIX=b ;;
+                      (3) BSDPREFIX=c ;;
+                      (4) BSDPREFIX=d ;;
+                      (5) BSDPREFIX=e ;;
+                      (6) BSDPREFIX=f ;;
+                      (7) BSDPREFIX=g ;;
+                      (8) BSDPREFIX=h ;;
+                      (9) BSDPREFIX=i ;;
+                    esac
+                    PART="${NAME}${BSDPREFIX}"
+                  fi
 
-                __get_size "${BSDLINE}"
+                  # GET LABEL AND MOUNT
+                  __mount_label ${PART}
 
-                # OUTPUT
-                printf "${FORMAT_L2}" "<FREE>" - - ${SIZE} - - -
-                continue
-              else
-                # USED SPACE
-                __get_size "${BSDLINE}"
-                PART=$( echo "${BSDLINE}" | awk 'END{print $3}' )
-                TYPE=$( echo "${BSDLINE}" | awk 'END{print $4}' )
-
-                # DEBUG
-                # if [ "${TYPE}" = "!0" ]
-                # then
-                #   TYPE="<UNSET>"
-                # fi
-
-                # SET APPROPRIATE LETTER FOR EACH PARTITION
-                case ${PART} in
-                  (1) BSDPREFIX=a ;;
-                  (2) BSDPREFIX=b ;;
-                  (3) BSDPREFIX=c ;;
-                  (4) BSDPREFIX=d ;;
-                  (5) BSDPREFIX=e ;;
-                  (6) BSDPREFIX=f ;;
-                  (7) BSDPREFIX=g ;;
-                  (8) BSDPREFIX=h ;;
-                  (9) BSDPREFIX=i ;;
-                esac
-                PART="${NAME}${BSDPREFIX}"
-              fi
-
-              # TRY CLASSIC MOUNT POINT WITH DEVICE NAME
-              MOUNT_FOUND=0
-              MOUNT=$( mount | grep /dev/${PART} | awk 'END{print $3}' )
-              if [ "${MOUNT}" = "" ]
-              then
-                MOUNT="-"
-              else
-                MOUNT_FOUND=1
-              fi
-
-              # GET LABEL FOR UFS FILESYSTEM
-              case ${TYPE} in
-                (freebsd-ufs)
-                  LABEL=$( tunefs -p ${PART} 2>&1 | awk '/volume label/ {print $NF}' )
-                  if [ "${LABEL}" = "(-L)" ]
+                  # WORKAROUND FOR (null) LABEL
+                  if [ "${LABEL}" = "" -o "${LABEL}" = "(null)" ]
                   then
                     LABEL="-"
                   fi
-                  ;;
-              esac
 
-              # TRY LABEL MOUNTPOINT
-              if [ "${MOUNT_FOUND}" != "1" ]
-              then
-                # TRY GLABEL MOUNTPOINT AS MSDOSFS MOUNT IS NOT POSSIBLE WITHOUT GPT/MBR
-                GLABEL=$( glabel status | grep ${PART} )
-                if [ "${GLABEL}" = "" ]
-                then
-                  LABEL="-"
-                else
-                  while read PROVIDER STATUS DEVICE
-                  do
-                    MOUNT=$( mount | grep "${PROVIDER}" | awk 'END{print $3}' )
-                    if [ "${MOUNT}" = "" ]
-                    then
-                      MOUNT="-"
-                    fi
-                    LABEL=$( echo "${GLABEL}" | grep -m 1 "${PART}" | awk '{print $1}' )
-                  done << EOF
-                    $( echo "${GLABEL}" sed '/^s*$/d' )
-EOF
-                fi
-              fi
+                  # GET MAJOR/MINOR DATA
+                  __major_minor ${PART}
 
-              # WORKAROUND FOR (null) LABEL
-              if [ "${LABEL}" = "" -o "${LABEL}" = "(null)" ]
-              then
-                LABEL="-"
-              fi
+                  # SET PROPER MOUNT FOR bsdlabel(8) PARTITION
+                  if [ "${TYPE}" = "freebsd-boot" -o "${TYPE}" = "freebsd" ]
+                  then
+                    MOUNT="-"
+                  fi
 
-              __major_minor ${PART}
+                  # SWAP ON/OFF DETECTION
+                  __swap_detect "${TYPE}"
 
-              # SET PROPER MOUNT FOR bsdlabel(8) PARTITION
-              if [ "${TYPE}" = "freebsd-boot" -o "${TYPE}" = "freebsd" ]
-              then
-                MOUNT="-"
-              fi
+                  # OUTPUT
+                  printf "${FORMAT_L2}" ${PART} ${MAJ} ${MIN} ${SIZE} ${TYPE} ${LABEL} ${MOUNT}
+                  if [ -e /dev/${PART}.eli ]
+                  then
+                    # GET GELI MOUNT/LABEL/MAJOR/MINOR
+                    __major_minor ${PART}.eli
+                    __mount_label ${PART}.eli
+                    printf "${FORMAT_L2}" ${PART}.eli ${MAJ} ${MIN} ${SIZE} ${TYPE} ${LABEL} ${MOUNT}
+                  fi
 
-              # SWAP ON/OFF DETECTION
-              __swap_detect "${TYPE}"
-
-              # OUTPUT
-              printf "${FORMAT_L2}" ${PART} ${MAJ} ${MIN} ${SIZE} ${TYPE} ${LABEL} ${MOUNT}
-            done
-      fi
-    fi
-  done
+                done
+          fi
+        fi
+      done
 }
 # __gpart_present() ENDED
 
@@ -368,10 +383,11 @@ EOF
 __gpart_absent() {
   # ------------------------------------------------------------------------- #
   # GPART ABSENT                                                              #
-  # GET SIZE INFORMATION FROM diskinfo(8) OUTPUT                              #
   # ------------------------------------------------------------------------- #
+  # GET SIZE INFORMATION FROM diskinfo(8) OUTPUT
   SIZE=$( diskinfo -v ${DEV} | awk '/mediasize in bytes/ {print $NF}' | tr -d '()' )
-  # USUAL MAJOR/MINOR DATA
+
+  # GET MAJOR/MINOR DATA
   __major_minor ${DEV}
 
   # TRY TO DETECT FS TYPE
@@ -383,41 +399,15 @@ __gpart_absent() {
     then
       # THIS IS ZFS
       TYPE=freebsd-zfs
+
       # ZFS USUALLY HAVE LOTS OF MOUNT POINTS SO USE '<ZFS>' HERE
       MOUNT="<ZFS>"
     else
       # IF ITS NOT ZFS THEN FIND PROPER MOUNT POINT
       TYPE="-"
-      # TRY CLASSIC MOUNT POINT WITH DEVICE NAME
-      MOUNT_FOUND=0
-      MOUNT=$( mount | grep /dev/${DEV} | awk 'END{print $3}' )
-      if [ "${MOUNT}" = "" ]
-      then
-        MOUNT="-"
-      else
-        MOUNT_FOUND=1
-      fi
 
-      # TRY GLABEL MOUNTPOINT AS MSDOSFS MOUNT IS NOT POSSIBLE WITHOUT GPT/MBR
-      if [ "${MOUNT_FOUND}" != "1" ]
-      then
-        GLABEL=$( glabel status | grep ${DEV}\$ )
-        if [ "${GLABEL}" = "" ]
-        then
-          LABEL="-"
-        else
-          while read PROVIDER STATUS DEVICE
-          do
-            MOUNT=$( mount | grep "${PROVIDER}" | awk 'END{print $3}' )
-            if [ "${MOUNT}" = "" ]
-            then
-              MOUNT="-"
-            fi
-          done << EOF
-            $( echo "${GLABEL}" sed '/^s*$/d' )
-EOF
-        fi
-      fi
+      # GET LABEL AND MOUNT
+      __mount_label ${DEV}
 
     fi
   fi
@@ -436,6 +426,13 @@ EOF
 
   # OUTPUT
   printf "${FORMAT_L0}" ${DEV} ${MAJ} ${MIN} ${SIZE} ${TYPE} ${LABEL} ${MOUNT}
+  if [ -e /dev/${DEV}.eli ]
+  then
+    # GET GELI MOUNT/LABEL/MAJOR/MINOR
+    __major_minor ${DEV}.eli
+    __mount_label ${DEV}.eli
+    printf "${FORMAT_L0}" ${DEV}.eli ${MAJ} ${MIN} ${SIZE} ${TYPE} ${LABEL} ${MOUNT}
+  fi
 }
 # __gpart_absent() ENDED
 
@@ -447,13 +444,12 @@ then
 elif [ ${#} -eq 1 ]
 then
   # SINGLE ARGUMENT MEANS SINGLE DISK OR HELP
-  # DISPLAY USAGE/EXAMPLES
   case ${1} in
     (h|-h|--h|help|-help|--help)
       __usage
       ;;
   esac
-  # SINGLE ARGUMENT MEANS SINGLE DISK
+  # SINGLE DISK CHECK
   if sysctl -n kern.disks | grep -q -- "${1}"
   then
     DISKS="${1}"
@@ -466,7 +462,7 @@ then
     __usage
   fi
 else
-  # SPECIFIED DISK DOES NOT EXIST IN THE SYSTEM
+  # ONLY '0' and '1' ARGUMENTS ARE COVERED
   __usage
 fi
 
@@ -476,7 +472,6 @@ fi
 FORMAT_L2="    %-10s %3s:%-3s %4s %-18s %12s %s\n"
 printf "${FORMAT_L0}" DEVICE MAJ MIN SIZE TYPE LABEL MOUNT
 
-# main()
 # PARSE DISKS
 echo "${DISKS}" \
   | sort -n \
