@@ -134,20 +134,23 @@ __swap_detect() { # 1=TYPE
 
 __mount_label() { # 1=TARGET
   local TARGET="${1}"
+  local MOUNT_FOUND=0
   LABEL="-"
   MOUNT="-"
 
   # TRY CLASSIC MOUNT POINT WITH DEVICE NAME
-  local MOUNT_FOUND=0
-  MOUNT=$( mount | grep "/dev/${TARGET} " | awk 'END{print $3}' )
-  if [ "${MOUNT}" = "" ]
+  if [ "${MOUNT_FOUND}" != "1" ]
   then
-    MOUNT="-"
-  else
-    local MOUNT_FOUND=1
+    MOUNT=$( mount | grep "/dev/${TARGET} " | awk 'END{print $3}' )
+    if [ "${MOUNT}" = "" ]
+    then
+      MOUNT="-"
+    else
+      local MOUNT_FOUND=1
+    fi
   fi
 
-  # GET LABEL FOR UFS FILESYSTEM
+  # GET LABEL FOR UFS OR ZFS FILESYSTEM
   case ${TYPE} in
     (freebsd-ufs)
       LABEL=$( tunefs -p /dev/${TARGET} 2>&1 | awk '/volume label/ {print $NF}' )
@@ -155,6 +158,10 @@ __mount_label() { # 1=TARGET
       then
         LABEL="-"
       fi
+      ;;
+    (freebsd-zfs)
+      MOUNT="<ZFS>"
+      local MOUNT_FOUND=1
       ;;
   esac
 
