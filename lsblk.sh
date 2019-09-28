@@ -139,15 +139,12 @@ __mount_label() { # 1=TARGET
   MOUNT="-"
 
   # TRY CLASSIC MOUNT POINT WITH DEVICE NAME
-  if [ "${MOUNT_FOUND}" != "1" ]
+  MOUNT=$( mount | grep "/dev/${TARGET} " | awk 'END{print $3}' )
+  if [ "${MOUNT}" = "" ]
   then
-    MOUNT=$( mount | grep "/dev/${TARGET} " | awk 'END{print $3}' )
-    if [ "${MOUNT}" = "" ]
-    then
-      MOUNT="-"
-    else
-      local MOUNT_FOUND=1
-    fi
+    MOUNT="-"
+  else
+    local MOUNT_FOUND=1
   fi
 
   # GET LABEL FOR UFS OR ZFS FILESYSTEM
