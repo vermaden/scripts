@@ -74,7 +74,6 @@ __usage() {
 }
 # __usage() ENDED
 
-# PARSE ALL POSSIBLE BLOCK DEVICES OR JUST SINGLE DEVICE
 # GET MAJOR/MINOR NUMBERS
 __major_minor() { # 1=DEV
   local DEV=${1}
