@@ -36,54 +36,58 @@ PATH=${PATH}:/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 # DISPLAY HELP/USAGE/EXAMPLES
 __usage() {
   local NAME="${0##*/}"
-  echo "usage:"
-  echo
-  echo "  BASIC USAGE INFORMATION"
-  echo "  ======================="
-  echo "  # ${NAME} [DISK]"
-  echo
-  echo "example(s):"
-  echo
-  echo "  LIST ALL BLOCK DEVICES IN SYSTEM"
-  echo "  --------------------------------"
-  echo "  # ${NAME}"
-  echo "  DEVICE         MAJ:MIN SIZE TYPE                      LABEL MOUNT"
-  echo "  ada0             0:5b  932G GPT                           - -"
-  echo "    ada0p1         0:64  200M efi                    efiboot0 <UNMOUNTED>"
-  echo "    ada0p2         0:65  512K freebsd-boot           gptboot0 -"
-  echo "    <FREE>         -:-   492K -                             - -"
-  echo "    ada0p3         0:66  931G freebsd-zfs                zfs0 <ZFS>"
-  echo
-  echo "  LIST ONLY da1 BLOCK DEVICE"
-  echo "  --------------------------"
-  echo "  # ${NAME} da1"
-  echo "  DEVICE         MAJ:MIN SIZE TYPE                      LABEL MOUNT"
-  echo "  da1              0:80  2.0G MBR                           - -"
-  echo "    da1s1          0:80  2.0G freebsd                       - -"
-  echo "      da1s1a       0:81  1.0G freebsd-ufs                root /"
-  echo "      da1s1b       0:82  1.0G freebsd-swap               swap SWAP"
-  echo
-  echo "hint(s):"
-  echo
-  echo "  DISPLAY ALL DISKS IN SYSTEM"
-  echo "  ---------------------------"
-  echo "  # sysctl kern.disks"
-  echo "  kern.disks: ada0 da0 da1"
-  echo
+  cat << __EOF
+usage:
+
+  BASIC USAGE INFORMATION
+  =======================
+  # ${NAME} [DISK]
+
+example(s):
+
+  LIST ALL BLOCK DEVICES IN SYSTEM
+  --------------------------------
+  # ${NAME}
+  DEVICE         MAJ:MIN SIZE TYPE                      LABEL MOUNT
+  ada0             0:5b  932G GPT                           - -
+    ada0p1         0:64  200M efi                    efiboot0 <UNMOUNTED>
+    ada0p2         0:65  512K freebsd-boot           gptboot0 -
+    <FREE>         -:-   492K -                             - -
+    ada0p3         0:66  931G freebsd-zfs                zfs0 <ZFS>
+
+  LIST ONLY da1 BLOCK DEVICE
+  --------------------------
+  # ${NAME} da1
+  DEVICE         MAJ:MIN SIZE TYPE                      LABEL MOUNT
+  da1              0:80  2.0G MBR                           - -
+    da1s1          0:80  2.0G freebsd                       - -
+      da1s1a       0:81  1.0G freebsd-ufs                root /
+      da1s1b       0:82  1.0G freebsd-swap               swap SWAP
+
+hint(s):
+
+  DISPLAY ALL DISKS IN SYSTEM
+  ---------------------------
+  # sysctl kern.disks
+  kern.disks: ada0 da0 da1
+
+  MOUNT procfs(5) ON /proc DIR TO SUPPORT fuse(8) MOUNTS
+  ------------------------------------------------------
+  # echo 'procfs /proc procfs rw 0 0' >> /etc/fstab
+  # mount /proc
+  # mount -t procfs
+  procfs on /proc (procfs, local)
+
+__EOF
   exit 1
 }
 # __usage() ENDED
 
 # GET MAJOR/MINOR NUMBERS
 __major_minor() { # 1=DEV
-  local DEV=${1}
-  MA_MI=$( ls -l /dev/${DEV} | awk 'END{print $5}' | tr 'x' ':' )
-  if [ "${MA_MI}" = "0," ]
-  then
-    MA_MI=$( ls -l /dev/${DEV} | awk 'END{print $5"x"$6 }' | tr -d ',' | tr 'x' ':' )
-  fi
-  MAJ=$( echo ${MA_MI} | awk -F ':' '{print $1}' )
-  MIN=$( echo ${MA_MI} | awk -F ':' '{print $2}' )
+  # local DEV=${1}
+  MAJ=$( stat -f "%Hr" /dev/${DEV} )
+  MIN=$( stat -f "%Lr" /dev/${DEV} )
 }
 # __major_minor() ENDED
 
@@ -105,7 +109,7 @@ __swap_detect() { # 1=TYPE
   then
     if [ "${LABEL}" != "-" ]
     then
-      if swapinfo | grep -q -- ${LABEL}
+      if swapinfo | grep -q -- ${LABEL} 2> /dev/null
       then
         MOUNT="SWAP"
         return
@@ -113,7 +117,7 @@ __swap_detect() { # 1=TYPE
     fi
     if [ "${PART}" != "" ]
     then
-      if swapinfo | grep -q -- ${PART}
+      if swapinfo | grep -q -- ${PART} 2> /dev/null
       then
         MOUNT="SWAP"
         return
@@ -121,7 +125,7 @@ __swap_detect() { # 1=TYPE
     fi
     if [ "${NAME}" != "" ]
     then
-      if swapinfo | grep -q -- ${NAME}
+      if swapinfo | grep -q -- ${NAME} 2> /dev/null
       then
         MOUNT="SWAP"
         return
@@ -179,11 +183,36 @@ __mount_label() { # 1=TARGET
           MOUNT="-"
         fi
         LABEL=$( echo "${GLABEL}" | grep -m 1 "${TARGET}" | awk '{print $1}' )
-      done << EOF
+      done << ______EOF
         $( echo "${GLABEL}" | sed '/^s*$/d' )
-EOF
+______EOF
     fi
   fi
+
+  # TRY procfs(5) MOUNTS
+  if [ "${MOUNT_FOUND}" != "1" ]
+  then
+    if [ -e /proc/0/status ]
+    then
+      FUSE_MOUNTS=$(
+        while read PID
+        do
+          cat /proc/${PID}/cmdline
+          echo
+        done << ________EOF
+          $( pgrep ntfs-3g )
+________EOF
+)
+      FUSE_MOUNTS=$( echo "${FUSE_MOUNTS}" | sort -u )
+      FUSE_MOUNTS=$( echo "${FUSE_MOUNTS}" | sed 's|ntfs-3g||g' )
+      FUSE_CHECKS=$( echo "${FUSE_MOUNTS}" | grep /dev/${TARGET}/ )
+      if [ "${FUSE_CHECKS}" != "" ]
+      then
+        MOUNT=$( echo "${FUSE_CHECKS}" | sed "s|/dev/${TARGET}||g" )
+      fi
+    fi
+  fi
+
 }
 # __mount_label() ENDED
 
@@ -395,10 +424,11 @@ __gpart_absent() {
   __major_minor ${DEV}
 
   # TRY TO DETECT FS TYPE
-  TYPE=$( fstyp /dev/${DEV} 2> /dev/null )
+  TYPE=$( fstyp -u /dev/${DEV} 2> /dev/null )
   if [ "${TYPE}" = "" ]
   then
     # ZFS DETECTION
+    # head -c 132000 /dev/${DEV} | od -H | grep -q 00bab10c
     if head -c 32000 /dev/${DEV} | strings | grep -q pool_guid 1> /dev/null 2> /dev/null
     then
       # THIS IS ZFS
@@ -415,6 +445,9 @@ __gpart_absent() {
 
     fi
   fi
+
+  # GET LABEL AND MOUNT
+  __mount_label ${DEV}
 
   # GET msdosfs LABEL BY HAND
   LABEL="-"
