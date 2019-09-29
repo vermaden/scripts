@@ -85,7 +85,7 @@ __EOF
 
 # GET MAJOR/MINOR NUMBERS
 __major_minor() { # 1=DEV
-  # local DEV=${1}
+  local DEV=${1}
   MAJ=$( stat -f "%Hr" /dev/${DEV} )
   MIN=$( stat -f "%Lr" /dev/${DEV} )
 }
