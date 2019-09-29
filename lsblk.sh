@@ -71,13 +71,6 @@ hint(s):
   # sysctl kern.disks
   kern.disks: ada0 da0 da1
 
-  MOUNT procfs(5) ON /proc DIR TO SUPPORT fuse(8) MOUNTS
-  ------------------------------------------------------
-  # echo 'procfs /proc procfs rw 0 0' >> /etc/fstab
-  # mount /proc
-  # mount -t procfs
-  procfs on /proc (procfs, local)
-
 __EOF
   exit 1
 }
@@ -194,7 +187,7 @@ ______EOF
   then
     FUSE_PIDS=$( pgrep mount.exfat ntfs-3g | tr '\n' ',' | sed '$s/.$//' )
     FUSE_MOUNTS=$( ps -p "${FUSE_PIDS}" -o command | sed 1d | sort -u )
-    MOUNT=$( echo "${FUSE_MOUNTS}" |  grep "/dev/${TARGET} " | awk '{print $3}' )
+    MOUNT=$( echo "${FUSE_MOUNTS}" | grep "/dev/${TARGET} " | awk '{print $3}' )
   fi
 }
 # __mount_label() ENDED
