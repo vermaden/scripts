@@ -189,11 +189,12 @@ ______EOF
     fi
   fi
 
-  # TRY procfs(5) MOUNTS
+  # TRY fuse(8) MOUNTS FROM PROCESSES
   if [ "${MOUNT_FOUND}" != "1" ]
   then
-    FUSE_MOUNTS=$( ps -p $( pgrep ntfs-3g | tr '\n' ',' | sed '$s/.$//' ) -o command | sed 1d | sort -u )
-    MOUNT=$( echo "${FUSE_MOUNTS}" |  grep "/dev/${TARGET} " | awk '{p  rint $3}' )
+    FUSE_PIDS=$( pgrep mount.exfat ntfs-3g | tr '\n' ',' | sed '$s/.$//' )
+    FUSE_MOUNTS=$( ps -p "${FUSE_PIDS}" -o command | sed 1d | sort -u )
+    MOUNT=$( echo "${FUSE_MOUNTS}" |  grep "/dev/${TARGET} " | awk '{print $3}' )
   fi
 }
 # __mount_label() ENDED
