@@ -192,27 +192,9 @@ ______EOF
   # TRY procfs(5) MOUNTS
   if [ "${MOUNT_FOUND}" != "1" ]
   then
-    if [ -e /proc/0/status ]
-    then
-      FUSE_MOUNTS=$(
-        while read PID
-        do
-          cat /proc/${PID}/cmdline
-          echo
-        done << ________EOF
-          $( pgrep ntfs-3g )
-________EOF
-)
-      FUSE_MOUNTS=$( echo "${FUSE_MOUNTS}" | sort -u )
-      FUSE_MOUNTS=$( echo "${FUSE_MOUNTS}" | sed 's|ntfs-3g||g' )
-      FUSE_CHECKS=$( echo "${FUSE_MOUNTS}" | grep /dev/${TARGET}/ )
-      if [ "${FUSE_CHECKS}" != "" ]
-      then
-        MOUNT=$( echo "${FUSE_CHECKS}" | sed "s|/dev/${TARGET}||g" )
-      fi
-    fi
+    FUSE_MOUNTS=$( ps -p $( pgrep ntfs-3g | tr '\n' ',' | sed '$s/.$//' ) -o command | sed 1d | sort -u )
+    MOUNT=$( echo "${FUSE_MOUNTS}" |  grep "/dev/${TARGET} " | awk '{p  rint $3}' )
   fi
-
 }
 # __mount_label() ENDED
 
