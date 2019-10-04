@@ -268,7 +268,7 @@ ______EOF
   # GET LABEL FROM gpart(8)
   if [ "${LABEL_FOUND}" != "1" ]
   then
-    LABEL=$( gpart show -p -l ${DEV} 2> /dev/null | sed 's|=>||g' | grep "${TARGET} " | awk '{print $4}' )
+    LABEL=$( gpart show -p -l ${DEV} 2> /dev/null | sed 's|=>||g' | sed 's-\[active\]--g' | grep "${TARGET} " | awk '{print $4}' )
     if [ "${LABEL}" = "" -o "${LABEL}" = "(null)" ]
     then
       LABEL="-"
@@ -351,7 +351,7 @@ __gpart_present() { # 1=DEV
 
   # WORKAROUND FOR gpart(1) BUG 240998
   # https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=240998
-  TYPE_EXFAT_HELPER_DEVICE=$( gpart show -p ${DEV} | head -1 | awk '{print $5}' 2> /dev/null )
+  TYPE_EXFAT_HELPER_DEVICE=$( gpart show -p ${DEV} | head -1 | sed 's-\[active\]--g' | awk '{print $5}' 2> /dev/null )
   if [ "${TYPE_EXFAT_HELPER_DEVICE}" = "MBR" ]
   then
     TYPE_EXFAT_HELPER=$( fstyp -u /dev/${DEV} 2> /dev/null )
@@ -365,7 +365,7 @@ __gpart_present() { # 1=DEV
   fi
 
   # READ PARTITIONS OF PROVIDER
-  local GPART=$( gpart show -p ${DEV} 2> /dev/null | sed 's|=>||g' )
+  local GPART=$( gpart show -p ${DEV} 2> /dev/null | sed 's-\[active\]--g' | sed 's|=>||g' )
   # PARSE gpart(8) OUTPUT
   echo "${GPART}" \
     | while read BEG END NAME TYPE SIZE SIZE_FREE
@@ -381,7 +381,7 @@ __gpart_present() { # 1=DEV
           # PARTITION
           FORMAT="${FORMAT_L1}"
           # READ PARTITIONS OF PROVIDER
-          local GPART_PARTS=$( gpart show -p ${NAME} 2> /dev/null | sed 's|=>||g' )
+          local GPART_PARTS=$( gpart show -p ${NAME} 2> /dev/null | sed 's-\[active\]--g' | sed 's|=>||g' )
           # PARSE gpart(8) OUTPUT
           if [ "${GPART_PARTS}" != "" ]
           then
