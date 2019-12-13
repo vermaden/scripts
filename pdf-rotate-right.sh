@@ -26,65 +26,33 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # ------------------------------
-# openbox(1) LOCK
+# split PDF pages with pdftk
 # ------------------------------
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-# ONE TIME TRY TO START mate-screensaver IF IT DOES NOT RUN
-if pgrep -q mate-screensaver 1> /dev/null 2> /dev/null
+if [ ${#} -eq 0 ]
 then
-  mate-screensaver 1> /dev/null 2> /dev/null &
+  echo "usage: ${0##*/} FILE"
+  exit 1
 fi
 
-# FALLBACK TO xlockmore WHEN mate-screensaver DOES NOT RUN
-if pgrep -q mate-screensaver 1> /dev/null 2> /dev/null
+for BIN in pdftk
+do
+  if ! /usr/bin/which -s ${BIN}
+  then
+    echo "ERROR: Binary '${BIN}' not in \$\{PATH\}."
+    exit 1
+  fi
+done
+
+if [ ! -f "${1}" ]
 then
-  mate-screensaver-command --lock 1> /dev/null 2> /dev/null
-else
-  FONT='-*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2'
-  FONT='-*-fixed-*-*-*-*-10-*-*-*-*-*-iso8859-2'
-  xlock \
-    -mode image \
-    -font     "${FONT}" \
-    -planfont "${FONT}" \
-    -username 'user: ' \
-    -password 'pass:' \
-    -info ' ' \
-    -validate 'Checking.' \
-    -invalid 'Nope. ' \
-    -background gray20 \
-    -foreground gray60 \
-    -dpmsoff 1 \
-    -icongeometry 64x64 \
-    -echokeys \
-    -echokey '*' \
-    -bitmap /home/vermaden/.icons/vermaden/xlock.xpm \
-    -count 1 \
-    -delay 10000000 \
-    -erasemode no_fade \
-    +showdate \
-    +description
-
-
-# xlock \
-#   -mode blank \
-#   -planfont "${FONT}" \
-#   -font     "${FONT}" \
-#   -username 'user: ' \
-#   -password 'pass:' \
-#   -info ' ' \
-#   -validate 'Checking.' \
-#   -invalid 'Nope. ' \
-#   -background gray20 \
-#   -foreground gray60 \
-#   -dpmsoff 1 \
-#   -icongeometry 1x1 \
-#   -echokeys \
-#   -echokey '*' \
-#   +showdate \
-#   +description
-
+  echo "ERROR: No such file or directory '${1}'."
+  exit 1
 fi
+
+pdftk "${1}" cat 1-endright output "${1}".ROTATED.RIGHT.pdf
+rm -f doc_data.txt
 
 echo '1' >> ~/scripts/stats/${0##*/}

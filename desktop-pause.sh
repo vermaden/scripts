@@ -35,13 +35,15 @@ __usage() {
   echo "usage: ${0##*/} OPTION [ARGUMENT]"
   echo
   echo "OPTIONS:"
-  echo "  -a  -  Do pause/resume active window."
-  echo "  -A  -  Do pause/resume active window and minimize it."
-  echo "  -s  -  Do pause/resume interactively selected window."
-  echo "  -S  -  Do pause/resume interactively selected window and minimize it."
-  echo "  -p  -  Do pause/resume specified PID."
-  echo "  -l  -  Do list paused processes/windows."
-  echo "  -L  -  Do list paused processes/windows with PIDs."
+  echo "  -a  -  Pause/resume active window."
+  echo "  -A  -  Pause/resume active window and minimize it."
+  echo "  -s  -  Pause/resume interactively selected window."
+  echo "  -S  -  Pause/resume interactively selected window and minimize it."
+  echo "  -p  -  Pause/resume specified PID."
+  echo "  -l  -  List paused processes/windows."
+  echo "  -L  -  List paused processes/windows with PIDs."
+  echo "  -k  -  Kill paused processes/windows with TERM (15) signal."
+  echo "  -K  -  Kill paused processes/windows with KILL (9) signal."
   echo
   echo "ARGUMENT:"
   echo "  PID for '-p' option."
@@ -104,6 +106,32 @@ case ${1} in
       | grep '^T' \
       | grep -v 'Ts+' \
       | awk '{print substr($0, index($0, $2))}'
+    exit 0
+    ;;
+
+  (-k)
+    ps -U ${USER} -o state,pid,comm \
+      | grep '^T' \
+      | grep -v 'Ts+' \
+      | awk '{print substr($0, index($0, $2))}' \
+      | awk '{print $1}' \
+      | while read I
+        do
+          kill -15 ${I} &
+        done
+    exit 0
+    ;;
+
+  (-K)
+    ps -U ${USER} -o state,pid,comm \
+      | grep '^T' \
+      | grep -v 'Ts+' \
+      | awk '{print substr($0, index($0, $2))}' \
+      | awk '{print $1}' \
+      | while read I
+        do
+          kill -9 ${I} &
+        done
     exit 0
     ;;
 

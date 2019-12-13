@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # OPTIONS
-  PORTS='audio/lame multimedia/ffmpeg'
+  PORTS='           multimedia/ffmpeg'
 # PORTS='audio/lame multimedia/ffmpeg sysutils/exfat-utils sysutils/fusefs-exfat'
 
 # ONLY root CAN BUILD PACKAGES/PORTS
@@ -23,12 +23,12 @@ case ${1} in
     # UNLOCK BUILD LOCK
     for PORT in ${PORTS}
     do
-      pkg unlock -y ${PORT}
+      # pkg unlock -y ${PORT}
       idprio 10 env BATCH=yes make -C /usr/ports/${PORT} build deinstall install clean &
       MAKE=${!}
       rctl -a process:${MAKE}:pcpu:deny=40
       wait ${MAKE}
-      pkg lock -y ${PORT}
+      # pkg lock -y ${PORT}
     done
     ;;
 
