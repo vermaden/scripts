@@ -216,10 +216,10 @@ __network_reset() {
   echo ${CMD} ifconfig ${LAN_IF} down
   #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
   #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
-# ${CMD} ifconfig ${WLAN_IF} destroy 2> /dev/null    # PANIC
-# echo ${CMD} ifconfig ${WLAN_IF} destroy            # PANIC
-# #DOAS# permit nopass :network as root cmd ifconfig # PANIC
-# #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *   # PANIC
+# ${CMD} ifconfig ${WLAN_IF} destroy 2> /dev/null    # INSTANT KERNEL PANIC
+# echo ${CMD} ifconfig ${WLAN_IF} destroy            # INSTANT KERNEL PANIC
+# #DOAS# permit nopass :network as root cmd ifconfig # INSTANT KERNEL PANIC
+# #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *   # INSTANT KERNEL PANIC
   echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
   echo "echo | ${CMD} tee /etc/resolv.conf"
   #DOAS# permit nopass :network as root cmd /etc/rc.d/netif args onerestart
@@ -244,6 +244,7 @@ __gateway_check() {
   if ! grep -q nameserver /etc/resolv.conf
   then
     "${0}" dns gw
+    echo '__gateway_check()'
   fi
 }
 
@@ -253,6 +254,7 @@ __dns_check() {
   if [ "${DNS}" = "0.0.0.0" ]
   then
     "${0}" dns 1.1.1.1
+    echo '__dns_check()'
   fi
 }
 
@@ -263,6 +265,7 @@ __squid_restart() {
     #DOAS# permit nopass :network as root cmd /usr/sbin/service args squid onerestart
     #SUDO# %network ALL = NOPASSWD: /usr/sbin/service squid onerestart
     doas service squid onerestart 1> /dev/null 2> /dev/null
+    echo '__squid_restart()'
   fi
 }
 
@@ -279,6 +282,7 @@ __usage() {
   echo "  status"
   echo
   echo "OPTIONS:"
+  echo "  scan"
   echo "  start"
   echo "  start SSID|PROFILE"
   echo "  stop"
@@ -287,6 +291,7 @@ __usage() {
   echo "EXAMPLES:"
   echo "  ${NAME} lan start"
   echo "  ${NAME} lan restart"
+  echo "  ${NAME} wlan scan"
   echo "  ${NAME} wlan start"
   echo "  ${NAME} wlan start HOME-NETWORK-SSID"
   echo "  ${NAME} wlan restart"
@@ -328,6 +333,7 @@ __usage_wlan() {
   echo "  ${NAME} wlan [OPTIONS]"
   echo
   echo "EXAMPLES:"
+  echo "  ${NAME} wlan scan"
   echo "  ${NAME} wlan start"
   echo "  ${NAME} wlan start HOME-NETWORK-SSID"
   echo "  ${NAME} wlan example"
@@ -512,6 +518,26 @@ case ${1} in
   # WLAN ======================================================================
   (wlan) # WLAN BEGIN
     case ${2} in
+      (scan)
+        #DOAS# permit nopass :network as root cmd ifconfig
+        #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
+        ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH} 2> /dev/null
+        echo ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH}
+        #DOAS# permit nopass :network as root cmd ifconfig
+        #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
+        ${CMD} ifconfig ${WLAN_IF} up
+        echo ${CMD} ifconfig ${WLAN_IF} up
+        #DOAS# permit nopass :network as root cmd ifconfig
+        #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
+        ifconfig ${WLAN_IF} scan &
+        echo ifconfig ${WLAN_IF} scan &
+        sleep 3
+        #DOAS# permit nopass :network as root cmd ifconfig
+        #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
+        ifconfig ${WLAN_IF} list scan
+        echo ifconfig ${WLAN_IF} list scan
+        ;;
+
       (start) # WLAN (RE)START
         __network_reset
         #DOAS# permit nopass :network as root cmd ifconfig
@@ -539,7 +565,7 @@ case ${1} in
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
         ${CMD} ifconfig ${WLAN_IF} ssid -
         echo ${CMD} ifconfig ${WLAN_IF} ssid -
-        if [ ${3} ]
+        if [ "${3}" ]
         then
           #DOAS# permit nopass :network as root cmd ifconfig
           #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
