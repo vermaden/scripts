@@ -143,7 +143,56 @@ __net_shares_umount() {
 
 # network_status() ------------------------------------------------------------
 __network_status() {
-  netstat -i -f inet
+
+  local COL1='\033[38;05;1m'
+  local COL2='\033[38;05;2m'
+  local COL3='\033[38;05;3m'
+  local COL4='\033[38;05;4m'
+  local COL5='\033[38;05;5m'
+  local COLe='\033[0m'
+  local DNS=$( grep -m 1 nameserver /etc/resolv.conf | awk '{print $NF}' )
+  local DGW=$( route show default | awk '/gateway:/ {print $NF}' )
+  local GREP_COLOR=34
+  local IP_REGEX='[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'
+
+  echo -e "${COL1}// Print Network Interfaces with netstat(1)${COLe}"
+  echo -e "# ${COL2}netstat -W -i -f inet${COLe}"
+  netstat -W -i -f inet | grep --color -C 256 -E "${IP_REGEX}"
+  echo
+
+  echo -e "${COL1}// Print Network Interfaces with ifconfig(8)${COLe}"
+  echo -e "# ${COL2}ifconfig -u -f inet:cidr,inet6:cidr${COLe}"
+  ifconfig -u -f inet:cidr,inet6:cidr | grep --color -C 256 -E "${IP_REGEX}"
+  echo
+
+  echo -e "${COL1}// Print Default Gateway with route(8)${COLe}"
+  echo -e "# ${COL2}route show default${COLe}"
+  route show default | grep --color -C 256 -E "${IP_REGEX}"
+  echo
+
+  echo -e "${COL1}// ping(8) GW/Default Gateway${COLe}"
+  echo -e "# ${COL2}ping -q -c 1 -t 3 -s 1 ${DGW}${COLe}"
+  ping -q -c 1 -t 3 -s 1 ${DGW} | sed 2,3d | grep --color -C 256 -E "${IP_REGEX}"
+  echo
+
+  if [ ${?} -eq 0 ]
+  then
+    echo -e "${COL1}// ping(8) DNS/Domain Name Server${COLe}"
+    echo -e "# ${COL2}ping -q -c 1 -t 3 -s 1 ${DNS}${COLe}"
+    ping -q -c 1 -t 3 -s 1  ${DNS} | sed 2,3d | grep --color -C 256 -E "${IP_REGEX}"
+    echo
+
+    if [ ${?} -eq 0 ]
+    then
+      echo -e "${COL1}// Check DNS Resolution with ping(8)${COLe}"
+      echo -e "# ${COL2}ping -q -c 1 -t 3 -s 1 freebsd.org${COLe}"
+      ping -q -c 1 -t 3 -s 1 freebsd.org | sed 2,3d | grep --color -C 256 -E "${IP_REGEX}"
+      echo
+    fi
+  fi
+
+
+
 }
 
 # network_reset() -------------------------------------------------------------
@@ -227,6 +276,7 @@ __usage() {
   echo "  wlan"
   echo "  wwan"
   echo "  dns"
+  echo "  status"
   echo
   echo "OPTIONS:"
   echo "  start"
@@ -246,6 +296,7 @@ __usage() {
   echo "  ${NAME} dns random"
   echo "  ${NAME} doas"
   echo "  ${NAME} sudo"
+  echo "  ${NAME} status"
   echo
   exit 1
 }
@@ -465,7 +516,7 @@ case ${1} in
         __network_reset
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH}
+        ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH} 2> /dev/null
         echo ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH}
         if [ "${WLAN_RANDOM_MAC}" = "1" ]
         then
@@ -480,6 +531,10 @@ case ${1} in
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
         ${CMD} ifconfig ${WLAN_IF} up
         echo ${CMD} ifconfig ${WLAN_IF} up
+        #DOAS# permit nopass :network as root cmd ifconfig
+        #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
+        ${CMD} ifconfig ${WLAN_IF} scan &
+        echo ${CMD} ifconfig ${WLAN_IF} scan &
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
         ${CMD} ifconfig ${WLAN_IF} ssid -
