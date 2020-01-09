@@ -151,7 +151,8 @@ __network_status() {
   local COL5='\033[38;05;5m'
   local COLe='\033[0m'
   local DNS=$( grep -m 1 nameserver /etc/resolv.conf | awk '{print $NF}' )
-  local DGW=$( route show default | awk '/gateway:/ {print $NF}' )
+  local ROUTE=$( route -n show default )
+  local DGW=$( echo "${ROUTE}" | awk '/gateway:/ {print $NF}' )
   local GREP_COLOR=34
   local IP_REGEX='[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'
 
@@ -166,8 +167,8 @@ __network_status() {
   echo
 
   echo -e "${COL1}// Print Default Gateway with route(8)${COLe}"
-  echo -e "# ${COL2}route show default${COLe}"
-  route show default | grep --color -C 256 -E "${IP_REGEX}"
+  echo -e "# ${COL2}route -n show default${COLe}"
+  echo "${ROUTE}" | grep --color -C 256 -E "${IP_REGEX}"
   echo
 
   echo -e "${COL1}// ping(8) GW/Default Gateway${COLe}"
