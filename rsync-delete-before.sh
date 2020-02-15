@@ -30,7 +30,7 @@ case ${#} in
                       --delete-before \
                       --exclude=.cache \
                       "$( __slash ${1} )" "$( __slash ${2} )"
-                      --inplace
+                      # --inplace
     ;;
 
   (*)
