@@ -76,6 +76,7 @@ hint(s):
   DISPLAY MEMORY BACKED DISKS
   ---------------------------
   # mdconfig -l
+  md0
 
 __EOF
   exit 1
@@ -283,7 +284,7 @@ ______EOF
 # LIST BLOCK DEVICES
 __list_block_devices() {
   # FIRST 1000 DEVICES OF EACH CLASS SHOULD DO
-  for I in ada da mmcsd md
+  for I in ada da mmcsd md vtbd
   do
     ls -1 /dev/${I}[0-9]           2> /dev/null
     ls -1 /dev/${I}[0-9][0-9]      2> /dev/null
@@ -468,9 +469,9 @@ case ${#} in
 esac
 
 # SET OUTPUT FORMAT AND PRINT HEADER
-    FORMAT_L0="%-14s %3s:%-3s %4s %-14s %20s %s\n"
-  FORMAT_L1="  %-12s %3s:%-3s %4s %-14s %20s %s\n"
-FORMAT_L2="    %-10s %3s:%-3s %4s %-14s %20s %s\n"
+    FORMAT_L0="%-14s %3s:%-3s %4s %-18s %20s %s\n"
+  FORMAT_L1="  %-12s %3s:%-3s %4s %-18s %20s %s\n"
+FORMAT_L2="    %-10s %3s:%-3s %4s %-18s %20s %s\n"
 FORMAT="${FORMAT_L0}"
 printf "${FORMAT}" DEVICE MAJ MIN SIZE TYPE LABEL MOUNT
 
