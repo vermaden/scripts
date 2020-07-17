@@ -26,29 +26,56 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # ------------------------------
-# BATTERY CAPACITY TESTER
+# MOUNT ISO IMAGE FreeBSD/SunOS/Linux
 # ------------------------------
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-if [ ${#} -ne 1 ]
-then
-  echo "usage: ${0##*/} BATTERY"
-  exit
-fi
-
-if acpiconf -i ${1} 1> /dev/null 2> /dev/null
-then
-  DATA=$( acpiconf -i ${1} )
-  MAX=$( echo "${DATA}" | grep '^Design\ capacity:'     | awk -F ':' '{print $2}' | tr -c -d '0-9' )
-  NOW=$( echo "${DATA}" | grep '^Last\ full\ capacity:' | awk -F ':' '{print $2}' | tr -c -d '0-9' )
-  MOD=$( echo "${DATA}" | grep '^Model\ number:'        | awk -F ':' '{print $2}' | awk '{print $1}' )
-  echo -n "Battery '${1}' model '${MOD}' has efficiency: "
-  printf '%1.0f%%\n' $( bc -l -e "scale = 2; ${NOW} / ${MAX} * 100" -e quit )
-else
-  echo "NOPE: Battery '${1}' does not exists on this system."
-  echo "INFO: Most systems has only '0' or '1' batteries."
+[ ${#} -ne 2 ] && {
+  echo "usage: ${0##*/} image.iso /mnt/point"
   exit 1
-fi
+}
+
+__absolute() {
+  if [ -f /${1} ]
+  then
+    echo "${1}"
+  else
+    echo "$( pwd )/${1}"
+  fi
+}
+
+mkdir -p "${2}" || {
+  echo "ER: can not create mount directory"
+  exit 1
+  }
+
+case $( uname ) in
+  (FreeBSD)
+    NODE=$( mdconfig -a -t vnode -f "${1}" )
+    mount -t cd9660 /dev/${NODE} "${2}"
+    ;;
+
+  (SunOS)
+    FILE=$(  __absolute "${1}" )
+    POINT=$( __absolute "${2}" )
+    lofiadm -d "${FILE}" 1> /dev/null
+    NODE=$( lofiadm -a "${FILE}" )
+    mount -F hsfs -o ro ${NODE} "${POINT}"
+    ;;
+
+  (Linux)
+    mount -o loop "${1}" "${2}"
+    ;;
+
+  (*)
+    echo "supported systems: FreeBSD Solaris Linux"
+    exit 1
+    ;;
+esac
+
+# OpenBSD
+# vnconfig svnd0 image.iso
+# mount -t cd9660 /dev/svnd0c /mnt
 
 echo '1' >> ~/scripts/stats/${0##*/}
