@@ -38,10 +38,10 @@ COLOR_RED=#dd2200
 
 __color_time() { # 1=TIME
   local TIME=${1}
-  if [ ${TIME} -gt 90 ]
+  if [ ${TIME} -ge 90 ]
   then
     COLOR_TIME=${COLOR_WHITE}
-  elif [ ${TIME} -lt 90 -a ${TIME} -gt 30 ]
+  elif [ ${TIME} -lt 90 -a ${TIME} -ge 30 ]
   then
     COLOR_TIME=${COLOR_ORANGE}
   elif  [ ${TIME} -lt 30 ]
@@ -52,10 +52,10 @@ __color_time() { # 1=TIME
 
 __color_life() { # 1=LIFE
   local LIFE=${1}
-  if [ ${LIFE} -gt 50 ]
+  if [ ${LIFE} -ge 50 ]
   then
     COLOR_LIFE=${COLOR_WHITE}
-  elif [ ${LIFE} -lt 50 -a ${LIFE} -gt 25 ]
+  elif [ ${LIFE} -lt 50 -a ${LIFE} -ge 25 ]
   then
     COLOR_LIFE=${COLOR_ORANGE}
   elif  [ ${LIFE} -lt 25 ]

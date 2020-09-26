@@ -26,31 +26,55 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # ------------------------------
-# openbox(1) RESTART CONKY
+# RANDOM WALLPAPER HANDLER
 # ------------------------------
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-#### XRANDR=$( xrandr )
-#### COUNT=$( echo "${XRANDR}" | grep -c " connected " )
-#### DELAY=0.2
+export DISPLAY=:0
 
-VERSION=1.9
-PROFILE=$( hostname -s )
+__usage() {
+  echo "usage: ${0##*/} DIR/FILE"
+  exit 1
+}
 
-killall -9 conky
+__absolute() {
+  if [ -f "/${1}" ]
+  then
+    echo "${1}"
+  else
+    echo "$( pwd )/${1}"
+  fi
+}
 
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.1 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.2 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.3 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.4 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.5 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.6 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.7 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.8 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.9 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.a 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.b 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.c 1> /dev/null 2> /dev/null &
+[ ${#} -ne 1 ]             && __usage
+[ -d "${1}" -o -f "${1}" ] || __usage
+
+# SINGLE FILE
+if [ -f "${1}" ]
+then
+  FILE="${@}"
+  WALL="/tmp/${0##*/}_${FILE##*/}.jpg"
+fi
+
+# DIRECTORY
+if [ -d "${1}" ]
+then
+  WALLS_LIST=$( find "${1}" | egrep "^.*\.[pPjJgG][nNpPiI][gGeEfF][gG]*$" )
+  WALLS_COUNT=$( echo "${WALLS_LIST}" | wc -l )
+  RANDOM=$( head -c 256 /dev/urandom | env LC_ALL=C tr -c -d '1-9' )
+  WINNER=$(( ${RANDOM} % ${WALLS_COUNT} + 1 ))
+  FILE="$( echo "${WALLS_LIST}" | sed -n ${WINNER}p )"
+fi
+
+# MAKE BACKUP
+cp ~/.fehbg ~/.fehbg.BCK
+
+# SET WALLPAPER
+case "${FILE}" in
+  (*/TILE-*) feh --bg-tile  $( __absolute "${FILE}" ) 1> /dev/null 2> /dev/null ;;
+  (*)        feh --bg-scale $( __absolute "${FILE}" ) 1> /dev/null 2> /dev/null ;;
+esac
 
 echo '1' >> ~/scripts/stats/${0##*/}
+

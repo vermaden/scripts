@@ -151,10 +151,16 @@ __network_status() {
   local COL5='\033[38;05;5m'
   local COLe='\033[0m'
   local DNS=$( grep -m 1 nameserver /etc/resolv.conf | awk '{print $NF}' )
-  local ROUTE=$( route -n show default )
+  local ROUTE=$( route -n show default 2> /dev/null )
   local DGW=$( echo "${ROUTE}" | awk '/gateway:/ {print $NF}' )
   local GREP_COLOR=34
   local IP_REGEX='[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'
+
+  if [ "$( ifconfig -u -l )" = "lo0" ]
+  then
+    echo 'NOPE: network is down'
+    exit 0
+  fi
 
   echo -e "${COL1}// Print Network Interfaces with netstat(1)${COLe}"
   echo -e "# ${COL2}netstat -W -i -f inet${COLe}"
@@ -171,28 +177,29 @@ __network_status() {
   echo "${ROUTE}" | grep --color -C 256 -E "${IP_REGEX}"
   echo
 
-  echo -e "${COL1}// ping(8) GW/Default Gateway${COLe}"
-  echo -e "# ${COL2}ping -q -c 1 -t 3 -s 1 ${DGW}${COLe}"
-  ping -q -c 1 -t 3 -s 1 ${DGW} | sed 2,3d | grep --color -C 256 -E "${IP_REGEX}"
-  echo
-
-  if [ ${?} -eq 0 ]
+  if [ "${ROUTE}" != "" ]
   then
-    echo -e "${COL1}// ping(8) DNS/Domain Name Server${COLe}"
-    echo -e "# ${COL2}ping -q -c 1 -t 3 -s 1 ${DNS}${COLe}"
-    ping -q -c 1 -t 3 -s 1  ${DNS} | sed 2,3d | grep --color -C 256 -E "${IP_REGEX}"
+    echo -e "${COL1}// ping(8) GW/Default Gateway${COLe}"
+    echo -e "# ${COL2}ping -q -c 1 -t 3 -s 1 ${DGW}${COLe}"
+    ping -q -c 1 -t 3 -s 1 ${DGW} | sed 2,3d | grep --color -C 256 -E "${IP_REGEX}"
     echo
 
     if [ ${?} -eq 0 ]
     then
-      echo -e "${COL1}// Check DNS Resolution with ping(8)${COLe}"
-      echo -e "# ${COL2}ping -q -c 1 -t 3 -s 1 freebsd.org${COLe}"
-      ping -q -c 1 -t 3 -s 1 freebsd.org | sed 2,3d | grep --color -C 256 -E "${IP_REGEX}"
+      echo -e "${COL1}// ping(8) DNS/Domain Name Server${COLe}"
+      echo -e "# ${COL2}ping -q -c 1 -t 3 -s 1 ${DNS}${COLe}"
+      ping -q -c 1 -t 3 -s 1  ${DNS} | sed 2,3d | grep --color -C 256 -E "${IP_REGEX}"
       echo
+
+      if [ ${?} -eq 0 ]
+      then
+        echo -e "${COL1}// Check DNS Resolution with ping(8)${COLe}"
+        echo -e "# ${COL2}ping -q -c 1 -t 3 -s 1 freebsd.org${COLe}"
+        ping -q -c 1 -t 3 -s 1 freebsd.org | sed 2,3d | grep --color -C 256 -E "${IP_REGEX}"
+        echo
+      fi
     fi
   fi
-
-
 
 }
 
@@ -422,6 +429,7 @@ __usage_dns() {
   echo "EXAMPLES:"
   echo "  ${NAME} dns onic"
   echo "  ${NAME} dns udns"
+  echo "  ${NAME} dns next"
   echo "  ${NAME} dns random"
   echo
   echo "CONFIG:"
@@ -587,10 +595,10 @@ case ${1} in
         __dns_check
         __squid_restart
 
-        #DOAS# permit nopass :network as root cmd ifconfig
-        #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${WLAN_IF} powersave
-        echo ${CMD} ifconfig ${WLAN_IF} powersave
+#       #DOAS# permit nopass :network as root cmd ifconfig
+#       #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
+#       ${CMD} ifconfig ${WLAN_IF} powersave
+#       echo ${CMD} ifconfig ${WLAN_IF} powersave
         ;;
 
       (restart) # WLAN RESTART
@@ -727,6 +735,17 @@ case ${1} in
         echo "echo 'nameserver 9.9.9.9'  | ${CMD} tee -a /etc/resolv.conf"
         ;;
 
+      (45.90.30.114) # DNS NextDNS
+        #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
+        #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
+        echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
+        echo "echo | ${CMD} tee /etc/resolv.conf"
+        #DOAS# permit nopass :network as root cmd tee args -a /etc/resolv.conf
+        #SUDO# %network ALL = NOPASSWD: /usr/bin/tee -a /etc/resolv.conf
+        echo 'nameserver 45.90.30.114'  | ${CMD} tee -a /etc/resolv.conf 1> /dev/null
+        echo "echo 'nameserver 45.90.30.114'  | ${CMD} tee -a /etc/resolv.conf"
+        ;;
+
       (random)
         #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
         #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
@@ -754,6 +773,8 @@ nameserver 87.118.111.215
 nameserver 213.187.11.62
 nameserver 37.235.1.174
 nameserver 37.235.1.177
+nameserver 45.90.28.114
+nameserver 45.90.30.114
 __EOF
         echo "cat << __EOF | sort -R | head -1 | ${CMD} tee -a /etc/resolv.conf"
         ;;

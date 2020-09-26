@@ -96,8 +96,8 @@ case ${1} in
     ps -U ${USER} -o state,comm \
       | grep '^T' \
       | grep -v 'Ts+' \
-      | sort -u \
-      | awk '{print $2}'
+      | awk '{print $2}' \
+      | sort -u
     exit 0
     ;;
 

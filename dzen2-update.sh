@@ -40,25 +40,24 @@ CDE='^fg(#dd0000)'
 __math() {
   local SCALE=1
   local RESULT=$( echo "scale=${SCALE}; ${@}" | bc -l )
-  if echo ${RESULT} | grep --color -q '^\.'
-  then
-    echo -n 0
-  fi
+  case ${RESULT} in
+    (.*) echo -n 0 ;;
+  esac
   echo ${RESULT}
   unset SCALE
   unset RESULT
 }
 
 # GATHER DATA
+  PS=$(      ps ax -o %cpu,rss,command -c )
   SMP=$(     sysctl -n kern.smp.cpus )
   SMP=$((    ${SMP} * 100 ))
-  PS=$(      ps ax -o %cpu,rss,command -c )
   CPU=$(     echo "${PS}" | awk -v SMP=${SMP} '/\ idle$/ {printf("%.1f%%",SMP-$1)}' )
 # LOAD=$(    sysctl -n vm.loadavg | awk '{print $2}' )
   DATE=$(    date +%Y/%m/%d/%a/%H:%M )
   FREQ=$(    sysctl -n dev.cpu.0.freq )
-# TEMP=$(    sysctl -n hw.acpi.thermal.tz0.temperature )
-  TEMP=$(    sysctl -n dev.cpu.0.temperature )
+  TEMP=$(    sysctl -n hw.acpi.thermal.tz0.temperature )
+# TEMP=$(    sysctl -n dev.cpu.0.temperature )
   MEM=$(( $( sysctl -n vm.stats.vm.v_inactive_count )
         + $( sysctl -n vm.stats.vm.v_free_count )
         + $( sysctl -n vm.stats.vm.v_cache_count ) ))
@@ -67,6 +66,7 @@ __math() {
   IF_GW=$(   ~/scripts/__conky_if_gw.sh )
   IF_DNS=$(  ~/scripts/__conky_if_dns.sh )
   IF_PING=$( ~/scripts/__conky_if_ping.sh dzen2 )
+  IF_XFER=$( ~/scripts/__conky_if_xfer.sh )
   VOL=$(     mixer -s vol | awk -F ':' '{printf("%s",$2)}' )
   FS=$(      zfs list -H -d 0 -o name,avail | awk '{printf("%s/%s ",$1,$2)}' )
   BAT=$(     ~/scripts/__conky_battery_separate.sh dzen2 )
@@ -80,6 +80,7 @@ echo -n "${CDE}| ${CLA}ip: ${CVA}${IF_IP}"      # NO SPACE AT THE END
 echo -n "${CDE}| ${CLA}gw: ${CVA}${IF_GW} "
 echo -n "${CDE}| ${CLA}dns: ${CVA}${IF_DNS} "
 echo -n "${CDE}| ${CLA}ping: ${CVA}${IF_PING} "
+echo -n "${CDE}| ${CLA}xfer: ${CVA}${IF_XFER} "
 echo -n "${CDE}| ${CLA}vol: ${CVA}${VOL} "
 echo -n "${CDE}| ${CLA}fs: ${CVA}${FS}"         # NO SPACE AT THE END
 echo -n "${CDE}| ${CLA}bat: ${CVA}${BAT} "

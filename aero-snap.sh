@@ -33,7 +33,7 @@
 
 OVERHEAD_X=6
 OVERHEAD_Y=5
-MARGIN_TOP=31
+MARGIN_TOP=29
 MARGIN_LEFT=1
 MARGIN_RIGHT=1
 
@@ -51,6 +51,16 @@ snap() {
       wmctrl -r :ACTIVE: -e 0,$(( ( ${SCREEN_W} / 2 ) -1 )),-1,$(( ( ${SCREEN_W} / 2 ) - 3 - ${MARGIN_RIGHT} )),-1
       wmctrl -r :ACTIVE: -b add,maximized_vert
       ;;
+    (SHIFT-L)
+      wmctrl -r :ACTIVE: -b remove,maximized_horz
+      wmctrl -r :ACTIVE: -e 0,${MARGIN_LEFT},-1,$(( ( ${SCREEN_W} / 3 * 2 ) - ${MARGIN_LEFT} - ${OVERHEAD_X} )),-1
+      wmctrl -r :ACTIVE: -b add,maximized_vert
+      ;;
+    (SHIFT-R)
+      wmctrl -r :ACTIVE: -b remove,maximized_horz
+      wmctrl -r :ACTIVE: -e 0,$(( ( ${SCREEN_W} / 3 * 2 ) - 1 )),-1,$(( ( ${SCREEN_W} / 3 ) - 3 - ${MARGIN_RIGHT} + 1 )),-1
+      wmctrl -r :ACTIVE: -b add,maximized_vert
+      ;;
     (T)
       X=${MARGIN_LEFT}
       Y=${MARGIN_TOP}
@@ -60,16 +70,30 @@ snap() {
       ;;
     (B)
       X=${MARGIN_LEFT}
-      Y=$(( ( ${SCREEN_H} / 2 ) + ${MARGIN_TOP} ))
-      H=$(( ( ${SCREEN_H} / 2 ) - ${MARGIN_TOP} ))
+      Y=$(( ( ${SCREEN_H} / 2 ) + ${MARGIN_TOP} + 5 ))
+      H=$(( ( ${SCREEN_H} / 2 ) - ${MARGIN_TOP} - 3 ))
       wmctrl -r :ACTIVE: -b remove,maximized_vert
       wmctrl -r :ACTIVE: -e 0,${X},$(( ${Y} - 8 )),$(( ${SCREEN_W} - ${MARGIN_LEFT} - 4 )),$(( ${H} - 20 ))
       ;;
+    (SHIFT-T)
+      X=${MARGIN_LEFT}
+      Y=${MARGIN_TOP}
+      H=$(( ( ${SCREEN_H} / 3 * 2 ) - ${MARGIN_TOP} ))
+      wmctrl -r :ACTIVE: -b remove,maximized_vert
+      wmctrl -r :ACTIVE: -e 0,${X},${Y},$(( ${SCREEN_W} - ${MARGIN_LEFT} - 4 )),$(( ${H} ))
+      ;;
+    (SHIFT-B)
+      X=${MARGIN_LEFT}
+      Y=$(( ( ${SCREEN_H} / 3 * 2) + ${MARGIN_TOP} + 5 ))
+      H=$(( ( ${SCREEN_H} / 3 )    - ${MARGIN_TOP} - 3 ))
+      wmctrl -r :ACTIVE: -b remove,maximized_vert
+      wmctrl -r :ACTIVE: -e 0,${X},$(( ${Y} - 8 )),$(( ${SCREEN_W} - ${MARGIN_LEFT} - 5 )),$(( ${H} - 20 ))
+      ;;
     (C)
-      X=$(( ${SCREEN_W} / 7 ))
-      Y=$(( ${SCREEN_H} / 6 ))
-      W=$( echo "${SCREEN_W} / 1.40" | bc -l | awk -F '.' '{print $1}' )
-      H=$( echo "${SCREEN_H} / 1.50" | bc -l | awk -F '.' '{print $1}' )
+      X=$(( ${SCREEN_W} / 9 ))
+      Y=$(( ${SCREEN_H} / 8 ))
+      W=$( echo "${SCREEN_W} / 1.30" | bc -l | awk -F '.' '{print $1}' )
+      H=$( echo "${SCREEN_H} / 1.30" | bc -l | awk -F '.' '{print $1}' )
       wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
       wmctrl -r :ACTIVE: -e 0,${X},${Y},${W},${H}
       ;;
@@ -82,28 +106,52 @@ snap() {
       exit 0
       ;;
     (TL)
-    X=${MARGIN_LEFT}
-    Y=${MARGIN_TOP}
+      X=${MARGIN_LEFT}
+      Y=${MARGIN_TOP}
       wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
       wmctrl -r :ACTIVE: -e 0,${X},${Y},$(( ( ${SCREEN_W} / 2 ) - ${MARGIN_LEFT} - 4 )),$(( ( ${SCREEN_H} / 2 ) - ${MARGIN_TOP} - 3 )),-1
       ;;
     (TR)
-    X=$(( ( ${SCREEN_W} / 2 ) - 1 ))
-    Y=${MARGIN_TOP}
+      X=$(( ( ${SCREEN_W} / 2 ) - 1 ))
+      Y=${MARGIN_TOP}
       wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
       wmctrl -r :ACTIVE: -e 0,${X},${Y},$(( ( ${SCREEN_W} / 2 ) - 3 )),$(( ( ${SCREEN_H} / 2 ) - ${MARGIN_TOP} )),-1
       ;;
     (BL)
-    X=${MARGIN_LEFT}
-    Y=$(( ( ${SCREEN_H} / 2 ) + ${MARGIN_TOP} - ( ${MARGIN_TOP} / 4 ) ))
+      X=${MARGIN_LEFT}
+      Y=$(( ( ${SCREEN_H} / 2 ) + ${MARGIN_TOP} - ( ${MARGIN_TOP} / 4 ) ))
       wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
       wmctrl -r :ACTIVE: -e 0,${X},${Y},$(( ${SCREEN_W} / 2 )),$(( ( ${SCREEN_H} / 2 ) - ${MARGIN_TOP} - ( ${MARGIN_TOP} / 2 ) )),-1
       ;;
     (BR)
-    X=$(( ( ${SCREEN_W} / 2 ) + ${MARGIN_LEFT} ))
-    Y=$(( ( ${SCREEN_H} / 2 ) + ${MARGIN_TOP} - ( ${MARGIN_TOP} / 4 ) ))
+      X=$(( ( ${SCREEN_W} / 2 ) + ${MARGIN_LEFT} ))
+      Y=$(( ( ${SCREEN_H} / 2 ) + ${MARGIN_TOP} - ( ${MARGIN_TOP} / 4 ) ))
       wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
       wmctrl -r :ACTIVE: -e 0,${X},${Y},$(( ${SCREEN_W} / 2 )),$(( ( ${SCREEN_H} / 2 ) - ${MARGIN_TOP} - ( ${MARGIN_TOP} / 2 ) )),-1
+      ;;
+    (SHIFT-TL)
+      X=${MARGIN_LEFT}
+      Y=${MARGIN_TOP}
+      wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
+      wmctrl -r :ACTIVE: -e 0,${X},${Y},$(( ( ${SCREEN_W} / 3 * 2 ) - ${MARGIN_LEFT} - 4 )),$(( ( ${SCREEN_H} / 3 * 2 ) - ${MARGIN_TOP} - 3 )),-1
+      ;;
+    (SHIFT-TR)
+      X=$(( ( ${SCREEN_W} / 3 * 2 ) + 1 ))
+      Y=${MARGIN_TOP}
+      wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
+      wmctrl -r :ACTIVE: -e 0,${X},${Y},$(( ( ${SCREEN_W} / 3 ) - 5 )),$(( ( ${SCREEN_H} / 3 * 2 ) - ${MARGIN_TOP} - 3 )),-1
+      ;;
+    (SHIFT-BL)
+      X=${MARGIN_LEFT}
+      Y=$(( ( ${SCREEN_H} / 3 * 2 ) + ${MARGIN_TOP} - ( ${MARGIN_TOP} / 4 ) + 1 ))
+      wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
+      wmctrl -r :ACTIVE: -e 0,${X},${Y},$(( ( ${SCREEN_W} / 3 * 2 ) - 5 )),$(( ( ${SCREEN_H} / 3 ) - ${MARGIN_TOP} - ( ${MARGIN_TOP} / 2 ) - 6 )),-1
+      ;;
+    (SHIFT-BR)
+      X=$(( ( ${SCREEN_W} / 3 * 2 ) + ${MARGIN_LEFT} ))
+      Y=$(( ( ${SCREEN_H} / 3 * 2 ) + ${MARGIN_TOP} - ( ${MARGIN_TOP} / 4 ) + 1 ))
+      wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
+      wmctrl -r :ACTIVE: -e 0,${X},${Y},$(( ${SCREEN_W} / 3 - 5 )),$(( ( ${SCREEN_H} / 3 ) - ${MARGIN_TOP} - ( ${MARGIN_TOP} / 2 ) - 6 )),-1
       ;;
     (F)
       wmctrl -r :ACTIVE: -b toggle,maximized_vert,maximized_horz

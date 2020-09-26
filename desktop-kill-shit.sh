@@ -35,13 +35,14 @@ doas pkill \
   at-spi-bus-launcher \
   at-spi2-registryd \
   gconfd-2 \
-  gvfs-hal-volume-monitor \
-  gvfs-gphoto2-volume-monitor \
+  gvfs-hal-volume-mon \
+  gvfs-gphoto2-volume \
   gvfsd \
   gvfsd-metadata \
   gvfsd-fuse \
   dconf-service \
   tumblerd \
-  xfconfd
+  xfconfd \
+  gst-plugin-scanner
 
 echo '1' >> ~/scripts/stats/${0##*/}

@@ -42,12 +42,13 @@ if pgrep -q mate-screensaver 1> /dev/null 2> /dev/null
 then
   mate-screensaver-command --lock 1> /dev/null 2> /dev/null
 else
-  FONT='-*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2'
   FONT='-*-fixed-*-*-*-*-10-*-*-*-*-*-iso8859-2'
+  FONT='-*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2'
+
   xlock \
     -mode image \
-    -font     "${FONT}" \
-    -planfont "${FONT}" \
+    -planfontset "${FONT}" \
+    -fontset     "${FONT}" \
     -username 'user: ' \
     -password 'pass:' \
     -info ' ' \
@@ -66,11 +67,10 @@ else
     +showdate \
     +description
 
-
 # xlock \
 #   -mode blank \
-#   -planfont "${FONT}" \
-#   -font     "${FONT}" \
+#   -planfontset "${FONT}" \
+#   -fontset     "${FONT}" \
 #   -username 'user: ' \
 #   -password 'pass:' \
 #   -info ' ' \

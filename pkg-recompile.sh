@@ -13,18 +13,11 @@ fi
 
 case ${1} in
   # REBUILD PACKAGES
-  (build)
-    # DISMISS ALL PROMPTS
-    # for PORT in ${PORTS}
-    # do
-    #   make -C /usr/ports/${PORT} config-recursive
-    # done
-
-    # UNLOCK BUILD LOCK
+  (b|build)
     for PORT in ${PORTS}
     do
-      # pkg unlock -y ${PORT}
-      idprio 10 env BATCH=yes make -C /usr/ports/${PORT} build deinstall install clean &
+      pkg unlock -y ${PORT} 1> /dev/null 2> /dev/null
+      idprio 10 env BATCH=yes DISABLE_VULNERABILITIES=yes make -C /usr/ports/${PORT} build deinstall install clean &
       MAKE=${!}
       rctl -a process:${MAKE}:pcpu:deny=40
       wait ${MAKE}
@@ -33,7 +26,7 @@ case ${1} in
     ;;
 
   # CLEAN
-  (clean)
+  (c|clean)
     for PORT in ${PORTS}
     do
       make -C /usr/ports/${PORT} clean
@@ -42,7 +35,7 @@ case ${1} in
 
   # USAGE
   (*)
-    echo "usage: ${0##*/} build|clean"
+    echo "usage: ${0##*/} b|c|build|clean"
     exit 1
     ;;
 

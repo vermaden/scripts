@@ -40,7 +40,7 @@ __usage() {
 }
 
 # SETTINGS
-URI=9.9.9.9
+URI=96.47.72.84
 
 # TYPE
 case ${1} in

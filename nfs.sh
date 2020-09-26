@@ -58,14 +58,15 @@ DIR=/data
 
 mount -t nfs | grep -q ${MNT} || {
   # FSTAB
-  # 10.0.0.2:/data /media/blackbox nfs rw,noauto,noatime,intr
+  # 10.0.0.2:/data /media/blackbox nfs rw,noauto,noatime,soft
   # ${CMD} mount /media/blackbox
 
   ${CMD} mkdir -p ${MNT}
   ${CMD} chown 1000:1000 ${MNT}
   ${CMD} mount -t nfs \
-    -o rw,rsize=1048576,wsize=1048576,readahead=4,retrycnt=1,retrans=1,tcp,noauto,noatime,soft,intr,proto=tcp \
+    -o rw,noatime,soft,retrycnt=5,retrans=1,readahead=4,nolockd,nocto,rsize=1048576,wsize=1048576 \
     10.0.0.2:/data ${MNT}
+
 }
 
 caja --browser --no-desktop ${MNT} &

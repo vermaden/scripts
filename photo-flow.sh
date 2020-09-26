@@ -3,6 +3,17 @@
 # 1=mmcsd0s1
 # 2=photo.NEW
 
+# HELP
+if [ ${#} -ne 2 ]
+then
+  echo "usage: $( basename ${0} ) SOURCE-DIR TARGET-DIR"
+  echo
+  echo "example:"
+  echo "          photo-flow.sh /media/mmcsd0s1 ~/photo.NEW"
+  echo
+  exit 1
+fi
+
 # CHECK SOURCE DIR
 if [ -d "${1}" ]
 then
@@ -34,4 +45,8 @@ cd "${TARGET}/${DUMP_DIR}"
 photo-rename-images.sh
 photo-rename-movies.sh
 photo-requality.sh 92
-for I in *.MP4; do photo-movie-audio-ac3.sh 160 25000 ${I}; done
+for I in *.MP4
+do
+  photo-movie-audio-ac3.sh 160 25000 ${I}
+done
+
