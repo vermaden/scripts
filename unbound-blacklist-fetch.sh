@@ -93,7 +93,8 @@ echo 'server:' > ${FILE}
   cat ${TEMP}/hosts-* \
   | grep -v '^#' \
   | grep -v '^$' \
-  | awk '{print $2}'
+  | awk '{print $2}' \
+  | tr '[:upper:]' '[:lower:]'
 
 ) \
   | sed -e s/$'\r'//g \
