@@ -54,29 +54,37 @@ mkdir -p ${TEMP}
 
 
 # FETCH
-[ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/unbound-oznu"
-fetch -q -a -r -o ${TEMP}/unbound-oznu \
-  https://raw.githubusercontent.com/oznu/dns-zone-blacklist/master/unbound/unbound-nxdomain.blacklist
+[ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/lists-unbound"
+fetch -q -a -r -o - \
+  https://raw.githubusercontent.com/oznu/dns-zone-blacklist/master/unbound/unbound-nxdomain.blacklist \
+  1> ${TEMP}/lists-unbound 2> /dev/null
 
-[ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/hosts-winhelp"
-fetch -q -a -r -o ${TEMP}/hosts-winhelp \
-  https://winhelp2002.mvps.org/hosts.txt
+[ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/lists-domains"
+fetch -q -a -r -o - \
+ 'https://pgl.yoyo.org/adservers/serverlist.php?mimetype=plaintext&hostformat=plain'       \
+  https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt                               \
+  https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt                         \
+  https://s3.amazonaws.com/lists.disconnect.me/simple_malware.txt                          \
+  https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt                     \
+  https://mirror1.malwaredomains.com/files/justdomains                                     \
+  https://v.firebog.net/hosts/static/w3kbl.txt                                             \
+  https://v.firebog.net/hosts/BillStearns.txt                                              \
+  https://raw.githubusercontent.com/matomo-org/referrer-spam-blacklist/master/spammers.txt \
+  https://raw.githubusercontent.com/Dawsey21/Lists/master/main-blacklist.txt               \
+  1> ${TEMP}/lists-domains 2> /dev/null
 
-[ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/hosts-steven-black"
-fetch -q -a -r -o ${TEMP}/hosts-steven-black \
-  https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
-
-[ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/hosts-adaway"
-fetch -q -a -r -o ${TEMP}/hosts-adaway \
-  http://adaway.org/hosts.txt
-
-[ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/hosts-someone-cares"
-fetch -q -a -r -o ${TEMP}/hosts-someone-cares \
-  http://someonewhocares.org/hosts/hosts
-
-[ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/hosts-malware"
-fetch -q -a -r -o ${TEMP}/hosts-malware \
-  http://www.malwaredomainlist.com/hostslist/hosts.txt
+[ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/lists-hosts"
+fetch -q -a -r -o - \
+  https://someonewhocares.org/hosts/zero/hosts                                            \
+  http://winhelp2002.mvps.org/hosts.txt                                                   \
+  https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts                        \
+  https://adaway.org/hosts.txt                                                            \
+  https://raw.githubusercontent.com/FadeMind/hosts.extras/master/add.Spam/hosts           \
+  http://sysctl.org/cameleon/hosts                                                        \
+  http://winhelp2002.mvps.org/hosts.txt                                                   \
+  https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/spy.txt \
+  https://raw.githubusercontent.com/vokins/yhosts/master/hosts                            \
+  1> ${TEMP}/lists-hosts 2> /dev/null
 
 
 
@@ -87,19 +95,29 @@ echo 'server:' > ${FILE}
 [ "${ECHO}" != "0" ] && echo "echo: add '${FILE}' rules"
 (
   # LIST UNBOUND SOURCES
-  awk -F '"' '{print $2}' ${TEMP}/unbound-*
-
-  # LIST HOSTS SOURCES
-  cat ${TEMP}/hosts-* \
+  cat ${TEMP}/lists-unbound \
   | grep -v '^#' \
   | grep -v '^$' \
-  | awk '{print $2}' \
-  | tr '[:upper:]' '[:lower:]'
+  | awk -F '"' '{print $2}'
+
+  # LIST DOMAINS SOURCES
+  cat ${TEMP}/lists-domains \
+  | grep -v '^#' \
+  | grep -v '^$'
+
+  # LIST HOSTS SOURCES
+  cat ${TEMP}/lists-hosts \
+  | grep -v '^#' \
+  | grep -v '^$' \
+  | awk '{print $2}'
 
 ) \
   | sed -e s/$'\r'//g \
+  | tr '[:upper:]' '[:lower:]' \
   | sort -u \
-  | sed 1,9d \
+  | grep -v '127.0.0.1' \
+  | grep -v '0.0.0.0' \
+  | sed 1,2d \
   | while read I
     do
       echo "local-zone: \"${I}\" ${TYPE}"
@@ -118,5 +136,3 @@ unset FILE
 unset TYPE
 unset TEMP
 unset ECHO
-
-
