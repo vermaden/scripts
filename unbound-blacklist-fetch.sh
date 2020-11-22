@@ -73,6 +73,12 @@ fetch -q -a -r -o - \
   https://raw.githubusercontent.com/Dawsey21/Lists/master/main-blacklist.txt               \
   1> ${TEMP}/lists-domains 2> /dev/null
 
+cat << EOF >> ${TEMP}/lists-domains
+
+buy.geni.us
+
+EOF
+
 [ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/lists-hosts"
 fetch -q -a -r -o - \
   https://someonewhocares.org/hosts/zero/hosts                                            \
@@ -116,18 +122,36 @@ echo 'server:' > ${FILE}
   cat ${TEMP}/lists-hosts     \
   | grep -v '^#'              \
   | grep -v '^$'              \
+  | grep -v '^!'              \
   | awk '{print $2}'
 
 ) \
-  | sed -e s/$'\r'//g          \
-  | grep -v '127.0.0.1'        \
-  | grep -v '0.0.0.0'          \
-  | grep -v '255.255.255.255'  \
-  | grep -v '::'               \
-  | grep -v 'localhost'        \
-  | tr '[:upper:]' '[:lower:]' \
-  | sort -u                    \
-  | sed 1,2d                   \
+  | sed -e s/$'\r'//g                  \
+  | grep -v -e '127.0.0.1'             \
+            -e '0.0.0.0'               \
+            -e '255.255.255.255'       \
+            -e '::'                    \
+            -e 'localhost'             \
+            -e 'localhost.localdomain' \
+            -e 'ip6-localhost'         \
+            -e 'ip6-loopback'          \
+            -e 'ip6-localnet'          \
+            -e 'ip6-mcastprefix'       \
+            -e 'ip6-allnodes'          \
+            -e 'ip6-allrouters'        \
+            -e 'broadcasthost'         \
+            -e '/'                     \
+            -e '\\'                    \
+            -e '('                     \
+            -e ')'                     \
+            -e '\['                    \
+            -e '\]'                    \
+            -e '^-'                    \
+            -e '^_'                    \
+            -e '^#'                    \
+  | tr '[:upper:]' '[:lower:]'         \
+  | sort -u                            \
+  | sed 1,2d                           \
   | while read I
     do
       echo "local-zone: \"${I}\" ${TYPE}"
