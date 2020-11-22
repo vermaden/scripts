@@ -96,28 +96,37 @@ echo 'server:' > ${FILE}
 (
   # LIST UNBOUND SOURCES
   cat ${TEMP}/lists-unbound \
-  | grep -v '^#' \
-  | grep -v '^$' \
+  | grep -v '^#'            \
+  | grep -v '^$'            \
   | awk -F '"' '{print $2}'
 
   # LIST DOMAINS SOURCES
   cat ${TEMP}/lists-domains \
-  | grep -v '^#' \
-  | grep -v '^$'
+  | grep -v '^#'            \
+  | grep -v '^$'            \
+  | grep -v '^:'            \
+  | grep -v '^;'            \
+  | grep -v '^!'            \
+  | grep -v '^@'            \
+  | grep -v '^\$'           \
+  | grep -v localhost       \
+  | awk '{print $1}'
 
   # LIST HOSTS SOURCES
-  cat ${TEMP}/lists-hosts \
-  | grep -v '^#' \
-  | grep -v '^$' \
+  cat ${TEMP}/lists-hosts     \
+  | grep -v '^#'              \
+  | grep -v '^$'              \
+  | grep -v '127.0.0.1'       \
+  | grep -v '0.0.0.0'         \
+  | grep -v '255.255.255.255' \
+  | grep -v '::'              \
   | awk '{print $2}'
 
 ) \
-  | sed -e s/$'\r'//g \
+  | sed -e s/$'\r'//g          \
   | tr '[:upper:]' '[:lower:]' \
-  | sort -u \
-  | grep -v '127.0.0.1' \
-  | grep -v '0.0.0.0' \
-  | sed 1,2d \
+  | sort -u                    \
+  | sed 1,2d                   \
   | while read I
     do
       echo "local-zone: \"${I}\" ${TYPE}"
