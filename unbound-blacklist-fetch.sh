@@ -116,14 +116,15 @@ echo 'server:' > ${FILE}
   cat ${TEMP}/lists-hosts     \
   | grep -v '^#'              \
   | grep -v '^$'              \
-  | grep -v '127.0.0.1'       \
-  | grep -v '0.0.0.0'         \
-  | grep -v '255.255.255.255' \
-  | grep -v '::'              \
   | awk '{print $2}'
 
 ) \
   | sed -e s/$'\r'//g          \
+  | grep -v '127.0.0.1'        \
+  | grep -v '0.0.0.0'          \
+  | grep -v '255.255.255.255'  \
+  | grep -v '::'               \
+  | grep -v 'localhost'        \
   | tr '[:upper:]' '[:lower:]' \
   | sort -u                    \
   | sed 1,2d                   \
