@@ -37,7 +37,7 @@
 FILE=/var/unbound/conf.d/blacklist.conf
 TYPE=always_nxdomain
 TEMP=/tmp/unbound
-ECHO=0
+ECHO=1
 
 
 

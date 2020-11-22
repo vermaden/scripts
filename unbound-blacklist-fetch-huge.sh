@@ -258,8 +258,8 @@ echo 'server:' > ${FILE}
 
 
 # CLEAN
-# [ "${ECHO}" != "0" ] && echo "rm: remove temp '${TEMP}' temp dir"
-# rm -r -f ${TEMP}
+[ "${ECHO}" != "0" ] && echo "rm: remove temp '${TEMP}' temp dir"
+rm -r -f ${TEMP}
 
 
 
