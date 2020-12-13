@@ -1,3 +1,4 @@
+
 #! /bin/sh
 
 # Copyright (c) 2020 Slawomir Wojciech Wojtczak (vermaden)
@@ -34,12 +35,28 @@
 
 
 # SETTINGS
-FILE=/var/unbound/conf.d/blacklist.conf
+WHICHOS=$(uname)
+[ "${ECHO}" != "0" ] && echo "running on '${WHICHOS}'"
+
+if [ "${WHICHOS}" = 'FreeBSD' ]
+then
+    [ "${ECHO}" != "0" ] && echo "running on FreeBSD"
+    FILE=/var/unbound/conf.d/blacklist.conf
+    FETCHCMD="fetch -q -o - "
+elif [ "${WHICHOS}" = 'OpenBSD' ]
+then
+    [ "${ECHO}" != "0" ] && echo "running on OpenBSD"
+    FILE=/var/unbound/etc/blacklist.conf
+    FETCHCMD="curl "
+else
+    [ "${ECHO}" != "0" ] && echo "running on '${WHICHOS}'"
+    FILE=/var/unbound/conf.d/blacklist.conf
+    FETCHCMD="fetch -q -o - "
+fi
+
 TYPE=always_nxdomain
 TEMP=/tmp/unbound
 ECHO=1
-
-
 
 # CLEAN
 [ "${ECHO}" != "0" ] && echo "rm: remove temp '${TEMP}' temp dir"
@@ -55,14 +72,14 @@ mkdir -p ${TEMP}
 
 # FETCH
 [ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/lists-unbound"
-fetch -q -o - \
+${FETCHCMD} \
   https://raw.githubusercontent.com/oznu/dns-zone-blacklist/master/unbound/unbound-nxdomain.blacklist \
   https://raw.githubusercontent.com/tomzuu/blacklist-named/master/malwaredomainlist.conf              \
   https://raw.githubusercontent.com/tomzuu/blacklist-named/master/cedia_justdomains.conf              \
   1> ${TEMP}/lists-unbound 2> /dev/null
 
 [ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/lists-domains"
-fetch -q -o - \
+curl \
  'https://pgl.yoyo.org/adservers/serverlist.php?mimetype=plaintext&hostformat=plain'                                                                                   \
   http://blacklists.ntop.org/adblocker-hostnames.txt                                                                                                                   \
   http://thedumbterminal.co.uk/files/services/squidblockedsites/blocked.txt                                                                                            \
@@ -165,7 +182,7 @@ buy.geni.us
 EOF
 
 [ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/lists-hosts"
-fetch -q -o - \
+curl \
   http://sysctl.org/cameleon/hosts                                                                                                          \
   http://winhelp2002.mvps.org/hosts.txt                                                                                                     \
   https://adaway.org/hosts.txt                                                                                                              \
@@ -263,6 +280,8 @@ echo 'server:' > ${FILE}
             -e 'ip6-allnodes'          \
             -e 'ip6-allrouters'        \
             -e 'broadcasthost'         \
+            -e 'device-metrics-us.amazon.com' \
+            -e 'device-metrics-us-2.amazon.com' \
             -e '/'                     \
             -e '\\'                    \
             -e '('                     \
@@ -273,6 +292,8 @@ echo 'server:' > ${FILE}
             -e '^_'                    \
             -e '^#'                    \
   | tr '[:upper:]' '[:lower:]'         \
+  | tr -d '\r'                         \
+  | tr -d '#'                          \
   | sort -u                            \
   | sed 1,2d                           \
   | while read I
@@ -280,6 +301,17 @@ echo 'server:' > ${FILE}
       echo "local-zone: \"${I}\" ${TYPE}"
     done >> ${FILE}
 
+# CHECK CONFIG AND POTENTIALLY RESTART UNBOUND
+if [ "${WHICHOS}" = 'OpenBSD' ]
+then
+    [ "${ECHO}" != "0" ] && echo "unbound-checkconf '${FILE}'"
+    CHECKCONFIG=$( unbound-checkconf "${FILE}")
+    if [ $? -eq 0 ]
+    then
+        [ "${ECHO}" != "0" ] && echo "/etc/rc.d/unbound restart"
+        /etc/rc.d/unbound restart
+    fi
+fi
 
 
 # CLEAN
