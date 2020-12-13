@@ -36,7 +36,6 @@
 
 # SETTINGS
 WHICHOS=$(uname)
-[ "${ECHO}" != "0" ] && echo "running on '${WHICHOS}'"
 
 if [ "${WHICHOS}" = 'FreeBSD' ]
 then
