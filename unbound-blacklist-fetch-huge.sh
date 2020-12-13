@@ -78,7 +78,7 @@ ${FETCHCMD} \
   1> ${TEMP}/lists-unbound 2> /dev/null
 
 [ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/lists-domains"
-curl \
+${FETCHCMD} \
  'https://pgl.yoyo.org/adservers/serverlist.php?mimetype=plaintext&hostformat=plain'                                                                                   \
   http://blacklists.ntop.org/adblocker-hostnames.txt                                                                                                                   \
   http://thedumbterminal.co.uk/files/services/squidblockedsites/blocked.txt                                                                                            \
@@ -181,7 +181,7 @@ buy.geni.us
 EOF
 
 [ "${ECHO}" != "0" ] && echo "fetch: ${TEMP}/lists-hosts"
-curl \
+${FETCHCMD} \
   http://sysctl.org/cameleon/hosts                                                                                                          \
   http://winhelp2002.mvps.org/hosts.txt                                                                                                     \
   https://adaway.org/hosts.txt                                                                                                              \
