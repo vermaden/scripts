@@ -35,27 +35,27 @@
 
 
 # SETTINGS
-WHICHOS=$(uname)
-
-if [ "${WHICHOS}" = 'FreeBSD' ]
-then
-    [ "${ECHO}" != "0" ] && echo "running on FreeBSD"
-    FILE=/var/unbound/conf.d/blacklist.conf
-    FETCHCMD="fetch -q -o - "
-elif [ "${WHICHOS}" = 'OpenBSD' ]
-then
-    [ "${ECHO}" != "0" ] && echo "running on OpenBSD"
-    FILE=/var/unbound/etc/blacklist.conf
-    FETCHCMD="curl "
-else
-    [ "${ECHO}" != "0" ] && echo "running on '${WHICHOS}'"
-    FILE=/var/unbound/conf.d/blacklist.conf
-    FETCHCMD="fetch -q -o - "
-fi
-
 TYPE=always_nxdomain
 TEMP=/tmp/unbound
 ECHO=1
+UNAME=$(uname)
+
+case ${UNAME} in
+  (FreeBSD)
+    FILE=/var/unbound/conf.d/blacklist.conf
+    FETCHCMD="fetch -q -o -"
+    ;;
+  (OpenBSD)
+    FILE=/var/unbound/etc/blacklist.conf
+    FETCHCMD="curl"
+    ;;
+  (*)
+    FILE=/var/unbound/conf.d/blacklist.conf
+    FETCHCMD="fetch -q -o - "
+    ;;
+esac
+
+
 
 # CLEAN
 [ "${ECHO}" != "0" ] && echo "rm: remove temp '${TEMP}' temp dir"
@@ -258,59 +258,72 @@ echo 'server:' > ${FILE}
   | awk '{print $1}'
 
   # LIST HOSTS SOURCES
-  cat ${TEMP}/lists-hosts     \
-  | grep -v '^#'              \
-  | grep -v '^$'              \
-  | grep -v '^!'              \
+  cat ${TEMP}/lists-hosts   \
+  | grep -v '^#'            \
+  | grep -v '^$'            \
+  | grep -v '^!'            \
   | awk '{print $2}'
 
 ) \
-  | sed -e s/$'\r'//g                  \
-  | grep -v -e '127.0.0.1'             \
-            -e '0.0.0.0'               \
-            -e '255.255.255.255'       \
-            -e '::'                    \
-            -e 'localhost'             \
-            -e 'localhost.localdomain' \
-            -e 'ip6-localhost'         \
-            -e 'ip6-loopback'          \
-            -e 'ip6-localnet'          \
-            -e 'ip6-mcastprefix'       \
-            -e 'ip6-allnodes'          \
-            -e 'ip6-allrouters'        \
-            -e 'broadcasthost'         \
-            -e 'device-metrics-us.amazon.com' \
+  | sed -e s/$'\r'//g                           \
+  | grep -v -e '127.0.0.1'                      \
+            -e '0.0.0.0'                        \
+            -e '255.255.255.255'                \
+            -e '::'                             \
+            -e 'localhost'                      \
+            -e 'localhost.localdomain'          \
+            -e 'ip6-localhost'                  \
+            -e 'ip6-loopback'                   \
+            -e 'ip6-localnet'                   \
+            -e 'ip6-mcastprefix'                \
+            -e 'ip6-allnodes'                   \
+            -e 'ip6-allrouters'                 \
+            -e 'broadcasthost'                  \
+            -e 'device-metrics-us.amazon.com'   \
             -e 'device-metrics-us-2.amazon.com' \
-            -e '/'                     \
-            -e '\\'                    \
-            -e '('                     \
-            -e ')'                     \
-            -e '\['                    \
-            -e '\]'                    \
-            -e '^-'                    \
-            -e '^_'                    \
-            -e '^#'                    \
-  | tr '[:upper:]' '[:lower:]'         \
-  | tr -d '\r'                         \
-  | tr -d '#'                          \
-  | sort -u                            \
-  | sed 1,2d                           \
+            -e '/'                              \
+            -e '\\'                             \
+            -e '('                              \
+            -e ')'                              \
+            -e '\['                             \
+            -e '\]'                             \
+            -e '^-'                             \
+            -e '^_'                             \
+            -e '^#'                             \
+  | tr '[:upper:]' '[:lower:]'                  \
+  | tr -d '\r'                                  \
+  | tr -d '#'                                   \
+  | sort -u                                     \
+  | sed 1,2d                                    \
   | while read I
     do
       echo "local-zone: \"${I}\" ${TYPE}"
     done >> ${FILE}
 
+
+
 # CHECK CONFIG AND POTENTIALLY RESTART UNBOUND
-if [ "${WHICHOS}" = 'OpenBSD' ]
-then
-    [ "${ECHO}" != "0" ] && echo "unbound-checkconf '${FILE}'"
-    CHECKCONFIG=$( unbound-checkconf "${FILE}")
-    if [ $? -eq 0 ]
+case ${UNAME} in
+  (FreeBSD)
+    [ "${ECHO}" != "0" ] && echo "/etc/rc.d/local_unbound configtest"
+    /etc/rc.d/local_unbound configtest
+    if [ ${?} -eq 0 ]
     then
-        [ "${ECHO}" != "0" ] && echo "/etc/rc.d/unbound restart"
-        /etc/rc.d/unbound restart
+      [ "${ECHO}" != "0" ] && echo "/etc/rc.d/local_unbound restart"
+      /etc/rc.d/local_unbound restart
     fi
-fi
+    ;;
+  (OpenBSD)
+    [ "${ECHO}" != "0" ] && echo "unbound-checkconf '${FILE}'"
+    unbound-checkconf "${FILE}" 1> /dev/null 2> /dev/null
+    if [ ${?} -eq 0 ]
+    then
+      [ "${ECHO}" != "0" ] && echo "/etc/rc.d/unbound restart"
+      /etc/rc.d/unbound restart
+    fi
+    ;;
+esac
+
 
 
 # CLEAN
@@ -324,3 +337,4 @@ unset FILE
 unset TYPE
 unset TEMP
 unset ECHO
+unset UNAME
