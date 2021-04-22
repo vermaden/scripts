@@ -69,7 +69,8 @@ if [ -d "${1}" ]
 then
   WALLS_LIST=$( find "${1}" | egrep "^.*\.[pPjJgG][nNpPiI][gGeEfF][gG]*$" )
   WALLS_COUNT=$( echo "${WALLS_LIST}" | wc -l )
-  RANDOM=$( head -c 256 /dev/urandom | env LC_ALL=C tr -c -d '1-9' )
+# RANDOM=$( head -c 256 /dev/urandom | env LC_ALL=C tr -c -d '1-9' )
+  RANDOM=$( env LC_ALL=C tr -c -d '1-9' < /dev/random | head -c 16 )
   WINNER=$(( ${RANDOM} % ${WALLS_COUNT} + 1 ))
   FILE="$( echo "${WALLS_LIST}" | sed -n ${WINNER}p )"
 fi
@@ -83,5 +84,5 @@ case "${FILE}" in
   (*)        feh --bg-scale $( __absolute "${FILE}" ) 1> /dev/null 2> /dev/null ;;
 esac
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
 
