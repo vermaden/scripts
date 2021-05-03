@@ -152,6 +152,7 @@ case ${#} in
         ;;
 
       # SH
+      # AWK
       ( [Ss][Hh] )
         geany "${@}" &
         ;;
@@ -221,13 +222,15 @@ case ${#} in
       # RAR
       # LZMA
       # 7Z
+      # TGZ
       ( [Ii][Ss][Oo]     \
       | [Zz][Ii][Pp]     \
       | [Gg][Zz]         \
       | [Xx][Zz]         \
       | [Rr][Aa][Rr]     \
       | [Ll][Zz][Mm][Aa] \
-      | [7][Zz]          )
+      | [7][Zz]          \
+      | [Tt][Gg][Zz]     )
         engrampa "${@}" &
         ;;
 
@@ -244,16 +247,26 @@ case ${#} in
         ;;
 
       (*)
-        TYPE=$( file "${@}" | awk -F':' '{print $2}' | tr -d ' ' )
+        TYPE=$( file "${@}" | awk -F':' '{print $2}' | awk -F',' '{print $1}' | tr -d ' ' )
 
         case ${TYPE} in
+
           (ASCIItext)
             leafpad "${@}" &
             ;;
 
-           (*)
-             EXIT=1
-             ;;
+          (POSIXshellscript)
+            geany "${@}" &
+            ;;
+
+          (awkscript)
+            geany "${@}" &
+            ;;
+
+          (*)
+            EXIT=1
+            ;;
+
         esac
 
         if [ ${EXIT} -ne 0 ]
