@@ -6,7 +6,7 @@
   Xft.dpi:        75
   Xft.rgba:       none
 
-! ALL | XTERM | URXVT
+! ALL TERMINALS CONFIG | XTERM | URXVT
 ! -----------------------------------------------------------------------------
   *background:             #222222
   *foreground:             #aaaaaa
@@ -18,37 +18,71 @@
 
 ! XTERM
 ! -----------------------------------------------------------------------------
-  xterm*iconHint:             /home/vermaden/.icons/vermaden/xterm.xpm
-  xterm*SimpleMenu*font:      -*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2
-  xterm*faceName:             Ubuntu Mono
-  xterm*faceSize:             10
-  xterm*scaleHeight:          0.9
-  xterm*VT100.geometry:       120x30
-  xterm*allowBoldFonts:       true
-  xterm*allowWindowOps:       true
-  xterm*fullscreen:           never
-  xterm*selectToClipboard:    true
-  xterm*VT100.translations:   #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
-  xterm*keepSelection:        true
-  xterm*omitTranslation:      fullscreen
-  xterm*title:                xterm
-  xterm*boldMode:             false
-  xterm*cutNewline:           true
-  xterm*on4Clicks:            group
-  xterm*on5Clicks:            page
-  xterm*internalBorder:       1
-  xterm*metaSendsEscape:      true
-  xterm*cursorBlink:          false
-  xterm*veryBoldColors:       14
-  xterm*loginShell:           true
-  xterm*charClass:            33:48,35:48,37:48,43:48,45-47:48,64:48,95:48,126:48,35:48,58:48,63:48,61:48,44:48,38:48,59:48
-  xterm*jumpScroll:           true
-  xterm*multiScroll:          true
-  xterm*scrollKey:            true
-  xterm*scrollTtyOutput:      false
-  xterm*saveLines:            1024000
+  xterm*allowBoldFonts:     true
+  xterm*allowWindowOps:     true
+  xterm*boldMode:           false
+  xterm*charClass:          33:48,35:48,37:48,43:48,45-47:48,64:48,95:48,126:48,35:48,58:48,63:48,61:48,44:48,38:48,59:48
+  xterm*cursorBlink:        false
+  xterm*cutNewline:         true
+  xterm*faceName:           consolas
+  xterm*faceSize:           11
+  xterm*fastScroll:         true
+  xterm*fullscreen:         false
+  xterm*iconHint:           /home/vermaden/.icons/vermaden/xterm.xpm
+  xterm*internalBorder:     1
+  xterm*jumpScroll:         true
+  xterm*keepSelection:      true
+  xterm*loginShell:         true
+  xterm*metaSendsEscape:    true
+  xterm*multiScroll:        true
+  xterm*omitTranslation:    fullscreen
+  xterm*on4Clicks:          group
+  xterm*on5Clicks:          page
+  xterm*saveLines:          1024000
+  xterm*scaleHeight:        1.0
+  xterm*scrollKey:          true
+  xterm*scrollTtyOutput:    false
+  xterm*selectToClipboard:  true
+  xterm*SimpleMenu*font:    -*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2
+  xterm*termName:           xterm-256color
+  xterm*title:              xterm
+  xterm*veryBoldColors:     14
+  xterm*VT100*geometry:     150x40
+  xterm*VT100*translations: #override                                                           \n\
+                                       <btn1up>:    select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0) \n\
+                            Ctrl       <key> minus: smaller-vt-font()                           \n\
+                            Ctrl       <key> plus:  larger-vt-font()                            \n\
+                            Ctrl Shift <key> C:     copy-selection(CLIPBOARD)                   \n\
+                            Ctrl Shift <key> V:     insert-selection(CLIPBOARD)
 
-! VERMADEN
+! URXVT
+! -----------------------------------------------------------------------------
+  urxvt.letterSpace:    0.0
+! urxvt.font:           xft:monaco:pixelsize=9,style=regular,minspace=True
+  urxvt.font:           -*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2
+  urxvt.boldFont:       -*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2
+  urxvt.iconFile:       /home/vermaden/.icons/vermaden/xterm.xpm
+  urxvt.geometry:       150x40
+  urxvt.cutchars:       ,;
+  urxvt.scrollBar:      false
+  urxvt.imLocale:       en_US.UTF-8
+  urxvt.loginShell:     true
+  urxvt.saveLines:      1024000
+  urxvt.inheritPixmap:  false
+  urxvt.shading:        20
+  urxvt.xftAntialias:   true
+  urxvt.jumpScroll:     true
+  urxvt.tintColor:      black
+  urxvt.internalBorder: 2
+  urxvt.cursorBlink:    false
+  urxvt.cursorColor:    #dd9900
+  urxvt.cursorColor2:   #000000
+  urxvt.colorBD:        #dddddd
+  urxvt.colorIT:        #bbbbbb
+  urxvt.colorUL:        #999999
+  urxvt.underlineColor: #999999
+
+! VERMADEN COLOR THEME
 ! -----------------------------------------------------------------------------
 ! black
   *color0:  #303030
@@ -140,4 +174,5 @@
   xmessage*Command.shapeStyle:            Rectangle
   xmessage*Command.background:            gray80
   xmessage*font:                          -*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2
+
 
