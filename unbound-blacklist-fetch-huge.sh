@@ -85,7 +85,6 @@ ${FETCHCMD} \
   https://280blocker.net/files/280blocker_domain.txt                                                                                                                   \
   https://bitbucket.org/ethanr/dns-blacklists/raw/8575c9f96e5b4a1308f2f12394abd86d0927a4a0/bad_lists/Mandiant_APT1_Report_Appendix_D.txt                               \
   https://blocklist.cyberthreatcoalition.org/vetted/domain.txt                                                                                                         \
-  https://dehakkelaar.nl/lists/cryptojacking_campaign.list.txt                                                                                                         \
   https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-malware.txt                                                                                         \
   https://gitlab.com/ZeroDot1/CoinBlockerLists/raw/master/list_browser.txt                                                                                             \
   https://hostfiles.frogeye.fr/firstparty-trackers.txt                                                                                                                 \
@@ -103,7 +102,6 @@ ${FETCHCMD} \
   https://raw.githubusercontent.com/cbuijs/shallalist/master/spyware/domains                                                                                           \
   https://raw.githubusercontent.com/cbuijs/shallalist/master/tracker/domains                                                                                           \
   https://raw.githubusercontent.com/cchevy/macedonian-pi-hole-blocklist/master/hosts.txt                                                                               \
-  https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/dnscrypt/spy.txt                                                                           \
   https://raw.githubusercontent.com/Dawsey21/Lists/master/main-blacklist.txt                                                                                           \
   https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/ABP-Japanese-Paranoid-Filters.txt                           \
   https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/Adblock-Persian.txt                                         \
@@ -156,7 +154,6 @@ ${FETCHCMD} \
   https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt                                                                                            \
   https://raw.githubusercontent.com/stamparm/blackbook/master/blackbook.txt                                                                                            \
   https://raw.githubusercontent.com/stamparm/maltrail/master/trails/static/malicious/magentocore.txt                                                                   \
-  https://raw.githubusercontent.com/stamparm/maltrail/master/trails/static/suspicious/crypto_mining.txt                                                                \
   https://raw.githubusercontent.com/XionKzn/PiHole-Lists/master/PiHole/Archive/Quad9.txt                                                                               \
   https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt                                                                                                 \
   https://s3.amazonaws.com/lists.disconnect.me/simple_malware.txt                                                                                                      \
@@ -283,6 +280,7 @@ echo 'server:' > ${FILE}
             -e 'broadcasthost'                  \
             -e 'device-metrics-us.amazon.com'   \
             -e 'device-metrics-us-2.amazon.com' \
+            -e 'click.redditmail.com'           \
             -e '/'                              \
             -e '\\'                             \
             -e '('                              \

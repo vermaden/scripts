@@ -37,6 +37,6 @@ TITLE=$( echo ${THEME} | awk -F. '{print $4}' )
 xrdb -load  ~/.Xdefaults
 xrdb -merge ~/.config/Xdefaults/themes/${THEME}
 
-xterm +fullscreen -title "xterm | ${TITLE}" ${@} &
+xterm -title "xterm | ${TITLE}" ${@} &
 
 echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

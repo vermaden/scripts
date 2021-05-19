@@ -159,6 +159,7 @@ echo 'server:' > ${FILE}
             -e 'broadcasthost'                  \
             -e 'device-metrics-us.amazon.com'   \
             -e 'device-metrics-us-2.amazon.com' \
+            -e 'click.redditmail.com'           \
             -e '/'                              \
             -e '\\'                             \
             -e '('                              \
