@@ -117,12 +117,14 @@ echo 'server:' > ${FILE}
 (
   # LIST UNBOUND SOURCES
   cat ${TEMP}/lists-unbound \
+  | grep -v '^(.)*#' -E     \
   | grep -v '^#'            \
   | grep -v '^$'            \
   | awk -F '"' '{print $2}'
 
   # LIST DOMAINS SOURCES
   cat ${TEMP}/lists-domains \
+  | grep -v '^(.)*#' -E     \
   | grep -v '^#'            \
   | grep -v '^$'            \
   | grep -v '^:'            \
@@ -135,6 +137,7 @@ echo 'server:' > ${FILE}
 
   # LIST HOSTS SOURCES
   cat ${TEMP}/lists-hosts   \
+  | grep -v '^(.)*#' -E     \
   | grep -v '^#'            \
   | grep -v '^$'            \
   | grep -v '^!'            \
