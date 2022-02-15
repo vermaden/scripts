@@ -74,7 +74,7 @@ echo "${SYSCTL_A}" \
     done
 echo
 
-printf "%38s\n" 'SYSTEM/TERMEPATURES '
+printf "%38s\n" 'SYSTEM/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
 echo "${SYSCTL_A}" \
   | grep -e temperature \
@@ -94,7 +94,7 @@ then
   exit 0
 fi
 
-printf "%38s\n" 'DISKS/TERMEPATURES '
+printf "%38s\n" 'DISKS/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
 for I in $( sysctl -n kern.disks )
 do
