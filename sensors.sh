@@ -1,6 +1,7 @@
 #! /bin/sh
 
 # Copyright (c) 2022 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2022 Trix Farrar
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -98,10 +99,25 @@ printf "%38s\n" 'DISKS/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
 for I in $( sysctl -n kern.disks )
 do
-  smartctl -a /dev/${I} \
-    | sed -E 's|\(.*\)||g' \
-    | grep -e Temperature_ \
-    | awk -v DISK=${I} \
-        '{MIB="smart." DISK "." tolower($2) ":"; printf("%38s %s.0C\n", MIB, $NF)}'
+  case ${I} in
+    (cd*)
+      continue
+      ;;
+    (nvd*)
+      I=$( echo ${I} | sed -e 's/nvd/nvme/g' )
+      smartctl -a /dev/${I} \
+        | sed -E 's|\(.*\)||g' \
+        | grep -e Temperature: \
+        | awk -v DISK=${I} \
+            '{MIB="smart." DISK "." tolower($1) ":"; printf("%38s %s.0C\n", MIB, $(NF-1))}'
+      ;;
+    (*)
+      smartctl -a /dev/${I} \
+        | sed -E 's|\(.*\)||g' \
+        | grep -e Temperature_ \
+        | awk -v DISK=${I} \
+            '{MIB="smart." DISK "." tolower($2) ":"; printf("%38s %s.0C\n", MIB, $NF)}'
+      ;;
+  esac
 done
 echo
