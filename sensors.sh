@@ -58,7 +58,7 @@ then
   __usage
 fi
 
-SYSCTL=$( sysctl dev hw.acpi )
+SYSCTL=$( sysctl dev hw.acpi 2> /dev/null )
 
 echo
 printf "%38s\n" 'BATTERY/AC/TIME/FAN/SPEED '
@@ -80,12 +80,13 @@ printf "%38s\n" 'SYSTEM/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
 echo "${SYSCTL}" \
   | grep -e temperature \
+  | grep -v 'critical temperature detected' \
   | sort -n -t . -k 3 \
   | while read MIB VALUE
     do
       case ${MIB} in
         (dev.cpu.*)
-          PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "." $2 "." $3 "."}' )
+          PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "\\." $2 "\\." $3 "\\."}' )
           MAX=$( echo "${SYSCTL}" \
                    | grep "${PREFIX}" \
                    | grep coretemp.tjmax \
