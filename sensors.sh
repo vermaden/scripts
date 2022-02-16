@@ -80,7 +80,7 @@ printf "%38s\n" 'SYSTEM/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
 echo "${SYSCTL}" \
   | grep -e temperature \
-  | sort -n \
+  | sort -n -t . -k 3 \
   | while read MIB VALUE
     do
       case ${MIB} in
@@ -111,7 +111,7 @@ fi
 
 printf "%38s\n" 'DISKS/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
-for I in $( sysctl -n kern.disks )
+for I in $( sysctl -n kern.disks | tr ' ' '\n' | sort -n )
 do
   case ${I} in
     (cd*)
