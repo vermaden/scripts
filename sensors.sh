@@ -85,19 +85,17 @@ echo "${SYSCTL}" \
     do
       case ${MIB} in
         (dev.cpu.*)
-          PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "." $2 "." $3}' )
+          PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "." $2 "." $3 "."}' )
           MAX=$( echo "${SYSCTL}" \
                    | grep "${PREFIX}" \
                    | grep coretemp.tjmax \
                    | awk '{print $NF}' )
-
           printf "%38s %s (max: %s)\n" ${MIB} ${VALUE} ${MAX}
           ;;
         (*)
           printf "%38s %s\n" ${MIB} ${VALUE}
           ;;
       esac
-
     done
 echo
 
