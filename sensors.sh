@@ -58,17 +58,18 @@ then
   __usage
 fi
 
-SYSCTL_A=$( sysctl -a )
+SYSCTL=$( sysctl dev hw.acpi )
 
 echo
 printf "%38s\n" 'BATTERY/AC/TIME/FAN/SPEED '
 printf "%38s\n" '------------------------------------ '
-echo "${SYSCTL_A}" \
+echo "${SYSCTL}" \
   | grep -e hw.acpi.cpu.cx_lowest \
          -e hw.acpi.acline \
          -e hw.acpi.battery.life \
          -e hw.acpi.battery.time \
          -e \.fan \
+  | sort -n \
   | while read MIB VALUE
     do
       printf "%38s %s\n" ${MIB} ${VALUE}
@@ -77,12 +78,27 @@ echo
 
 printf "%38s\n" 'SYSTEM/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
-echo "${SYSCTL_A}" \
+echo "${SYSCTL}" \
   | grep -e temperature \
+  | sort -n \
   | while read MIB VALUE
-   do
-     printf "%38s %s\n" ${MIB} ${VALUE}
-   done
+    do
+      case ${MIB} in
+        (dev.cpu.*)
+          PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "." $2 "." $3}' )
+          MAX=$( echo "${SYSCTL}" \
+                   | grep "${PREFIX}" \
+                   | grep coretemp.tjmax \
+                   | awk '{print $NF}' )
+
+          printf "%38s %s (max: %s)\n" ${MIB} ${VALUE} ${MAX}
+          ;;
+        (*)
+          printf "%38s %s\n" ${MIB} ${VALUE}
+          ;;
+      esac
+
+    done
 echo
 
 if [ $( whoami ) != "root" ]
