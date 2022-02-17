@@ -120,20 +120,17 @@ do
       continue
       ;;
     (nvd*)
-      I=$( echo ${I} | sed -e 's/nvd/nvme/g' )
-      smartctl -a /dev/${I} \
-        | sed -E 's|\(.*\)||g' \
-        | grep -e Temperature: \
-        | awk -v DISK=${I} \
-            '{MIB="smart." DISK "." tolower($1) ":"; printf("%38s %s.0C\n", MIB, $(NF-1))}'
+        I=$( echo ${I} | sed -e 's/nvd/nvme/g' )
+        GREPSTR='Temperature:'
+        AWKFLD='(NF-1)'
       ;;
     (*)
-      smartctl -a /dev/${I} \
-        | sed -E 's|\(.*\)||g' \
-        | grep -e Temperature_ \
-        | awk -v DISK=${I} \
-            '{MIB="smart." DISK "." tolower($2) ":"; printf("%38s %s.0C\n", MIB, $NF)}'
+        GREPSTR='Temperature_'
+        AWKFLD='NF'
       ;;
   esac
+      smartctl -a /dev/${I} \
+        | awk -v DISK=${I} \
+            "gsub(/\(.*\)/,\"\"); /${GREPSTR}/ {MIB=\"smart.\" DISK \".\" tolower(\$1) \":\"; printf(\"%38s %s.0C\n\", MIB, \$(${AWKFLD}))}"
 done
 echo
