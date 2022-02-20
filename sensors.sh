@@ -92,7 +92,21 @@ echo "${SYSCTL}" \
                    | grep coretemp.tjmax \
                    | awk '{print $NF}' )
           printf "%38s %s (max: %s)\n" ${MIB} ${VALUE} ${MAX}
+          unset PREFIX
+          unset MAX
           ;;
+
+        (hw.acpi.thermal.*)
+          PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "\\." $2 "\\." $3 "\\." $4 "\\."}' )
+          MAX=$( echo "${SYSCTL}" \
+                   | grep "${PREFIX}" \
+                   | grep _CRT: \
+                   | awk '{print $NF}' )
+          printf "%38s %s (max: %s)\n" ${MIB} ${VALUE} ${MAX}
+          unset PREFIX
+          unset MAX
+          ;;
+
         (*)
           printf "%38s %s\n" ${MIB} ${VALUE}
           ;;
@@ -121,15 +135,15 @@ do
     (nvd*)
       I=$( echo ${I} | sed -e 's/nvd/nvme/g' )
       smartctl -a /dev/${I} \
-        | sed -E 's|\(.*\)||g' \
         | grep -e Temperature: \
+        | sed -E 's|\(.*\)||g' \
         | awk -v DISK=${I} \
             '{MIB="smart." DISK "." tolower($1) ":"; printf("%38s %s.0C\n", MIB, $(NF-1))}'
       ;;
     (*)
       smartctl -a /dev/${I} \
-        | sed -E 's|\(.*\)||g' \
         | grep -e Temperature_ \
+        | sed -E 's|\(.*\)||g' \
         | awk -v DISK=${I} \
             '{MIB="smart." DISK "." tolower($2) ":"; printf("%38s %s.0C\n", MIB, $NF)}'
       ;;
