@@ -43,6 +43,15 @@ then
   exit 1
 fi
 
+for BIN in pdftk
+do
+  if ! /usr/bin/which ${BIN} 1> /dev/null 2> /dev/null
+  then
+    echo "ERROR: Binary '${BIN}' not in \$\{PATH\}."
+    exit 1
+  fi
+done
+
 NAME="ALL.pdf"
 if [ -f "${NAME}" ]
 then
@@ -54,9 +63,13 @@ fi
 
 pdftk "${@}" cat output "${NAME}"
 
+# ALTERNATIVE gs(1) COMMAND
+# $ gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite \
+#      -sOutputFile=outfile.pdf infile1.pdf infile2.pdf
+
 if [ ${?} -eq 0 ]
 then
   echo "INFO: File '${NAME}' generated."
 fi
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

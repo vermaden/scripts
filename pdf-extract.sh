@@ -45,7 +45,7 @@ fi
 
 for BIN in pdftk
 do
-  if ! /usr/bin/which -s ${BIN}
+  if ! /usr/bin/which ${BIN} 1> /dev/null 2> /dev/null
   then
     echo "ERROR: Binary '${BIN}' not in \$\{PATH\}."
     exit 1
@@ -66,9 +66,14 @@ NAME="${FILE}.EXTRACT.$( echo ${@} | tr ' ' '-' ).pdf"
 
 pdftk "${FILE}" cat ${@} output "${NAME}"
 
+# ALTERNATIVE gs(1) COMMAND
+# $ gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER \
+#      -dFirstPage=22 -dLastPage=36 \
+#      -sOutputFile=outfile_p22-p36.pdf 100p-inputfile.pdf
+
 if [ ${?} -eq 0 ]
 then
   echo "INFO: File '${NAME}' generated."
 fi
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

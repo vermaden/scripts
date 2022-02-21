@@ -39,7 +39,7 @@ fi
 
 for BIN in pdftk
 do
-  if ! /usr/bin/which -s ${BIN}
+  if ! /usr/bin/which ${BIN} 1> /dev/null 2> /dev/null
   then
     echo "ERROR: Binary '${BIN}' not in \$\{PATH\}."
     exit 1
@@ -55,4 +55,4 @@ fi
 pdftk "${1}" cat 1-endright output "${1}".ROTATED.RIGHT.pdf
 rm -f doc_data.txt
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

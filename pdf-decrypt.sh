@@ -39,6 +39,15 @@ then
   exit 1
 fi
 
+for BIN in qpdf
+do
+  if ! /usr/bin/which ${BIN} 1> /dev/null 2> /dev/null
+  then
+    echo "ERROR: Binary '${BIN}' not in \$\{PATH\}."
+    exit 1
+  fi
+done
+
 qpdf --decrypt "${1}" "${1}".DECRYPT.pdf
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

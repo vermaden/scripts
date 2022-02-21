@@ -66,6 +66,15 @@ then
   __usage
 fi
 
+for BIN in pdftk
+do
+  if ! /usr/bin/which ${BIN} 1> /dev/null 2> /dev/null
+  then
+    echo "ERROR: Binary '${BIN}' not in \$\{PATH\}."
+    exit 1
+  fi
+done
+
 case ${1} in
   (dump)
     if [ -f "${3}" ]
@@ -128,4 +137,4 @@ case ${1} in
 
 esac
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
