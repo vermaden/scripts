@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2017-2021 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2017-2022 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -98,6 +98,7 @@ case ${#} in
       # TIFF
       # XPM
       # XBM
+      # BMP
       ( [Jj][Pp][Ee]     \
       | [Jj][Pp][Gg]     \
       | [Jj][Pp][Ee][Gg] \
@@ -107,6 +108,7 @@ case ${#} in
       | [Tt][Ii][Ff]     \
       | [Xx][Pp][Mm]     \
       | [Xx][Bb][Mm]     \
+      | [Bb][Mm][Pp]     \
       | [Ss][Vv][Gg]     )
         viewnior "${@}" &
         ;;
@@ -136,10 +138,12 @@ case ${#} in
         ;;
 
       # TXT
+      # SRT
       # PL
       # PUB
       # VCF
       ( [Tt][Xx][Tt] \
+      | [Ss][Rr][Tt] \
       | [Pp][Ll]     \
       | [pP][uU][bB] \
       | [Vv][Cc][Ff] )
@@ -211,6 +215,7 @@ case ${#} in
       | [Rr][Mm][Vv][Bb] \
       | [Ww][Ee][Bb][Mm] \
       | [Oo][Gg][Vv]     \
+      | [Vv][Oo][Bb]     \
       | [Mm][Pp][Gg]     )
         mpv "${@}" 1> /dev/null 2> /dev/null &
         ;;
@@ -244,6 +249,11 @@ case ${#} in
       # SWF
       ( [Ss][Ww][Ff] )
         wine ~/win32/bin/flashplayer_32_sa.exe "${@}" &
+        ;;
+
+      # EXE
+      ( [Ee][Xx][Ee] )
+        wine "${@}" &
         ;;
 
       (*)
@@ -291,3 +301,4 @@ case ${#} in
 esac
 
 echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
+
