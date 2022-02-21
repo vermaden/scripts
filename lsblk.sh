@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2016-2019 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2016-2021 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -33,6 +33,23 @@
 
 PATH=${PATH}:/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
+# DISPLAY VERSION
+if [ "${1}" = "--version" -o \
+     "${1}" =  "-version" -o \
+     "${1}" =   "version" ]
+then
+  echo
+  echo "  ___     ___   ___ __       _ _ _____    "
+  echo "  \  \  __\__\__\  \  \  __ / / /     \   "
+  echo "   \  \/  __/    \  \  \/ // / /   .   \  "
+  echo "    \  \___ \  \  \  \_   \\\ \ \    \  / "
+  echo "     \___\__/\____/\___\/\_\\\_\_\____\/  "
+  echo
+  echo "lsblk 3.7 2021/08/28"
+  echo
+  exit 0
+fi
+
 # DISPLAY HELP/USAGE/EXAMPLES
 __usage() {
   local NAME="${0##*/}"
@@ -42,6 +59,7 @@ usage:
   BASIC USAGE INFORMATION
   =======================
   # ${NAME} [DISK]
+  # ${NAME} -d | --disks
 
 example(s):
 
@@ -56,7 +74,6 @@ example(s):
     ada0p3         0:102 931G freebsd-zfs                zfs0 <ZFS>
     ada0p3.eli     0:106 931G freebsd-zfs                   - <ZFS>
 
-
   LIST ONLY da1 BLOCK DEVICE
   --------------------------
   # ${NAME} da1
@@ -65,6 +82,13 @@ example(s):
     da1s1          0:80  2.0G freebsd                       - -
       da1s1a       0:81  1.0G freebsd-ufs                root /
       da1s1b       0:82  1.0G freebsd-swap               swap SWAP
+
+  LIST ENTIRE DISKS
+  -----------------
+  # ${NAME} -d
+  DEVICE SIZE MODEL
+  ada0   1.8T Samsung SSD 860 QVO 2TB
+  ada1   119G SAMSUNG SSD PM830 mSATA 128GB
 
 hint(s):
 
@@ -148,7 +172,7 @@ __mount_label() { # 1=TARGET
     MOUNT="-"
   fi
 
-  # CHECK IF DEVICE EXISTS
+  # CHECK IF DEVICE EXISTS - IT NOT THEN EXIT FUNCTION
   [ ! -e /dev/${TARGET} ] && return
 
   # TRY CLASSIC MOUNT POINT WITH DEVICE NAME
@@ -192,6 +216,7 @@ __mount_label() { # 1=TARGET
       fi
       ;;
     (exfat)
+      # IF exfatlabel(8) IS AVAIALBLE THEN READ exFAT LABEL
       if which exfatlabel 1> /dev/null 2> /dev/null
       then
         LABEL=$( exfatlabel /dev/${DEV} 2> /dev/null )
@@ -217,7 +242,7 @@ __mount_label() { # 1=TARGET
     else
       while read PROVIDER STATUS DEVICE
       do
-        LABEL=$( echo "${GLABEL_GREP}" | grep -m 1 "${TARGET}"  | awk '{print $1}' )
+        LABEL=$( echo "${GLABEL_GREP}" | grep -m 1 " ${TARGET}"  | awk '{print $1}' )
         local LABEL_FOUND=1
         break
       done << ______EOF
@@ -252,11 +277,28 @@ ______EOF
   # GET MOUNT FROM fuse(8)
   if [ "${MOUNT_FOUND}" != "1" ]
   then
-    local FUSE_PIDS=$( pgrep mount.exfat ntfs-3g | tr '\n' ',' | sed '$s/.$//' )
+    if [ -e /dev/fuse ]
+    then
+      local FUSE_PIDS=$( fstat /dev/fuse 2> /dev/null | awk 'NR > 1 {print $3}' | tr '\n' ',' | sed '$s/.$//' )
+    else
+      local FUSE_PIDS=$( pgrep mount.exfat ntfs-3g 2> /dev/null | tr '\n' ',' | sed '$s/.$//' )
+    fi
     if [ "${FUSE_PIDS}" != "" ]
     then
       local FUSE_MOUNTS=$( ps -p "${FUSE_PIDS}" -o command | sed 1d | sort -u )
-      MOUNT=$( echo "${FUSE_MOUNTS}" | grep "/dev/${TARGET} " | awk '{print $3}' )
+      MOUNT=$( echo "${FUSE_MOUNTS}" | grep "/dev/${TARGET} " | sed 's|(mount.exfat-fuse)||g' | awk '{print $NF}' )
+      # TRY automount(8) STATE FILE IF EXISTS
+      if [ "${MOUNT}" = "" ]
+      then
+        if [ -f /var/run/automount.state ]
+        then
+          MOUNT=$( grep "^/dev/${TARGET} " /var/run/automount.state | awk '{print $NF}' )
+          if ! mount -t fusefs | grep -q "${MOUNT}"
+          then
+            MOUNT="-"
+          fi
+        fi
+      fi
       if [ "${MOUNT}" = "" ]
       then
         MOUNT="-"
@@ -269,7 +311,7 @@ ______EOF
   # GET LABEL FROM gpart(8)
   if [ "${LABEL_FOUND}" != "1" ]
   then
-    LABEL=$( gpart show -p -l ${DEV} 2> /dev/null | sed 's|=>||g' | sed 's-\[active\]--g' | grep "${TARGET} " | awk '{print $4}' )
+    LABEL=$( gpart show -p -l ${DEV} 2> /dev/null | sed 's|=>||g' | sed -E 's-\[.*\]--g' | grep "${TARGET} " | awk '{print $4}' )
     if [ "${LABEL}" = "" -o "${LABEL}" = "(null)" ]
     then
       LABEL="-"
@@ -284,15 +326,19 @@ ______EOF
 # LIST BLOCK DEVICES
 __list_block_devices() {
   # FIRST 1000 DEVICES OF EACH CLASS SHOULD DO
-  for I in ada da mmcsd md vtbd
-  do
-    ls -1 /dev/${I}[0-9]           2> /dev/null
-    ls -1 /dev/${I}[0-9][0-9]      2> /dev/null
-    ls -1 /dev/${I}[0-9][0-9][0-9] 2> /dev/null
-  done \
-    | sed 's|/dev/||g' \
-    | sort -u \
-    | sed '/^s*$/d'
+  (
+    sysctl -n kern.disks | tr ' ' '\n'
+    for I in ada da mmcsd md vtbd
+    do
+      ls -1 /dev/${I}[0-9]           2> /dev/null
+      ls -1 /dev/${I}[0-9][0-9]      2> /dev/null
+      ls -1 /dev/${I}[0-9][0-9][0-9] 2> /dev/null
+    done
+  ) \
+      | sed 's|/dev/||g' \
+      | sed -r "s/[[:cntrl:]]\[[0-9]{1,3}m//g" \
+      | sort -u \
+      | sed '/^s*$/d'
 }
 # __list_block_devices() ENDED
 
@@ -345,6 +391,8 @@ __print_parts() { # 1=NAME 2=TYPE 3=SIZE 4=SIZE_FREE
 __gpart_present() { # 1=DEV
   local DEV=${1}
   local TYPE="-"
+  local LABEL="-"
+  local MOUNT="-"
   local SIZE="-"
   local SIZE_FREE="-"
   # CHECK IF DEVICE EXISTS
@@ -352,21 +400,42 @@ __gpart_present() { # 1=DEV
 
   # WORKAROUND FOR gpart(1) BUG 240998
   # https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=240998
-  TYPE_EXFAT_HELPER_DEVICE=$( gpart show -p ${DEV} | head -1 | sed 's-\[active\]--g' | awk '{print $5}' 2> /dev/null )
+  TYPE_EXFAT_HELPER_DEVICE=$( gpart show -p ${DEV} | head -1 | sed -E 's-\[.*\]--g' | awk '{print $5}' 2> /dev/null )
   if [ "${TYPE_EXFAT_HELPER_DEVICE}" = "MBR" ]
   then
     TYPE_EXFAT_HELPER=$( fstyp -u /dev/${DEV} 2> /dev/null )
     if [ "${TYPE_EXFAT_HELPER}" = "exfat" ]
     then
       TYPE=exfat
-      SIZE=$( diskinfo -v ${DEV} 2> /dev/null| awk '/mediasize in bytes/ {print $NF}' | tr -d '()' )
-      __print_parts ${DEV} ${TYPE} ${SIZE} -
+      case ${DEV} in
+        (md*) SIZE=$( diskinfo -v ${DEV} 2> /dev/null| awk '/mediasize in bytes/ {print $NF}' | tr -d '()' ) ;;
+        (*)   SIZE=$( geom disk list ${DEV} | awk '/Mediasize:/ {print $NF}' | tr -d '()' )                  ;;
+      esac
+      __mount_label ${DEV}
+      # EXFAT FILESYSTEM ON WHOLE DEVICE IS INTERPETED AS MBR - FIX THAT
+      if [ "${LABEL}" = "gpt/MBR" ]
+      then
+
+        # IF exfatlabel(8) IS AVAIALBLE THEN READ exFAT LABEL
+        if which exfatlabel 1> /dev/null 2> /dev/null
+        then
+          LABEL=$( exfatlabel /dev/${DEV} 2> /dev/null )
+          if [ "${LABEL}" = "" ]
+          then
+            local LABEL="-"
+          else
+            local LABEL="exfat/${LABEL}"
+          fi
+        fi
+
+      fi
+      __print_parts ${DEV} ${TYPE} ${SIZE} ${MOUNT}
       continue
     fi
   fi
 
   # READ PARTITIONS OF PROVIDER
-  local GPART=$( gpart show -p ${DEV} 2> /dev/null | sed 's-\[active\]--g' | sed 's|=>||g' )
+  local GPART=$( gpart show -p ${DEV} 2> /dev/null | sed -E 's-\[.*\]--g' | sed 's|=>||g' )
   # PARSE gpart(8) OUTPUT
   echo "${GPART}" \
     | while read BEG END NAME TYPE SIZE SIZE_FREE
@@ -382,7 +451,7 @@ __gpart_present() { # 1=DEV
           # PARTITION
           FORMAT="${FORMAT_L1}"
           # READ PARTITIONS OF PROVIDER
-          local GPART_PARTS=$( gpart show -p ${NAME} 2> /dev/null | sed 's-\[active\]--g' | sed 's|=>||g' )
+          local GPART_PARTS=$( gpart show -p ${NAME} 2> /dev/null | sed -E 's-\[.*\]--g' | sed 's|=>||g' )
           # PARSE gpart(8) OUTPUT
           if [ "${GPART_PARTS}" != "" ]
           then
@@ -423,7 +492,16 @@ __gpart_absent() { # 1=DEV
   local DEV=${1}
   # EXIT IF DEVICE DOES NOT EXISTS
   [ ! -e /dev/${DEV} ] && return
-  local SIZE=$( diskinfo -v ${DEV} 2> /dev/null | awk '/mediasize in bytes/ {print $NF}' | tr -d '()' )
+  local MOUNT="-"
+  case ${DEV} in
+    (md*) local SIZE=$( diskinfo -v ${DEV} 2> /dev/null | awk '/mediasize in bytes/ {print $NF}' | tr -d '()' ) ;;
+    (*)   local SIZE=$( geom disk list ${DEV} | awk '/Mediasize:/ {print $NF}' | tr -d '()' )                   ;;
+  esac
+  # WHEN SIZE IS NOT AVAILABLE ITS PROBABLY EMPTY CARD READER
+  if [ "${SIZE}"  = "0B" ]
+  then
+    return
+  fi
   local SIZE_FREE="-"
   __type ${DEV}
   __mount_label ${DEV}
@@ -435,10 +513,35 @@ __gpart_absent() { # 1=DEV
 }
 # __gpart_absent() ENDED
 
+# LIST ENTIRE DISKS ONLY
+__list_disks() {
+  local FORMAT="%-6s %4s %s\n"
+  printf "${FORMAT}" DEVICE SIZE MODEL
+
+  # DO THE JOB
+  echo "${DISKS}" \
+    | while read DEVICE
+      do
+        case ${DEVICE} in
+          (md*)
+            local SIZE=$( diskinfo -v ${DEVICE} 2> /dev/null| awk '/mediasize in bytes/ {print $NF}' | tr -d '()' )
+            local MODEL="FreeBSD md(4) Memory Disk"
+            ;;
+          (*)
+            local SIZE=$(  geom disk list ${DEVICE} | awk '/Mediasize:/ {print $NF}' | tr -d '()' )
+            local MODEL=$( geom disk list ${DEVICE} | awk -F ':' '/descr:/ {print $2}' | sed '$s/^.//' )
+            ;;
+        esac
+        [ "${SIZE}"  = "" ] && local SIZE="-"
+        printf "${FORMAT}" ${DEVICE} ${SIZE} "${MODEL}"
+      done
+}
+# __list_disks() ENDED
+
 # PARSE ARGUMENTS IF THERE ARE ANY
 LEVEL_DEV=0
 LEVEL_PAR=0
-GLABEL=$( glabel status | sed 1d )
+GLABEL=$( glabel status | sed 1d | grep -v gptid )
 DISKS=$( __list_block_devices )
 case ${#} in
   (0)
@@ -446,10 +549,14 @@ case ${#} in
     :
     ;;
   (1)
-    # SINGLE ARGUMENT MEANS SINGLE DISK OR HELP
+    # SINGLE ARGUMENT MEANS 'SINGLE DISK' OR 'ENTIRE DISKS ONLY' OR 'HELP'
     case ${1} in
       (h|-h|--h|help|-help|--help)
         __usage
+        ;;
+      (-d|--disks)
+        __list_disks
+        exit 0
         ;;
     esac
     # SINGLE DISK CHECK
@@ -469,13 +576,13 @@ case ${#} in
 esac
 
 # SET OUTPUT FORMAT AND PRINT HEADER
-    FORMAT_L0="%-14s %3s:%-3s %4s %-18s %20s %s\n"
-  FORMAT_L1="  %-12s %3s:%-3s %4s %-18s %20s %s\n"
-FORMAT_L2="    %-10s %3s:%-3s %4s %-18s %20s %s\n"
+    FORMAT_L0="%-14s %3s:%-3s %4s %-18s %32s %s\n"
+  FORMAT_L1="  %-12s %3s:%-3s %4s %-18s %32s %s\n"
+FORMAT_L2="    %-10s %3s:%-3s %4s %-18s %32s %s\n"
 FORMAT="${FORMAT_L0}"
 printf "${FORMAT}" DEVICE MAJ MIN SIZE TYPE LABEL MOUNT
 
-# DO THE JOB
+# LIST ALL PARTITIONS OF ALL DISKS
 echo "${DISKS}" \
   | while read DEVICE
     do
