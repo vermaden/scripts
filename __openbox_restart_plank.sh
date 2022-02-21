@@ -62,4 +62,4 @@ esac
 # PLANK DISABLE TOOLTIPS
 gsettings set net.launchpad.plank.dock.settings:/net/launchpad/plank/docks/dock1/ tooltips-enabled false
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

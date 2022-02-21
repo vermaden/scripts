@@ -39,8 +39,8 @@ killall -9 tint2
 
 __builtin() {
 # ( sleep ${DELAY} &&            tint2 -c ~/.tint2rc.STARTER 1> /dev/null 2> /dev/null ) &
-# ( sleep ${DELAY} && nice -n 20 tint2 -c ~/.tint2rc         1> /dev/null 2> /dev/null ) &
-  ( sleep ${DELAY} &&            tint2 -c ~/.tint2rc.ALL     1> /dev/null 2> /dev/null ) &
+# ( sleep ${DELAY} && nice -n 20 tint2 -c ~/.tint2rc.ALL     1> /dev/null 2> /dev/null ) &
+  ( sleep ${DELAY} &&            tint2 -c ~/.tint2rc         1> /dev/null 2> /dev/null ) &
 }
 
 __right() {
@@ -61,4 +61,4 @@ case ${COUNT} in
     ;;
 esac
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

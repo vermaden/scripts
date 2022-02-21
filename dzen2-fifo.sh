@@ -78,4 +78,4 @@ done | dzen2 \
 # RUN FITST dzen2(1) UPDATE
 ~/scripts/dzen2-update.sh > ~/.dzen2-fifo &
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

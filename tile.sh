@@ -186,4 +186,4 @@ case ${1} in
 
 esac
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

@@ -66,9 +66,8 @@ mount -t nfs | grep -q ${MNT} || {
   ${CMD} mount -t nfs \
     -o rw,noatime,soft,retrycnt=5,retrans=1,readahead=4,nolockd,nocto,rsize=1048576,wsize=1048576 \
     10.0.0.2:/data ${MNT}
-
 }
 
 caja --browser --no-desktop ${MNT} &
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

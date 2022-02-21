@@ -69,4 +69,4 @@ awk '{print $2}' "${1}" \
       fi
     done
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

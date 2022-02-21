@@ -92,3 +92,6 @@ case ${1} in
     __usage
 
 esac
+
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
+

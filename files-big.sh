@@ -42,4 +42,4 @@ fi
 
 find "${DIR}" -type f -exec stat -f "%16z; doas rm -f \"%N\"" {} ';' | sort -n
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

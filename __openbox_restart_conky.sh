@@ -40,17 +40,17 @@ PROFILE=$( hostname -s )
 
 killall -9 conky
 
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.1 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.2 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.3 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.4 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.5 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.6 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.7 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.8 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.9 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.a 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.b 1> /dev/null 2> /dev/null &
-nice -n 20 conky -c /home/vermaden/.conkyrc.${VERSION}.${PROFILE}.LOG.c 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.1 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.2 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.3 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.4 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.5 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.6 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.7 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.8 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.9 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.a 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.b 1> /dev/null 2> /dev/null &
+nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.c 1> /dev/null 2> /dev/null &
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

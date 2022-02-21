@@ -48,4 +48,4 @@ find "${DIR}" -type d -maxdepth 1 -mindepth 1 \
       echo " ${I}"
     done | sort -n
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

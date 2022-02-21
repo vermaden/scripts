@@ -31,12 +31,12 @@
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-THEME=$( ls ~/.config/Xdefaults/themes | sort -R | head -1 )
+THEME=$( find ~/.config/Xdefaults/themes -type f | xargs basename | sort -R | head -1 )
 TITLE=$( echo ${THEME} | awk -F. '{print $4}' )
 
 xrdb -load  ~/.Xdefaults
 xrdb -merge ~/.config/Xdefaults/themes/${THEME}
 
-xterm -title "xterm | ${TITLE}" ${@} &
+cd ~ && xterm -title "xterm | ${TITLE}" ${@} &
 
 echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

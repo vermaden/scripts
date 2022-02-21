@@ -44,6 +44,7 @@ __usage() {
   echo "  -L  -  List paused processes/windows with PIDs."
   echo "  -k  -  Kill paused processes/windows with TERM (15) signal."
   echo "  -K  -  Kill paused processes/windows with KILL (9) signal."
+  echo "  -r  -  resume all paused processes/windows."
   echo
   echo "ARGUMENT:"
   echo "  PID for '-p' option."
@@ -106,6 +107,19 @@ case ${1} in
       | grep '^T' \
       | grep -v 'Ts+' \
       | awk '{print substr($0, index($0, $2))}'
+    exit 0
+    ;;
+
+  (-r)
+    ps -U ${USER} -o state,pid,comm \
+      | grep '^T' \
+      | grep -v 'Ts+' \
+      | awk '{print $2}' \
+      | while read PID
+        do
+          kill -CONT ${PID}
+          echo "IN: process '${PID}' resumed."
+        done
     exit 0
     ;;
 
@@ -185,4 +199,4 @@ pgrep -P ${PID} \
       echo "INFO: kill -${SIGNAL} ${I}"
     done
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

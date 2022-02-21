@@ -35,6 +35,7 @@
 CLA='^fg(#aaaaaa)'
 CVA='^fg(#eeeeee)'
 CDE='^fg(#dd0000)'
+alias bsdgrep=grep
 
 # CUSTOM MATH FUNCTION
 __math() {
@@ -87,4 +88,4 @@ echo -n "${CDE}| ${CLA}bat: ${CVA}${BAT} "
 echo -n "${CDE}| ${CLA}top: ${CVA}${TOP}"       # NO SPACE AT THE END
 echo
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

@@ -78,4 +78,4 @@ esac
 # vnconfig svnd0 image.iso
 # mount -t cd9660 /dev/svnd0c /mnt
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

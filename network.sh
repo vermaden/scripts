@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2020 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2017-2021 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -39,12 +39,12 @@ WLAN_IF=wlan0
 WLAN_PH=iwn0
 WLAN_RANDOM_MAC=0
 WLAN_COUNTRY=PL
-WLAN_REGDOMAIN=NONE
+WLAN_REGDOMAIN=FCC4
 WWAN_IF=tun0
 WWAN_PROFILE=WWAN
 NAME=${0##*/}
 NETFS="nfs,smbfs,fusefs.sshfs"
-TIMEOUT=16
+TIMEOUT=48
 DELAY=0.5
 SUDO_WHICH=0
 SUDO=0

@@ -50,3 +50,4 @@ do
   photo-movie-audio-ac3.sh 160 25000 ${I}
 done
 
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

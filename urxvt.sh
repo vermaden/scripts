@@ -31,7 +31,7 @@
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-THEME=$( ls ~/.config/Xdefaults/themes | sort -R | head -1 )
+THEME=$( find ~/.config/Xdefaults/themes -type f | xargs basename | sort -R | head -1 )
 TITLE=$( echo ${THEME} | awk -F. '{print $4}' )
 SHADE=$( echo ${THEME} | awk -F. '{print $3}' )
 
@@ -39,12 +39,12 @@ xrdb -load  ~/.Xdefaults
 xrdb -merge ~/.config/Xdefaults/themes/${THEME}
 
 case ${SHADE} in
-  (DARK)  THEME=$( ls ~/.config/Xdefaults/urxvt/DARK.*.Xdefaults  | sort -R | head -1 ) ;;
-  (LIGHT) THEME=$( ls ~/.config/Xdefaults/urxvt/LIGHT.*.Xdefaults | sort -R | head -1 ) ;;
+  (DARK)  THEME=$( find ~/.config/Xdefaults/urxvt -name DARK.\*.Xdefaults -type f  | sort -R | head -1 ) ;;
+  (LIGHT) THEME=$( find ~/.config/Xdefaults/urxvt -name LIGHT.\*.Xdefaults -type f | sort -R | head -1 ) ;;
 esac
 
 xrdb -merge ${THEME}
 
-urxvt -title "urxvt | ${TITLE}" ${@} &
+cd ~ && urxvt -title "urxvt | ${TITLE}" ${@} &
 
 echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

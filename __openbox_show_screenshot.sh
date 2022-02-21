@@ -31,6 +31,6 @@
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-viewnior "gfx/screenshots/$( ls -tr gfx/screenshots|tail -1 )"
+viewnior ~/gfx/screenshots/$( ls -tr ~/gfx/screenshots | tail -1 )
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

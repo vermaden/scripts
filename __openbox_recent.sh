@@ -32,7 +32,7 @@
 # https://vermaden.wordpress.com
 
 LC_ALL=C
-MAX=10
+MAX=20
 COUNT=0
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 echo " <openbox_pipe_menu>"
@@ -89,4 +89,4 @@ else
   exit 1
 fi
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

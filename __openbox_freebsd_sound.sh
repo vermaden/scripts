@@ -101,16 +101,16 @@ then
     | sed 1d \
     | grep play \
     | while read DEVICE
-    do
-      NUMBER=$( echo "${DEVICE}" | awk -F':' '{print $1}' | grep -o -E "[0-9]+" | sed 's/</&lt;/g' | sed 's/>/&gt;/g' )
-      COMMAND="${CMD} sysctl hw.snd.default_unit=${NUMBER}"
-      NAME=$( echo "${DEVICE}" | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g' )
+      do
+        NUMBER=$( echo "${DEVICE}" | awk -F':' '{print $1}' | grep -o -E "[0-9]+" | sed 's/</&lt;/g' | sed 's/>/&gt;/g' )
+        COMMAND="${CMD} sysctl hw.snd.default_unit=${NUMBER}"
+        NAME=$( echo "${DEVICE}" | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g' )
         echo "<item label=\"${NAME}\">"
         echo "  <action name=\"Execute\">"
         echo "    <command>${COMMAND}</command>"
         echo "  </action>"
         echo "</item>"
-    done
+      done
 
   echo "<separator />"
 
@@ -123,4 +123,4 @@ fi
 
 echo "</openbox_pipe_menu>"
 
-echo '1' >> ~/scripts/stats/${0##*/}
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
