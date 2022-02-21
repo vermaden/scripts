@@ -11,8 +11,8 @@
   export LESSHISTSIZE=0
 
 # IMITATE sockstat(1) ON LINUX
-  case $( uname ) in
-    (Linux) alias sockstat="netstat -lnptu --protocol=inet,unix" ;;
+  case ${OSTYPE} in
+    (linux*) alias sockstat="netstat -lnptu --protocol=inet,unix" ;;
   esac
 
 # ZSH HISTORY
@@ -90,6 +90,9 @@
 # ZSH COMPLETION CASE (IN)SENSITIVE
 # zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
+# ZSH COMPLETION CASE (IN)SENSITIVE ONE WAY ONLY
+# zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
 # ZSH DISABLE USER COMPLETION FOR THESE NAMES
   zstyle ':completion:*:*:*:users' ignored-patterns \
     dladm dbus distcache dovecot list ftp games gdm gkrellmd gopher gnats \
@@ -110,7 +113,7 @@
   zstyle ':completion:*' menu select
   zstyle :compinstall filename '~/.zshrc'
   autoload -Uz compinit
-  autoload -U colors &amp;&amp; colors
+  autoload -U colors && colors
   compinit
 
 # ZSH OTHER FEATURES
@@ -164,7 +167,7 @@
 
 # COLOR PROMPT
   cSRV="%F{magenta}"
-  case $( whoami ) in
+  case ${LOGNAME} in
     (root)
       cUSR="%F{red}"
       cPMT="%F{red}"
@@ -178,13 +181,29 @@
   cPWD="%F{magenta}%B"
   cSTD="%b%f"
   export PS1="$cTIM%T$cSTD $cSRV%m$cSTD $cUSR%n$cSTD $cPWD%~$cSTD $cPMT%#$cSTD "
-  export PS2="$cTIM%T$cSTD $cUSR&gt;$cSTD $cPWD"
+  export PS2="$cTIM%T$cSTD $cUSR>$cSTD $cPWD"
+# export RPS1=$'%{\e[0;34m%}%T%{\e[0m%}'
 
+# COLOR MAN PAGES
+  if [ -e /usr/bin/col -a -e /usr/local/bin/bat ]
+  then
+    # USE bat(1) AND col(1) IF AVAILABLE
+    export MANPAGER="sh -c 'col -bx | bat -l man -p' "
+  else
+    # USE less(1) AS FALLBACK
+    export LESS_TERMCAP_mb=$'\E[5m'
+    export LESS_TERMCAP_md=$'\E[01;31m'
+    export LESS_TERMCAP_me=$'\E[0m'
+    export LESS_TERMCAP_se=$'\E[0m'
+    export LESS_TERMCAP_so=$'\E[01;44;33m'
+    export LESS_TERMCAP_ue=$'\E[0m'
+    export LESS_TERMCAP_us=$'\E[01;32m'
+  fi
 
 # SET PROPER ENCODINGS
   case ${TERM} in
     (cons25*) export LC_ALL=en_US.ISO8859-1 ;;
-    (*)       export LC_ALL=en_US.UTF-8     ;;
+    (*)       export LC_ALL=en_US.UTF-8 ;;
   esac
 
 # ALIASES
@@ -197,14 +216,9 @@
   alias wget='wget -c -t 0'
 
 # LS/GLS/EXA
-  case $( uname ) in
-    (FreeBSD)
-      if /usr/bin/env which exa 1&gt; /dev/null 2&gt; /dev/null
-      then
-        alias bls='/bin/ls -p -G -D "%Y.%m.%d %H:%M"'
-        alias gls='gls -p --color=always --time-style=long-iso --group-directories-first --quoting-style=literal'
-        alias ls='exa --time-style=long-iso --group-directories-first'
-      elif /usr/bin/env which gls 1&gt; /dev/null 2&gt; /dev/null
+  case ${OSTYPE} in
+    (freebsd*)
+      if /usr/bin/env which gls 1> /dev/null 2> /dev/null
       then
         alias bls='/bin/ls -p -G -D "%Y.%m.%d %H:%M"'
         alias ls=' gls -p --color=always --time-style=long-iso --group-directories-first --quoting-style=literal'
@@ -212,21 +226,14 @@
         alias ls=' /bin/ls -p -G -D "%Y.%m.%d %H:%M"'
       fi
       ;;
-    (OpenBSD)
+    (openbsd*)
       export PKG_PATH=http://ftp.openbsd.org/pub/OpenBSD/$( uname -r )/packages/$( uname -m )/
-      [ -e /usr/local/bin/colorls ] &amp;&amp; alias ls='/usr/local/bin/colorls -G'
+      [ -e /usr/local/bin/colorls ] && alias ls='/usr/local/bin/colorls -G'
       ;;
-    (Linux)
-      if /usr/bin/env which exa 1&gt; /dev/null 2&gt; /dev/null
-      then
-        alias gls='ls -p --color=always --time-style=long-iso --group-directories-first --quoting-style=literal'
-        alias ls='exa --time-style=long-iso --group-directories-first'
-      else
-        alias ls='ls -p --color=always --time-style=long-iso --group-directories-first --quoting-style=literal'
-      fi
+    (linux*)
+      alias ls='ls -p --color=always --time-style=long-iso --group-directories-first --quoting-style=literal'
       ;;
   esac
   alias la='ls -A'
   alias ll='ls -l'
   alias exa='exa --time-style=long-iso --group-directories-first'
-
