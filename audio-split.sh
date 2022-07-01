@@ -54,7 +54,7 @@ case ${#} in
     REGEX_NUMBER=$( echo ${1} | grep -E -o "[0-9]+" )
     if [ "${1}" != "${REGEX_NUMBER}" ]
     then
-      echo "NOPE: the TBW must be natural number of TERABYTES"
+      echo "NOPE: the LENGTH must be natural number of MINUTES"
       exit 1
     fi
 
