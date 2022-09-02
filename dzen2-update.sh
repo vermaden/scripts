@@ -70,7 +70,7 @@ __math() {
   IF_XFER=$( ~/scripts/__conky_if_xfer.sh )
   VOL=$(     mixer -s vol | awk -F ':' '{printf("%s",$2)}' )
   FS=$(      zfs list -H -d 0 -o name,avail | awk '{printf("%s/%s ",$1,$2)}' )
-  BAT=$(     ~/scripts/__conky_battery_separate.sh dzen2 )
+  BAT=$(     ~/scripts/__conky_battery.sh dzen2 )
   TOP=$(     echo "${PS}" | bsdgrep -v -E '(COMMAND|idle)$' | sort -r -n \
                | head -3 | awk '{printf("%s/%d%%/%.1fGB ",$3,$1,$2/1024/1024)}' )
 
