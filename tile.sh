@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2018 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2023 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -185,5 +185,3 @@ case ${1} in
     ;;
 
 esac
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
