@@ -58,33 +58,72 @@ then
   __usage
 fi
 
+# GET sysctl(8) OUTPUT ONLY ONCE
 SYSCTL=$( sysctl dev hw.acpi 2> /dev/null )
+
+
 
 echo
 printf "%38s\n" 'BATTERY/AC/TIME/FAN/SPEED '
 printf "%38s\n" '------------------------------------ '
+
+# DISPLAY RELEVANT INFORMATION
 echo "${SYSCTL}" \
-  | grep -e hw.acpi.cpu.cx_lowest \
+  | grep -e dev.cpu.0.freq: \
+         -e hw.acpi.cpu.cx_lowest \
+         -e dev.cpu.0.cx_supported \
+         -e dev.cpu.0.cx_usage: \
          -e hw.acpi.acline \
          -e hw.acpi.battery.life \
          -e hw.acpi.battery.time \
          -e \.fan \
   | sort -n \
-  | while read MIB VALUE
+  | while read MIB VALUE1 VALUE2
     do
-      printf "%38s %s\n" ${MIB} ${VALUE}
+      printf "%38s %s" ${MIB} ${VALUE1}
+      printf " %s" ${VALUE2}
+      printf "\n"
     done
-echo
 
+# CHECK IF power(8) IS RUNNING
+POWERD=0
+if pgrep -q powerd 1> /dev/null 2> /dev/null
+then
+  printf "%38s %s\n" "powerd(8):" "running"
+  POWERD=1
+fi
+
+# CHECK IF powerxx(8) IS RUNNING
+POWERDXX=0
+if pgrep -q -x -S "powerd\+\+" 1> /dev/null 2> /dev/null
+then
+  printf "%38s %s\n" "powerdxx(8):" "running"
+  POWERDXX=1
+fi
+
+# DISPLAY powerd(8)/powerdxx(8) STATUS
+if [ ${POWERD} -eq 0 -a ${POWERDXX} -eq 0 ]
+then
+  printf "%38s %s\n" "powerd(8)/powerdxx(8):" "disabled"
+  unset POWERD
+  unset POWERDXX
+fi
+
+
+
+echo
 printf "%38s\n" 'SYSTEM/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
+
+# DISPLAY RELEVANT INFORMATION
 echo "${SYSCTL}" \
   | grep -e temperature \
   | grep -v 'critical temperature detected' \
-  | sort -n -t . -k 3 \
+  | sort -n -t . -k 2 \
   | while read MIB VALUE
     do
       case ${MIB} in
+        # USE 3 FIELDS FOR dev.cpu.* MIBS
         (dev.cpu.*)
           PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "\\." $2 "\\." $3 "\\."}' )
           MAX=$( echo "${SYSCTL}" \
@@ -95,7 +134,7 @@ echo "${SYSCTL}" \
           unset PREFIX
           unset MAX
           ;;
-
+        # USE 4 FIELDS FOR hw.acpi.thermal.* MIBS
         (hw.acpi.thermal.*)
           PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "\\." $2 "\\." $3 "\\." $4 "\\."}' )
           MAX=$( echo "${SYSCTL}" \
@@ -106,32 +145,44 @@ echo "${SYSCTL}" \
           unset PREFIX
           unset MAX
           ;;
-
+        # JUST DISPLAY WITHOUT PARSING FOR OTHER MIBS
         (*)
           printf "%38s %s\n" ${MIB} ${VALUE}
           ;;
       esac
     done
+
+
+
 echo
-
-if [ $( whoami ) != "root" ]
-then
-  exit 0
-fi
-
-if ! which smartctl 1> /dev/null 2> /dev/null
-then
-  exit 0
-fi
-
 printf "%38s\n" 'DISKS/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
+
+# WE NEED root PERMISSIONS FOR smartctl(8) COMMAND
+if [ $( whoami ) != "root" ]
+then
+  echo "   Run '${0##*/}' as 'root' to display disks temperatures."
+  echo
+  exit 0
+fi
+
+# CHECK IF smartctl() IS AVAILABLE
+if ! which smartctl 1> /dev/null 2> /dev/null
+then
+  echo "   Install 'sysutils/smartmontools' package to display disks temperatures."
+  echo
+  exit 0
+fi
+
+# DISPLAY TEMPERATURE FOR EACH DISK
 for I in $( sysctl -n kern.disks | tr ' ' '\n' | sort -n )
 do
   case ${I} in
+    # IGNORE cd(4) DEVICES
     (cd*)
       continue
       ;;
+    # THE nvd(4) AND nvme(4) DEVICES NEED SPECIAL HANDLING
     (nvd*)
       I=$( echo ${I} | sed -e 's/nvd/nvme/g' )
       smartctl -a /dev/${I} \
@@ -140,6 +191,7 @@ do
         | awk -v DISK=${I} \
             '{MIB="smart." DISK "." tolower($1) ":"; printf("%38s %s.0C\n", MIB, $(NF-1))}'
       ;;
+    # SATA/ATA/SCSI/USB DISKS
     (*)
       smartctl -a /dev/${I} \
         | grep -e Temperature_ \
@@ -150,3 +202,5 @@ do
   esac
 done
 echo
+
+echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
