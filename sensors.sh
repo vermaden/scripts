@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2022 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2022-2023 Slawomir Wojciech Wojtczak (vermaden)
 # Copyright (c) 2022 Trix Farrar
 # All rights reserved.
 #
@@ -116,6 +116,14 @@ printf "%38s\n" 'SYSTEM/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
 
 # DISPLAY RELEVANT INFORMATION
+if sysctl -n dev.cpu.0.coretemp.tjmax 1> /dev/null 2> /dev/null
+then
+  TEMP_MAX_CPU=1
+fi
+if sysctl -n hw.acpi.thermal.tz0._CRT 1> /dev/null 2> /dev/null
+then
+  TEMP_MAX_ACPI=1
+fi
 echo "${SYSCTL}" \
   | grep -e temperature \
   | grep -v 'critical temperature detected' \
@@ -126,22 +134,32 @@ echo "${SYSCTL}" \
         # USE 3 FIELDS FOR dev.cpu.* MIBS
         (dev.cpu.*)
           PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "\\." $2 "\\." $3 "\\."}' )
-          MAX=$( echo "${SYSCTL}" \
-                   | grep "${PREFIX}" \
-                   | grep coretemp.tjmax \
-                   | awk '{print $NF}' )
-          printf "%38s %s (max: %s)\n" ${MIB} ${VALUE} ${MAX}
+          if [ "${TEMP_MAX_CPU}" = "1" ]
+          then
+            MAX=$( echo "${SYSCTL}" \
+                     | grep "${PREFIX}" \
+                     | grep coretemp.tjmax \
+                     | awk '{print $NF}' )
+            printf "%38s %s (max: %s)\n" ${MIB} ${VALUE} ${MAX}
+          else
+            printf "%38s %s\n" ${MIB} ${VALUE}
+          fi
           unset PREFIX
           unset MAX
           ;;
         # USE 4 FIELDS FOR hw.acpi.thermal.* MIBS
         (hw.acpi.thermal.*)
           PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "\\." $2 "\\." $3 "\\." $4 "\\."}' )
-          MAX=$( echo "${SYSCTL}" \
-                   | grep "${PREFIX}" \
-                   | grep _CRT: \
-                   | awk '{print $NF}' )
-          printf "%38s %s (max: %s)\n" ${MIB} ${VALUE} ${MAX}
+          if [ "${TEMP_MAX_ACPI}" = "1" ]
+          then
+            MAX=$( echo "${SYSCTL}" \
+                     | grep "${PREFIX}" \
+                     | grep _CRT: \
+                     | awk '{print $NF}' )
+            printf "%38s %s (max: %s)\n" ${MIB} ${VALUE} ${MAX}
+          else
+            printf "%38s %s\n" ${MIB} ${VALUE}
+          fi
           unset PREFIX
           unset MAX
           ;;
@@ -151,6 +169,8 @@ echo "${SYSCTL}" \
           ;;
       esac
     done
+unset TEMP_MAX_CPU
+unset TEMP_MAX_ACPI
 
 
 
@@ -188,6 +208,7 @@ do
       smartctl -a /dev/${I} \
         | grep -e Temperature: \
         | sed -E 's|\(.*\)||g' \
+        | tr -d ':' \
         | awk -v DISK=${I} \
             '{MIB="smart." DISK "." tolower($1) ":"; printf("%38s %s.0C\n", MIB, $(NF-1))}'
       ;;
