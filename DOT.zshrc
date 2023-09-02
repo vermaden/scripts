@@ -61,6 +61,7 @@
   alias qr='qrencode -t ansiutf8'
   alias open=xdg-open
   alias see=see.sh
+  alias bat='bat --style=plain'
   alias cssh='cssh -o "-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"'
   alias ssh='ssh -C -c aes128-ctr -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
   alias sshfs='sshfs -C -o max_conns=2'
