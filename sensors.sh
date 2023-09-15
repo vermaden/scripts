@@ -50,6 +50,7 @@ __usage() {
   exit 1
 }
 
+# DISPLAY HELP
 if [ "${1}" = "-h"    -o \
      "${1}" = "help"  -o \
      "${1}" = "-help" -o \
@@ -58,26 +59,44 @@ then
   __usage
 fi
 
+# DISPLAY VERSION
+if [ "${1}" = "--version" -o \
+     "${1}" =  "-version" -o \
+     "${1}" =   "version" ]
+then
+  cat << VERSION
+                                                   __ ____ __
+                                                  / //    \\\\ \\
+   _____ _____   ____  _____ ____   _  ___ _____ / //  /  / \\ \\
+  /  __//  _  \ /    \/  __//    \ / \/ _//  __// / \     \ / /
+  \__  \\\\  ___//  /  /\__  \\\\  \  \\\\   /  \__  \\\\ \ /  /  // /
+ /_____/ \___//__/__//_____/ \____/ \__\ /_____/ \_\\\\____//_/
+
+sensors 0.3 2023/09/15
+
+VERSION
+  exit 0
+fi
+
 # GET sysctl(8) OUTPUT ONLY ONCE
 SYSCTL=$( sysctl dev hw.acpi 2> /dev/null )
 
-
-
+# HEADER: BATTERY/AC/TIME/FAN/SPEED
 echo
 printf "%38s\n" 'BATTERY/AC/TIME/FAN/SPEED '
 printf "%38s\n" '------------------------------------ '
 
 # DISPLAY RELEVANT INFORMATION
-echo "${SYSCTL}" \
-  | grep -e dev.cpu.0.freq: \
-         -e hw.acpi.cpu.cx_lowest \
+echo "${SYSCTL}"                   \
+  | grep -e dev.cpu.0.freq:        \
+         -e hw.acpi.cpu.cx_lowest  \
          -e dev.cpu.0.cx_supported \
-         -e dev.cpu.0.cx_usage: \
-         -e hw.acpi.acline \
-         -e hw.acpi.battery.life \
-         -e hw.acpi.battery.time \
-         -e \.fan \
-  | sort -n \
+         -e dev.cpu.0.cx_usage:    \
+         -e hw.acpi.acline         \
+         -e hw.acpi.battery.life   \
+         -e hw.acpi.battery.time   \
+         -e \.fan                  \
+  | sort -n                        \
   | while read MIB VALUE1 VALUE2
     do
       printf "%38s %s" ${MIB} ${VALUE1}
@@ -111,6 +130,7 @@ fi
 
 
 
+# HEADER: SYSTEM/TEMPERATURES
 echo
 printf "%38s\n" 'SYSTEM/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
@@ -124,10 +144,10 @@ if sysctl -n hw.acpi.thermal.tz0._CRT 1> /dev/null 2> /dev/null
 then
   TEMP_MAX_ACPI=1
 fi
-echo "${SYSCTL}" \
-  | grep -e temperature \
+echo "${SYSCTL}"                            \
+  | grep -e temperature                     \
   | grep -v 'critical temperature detected' \
-  | sort -n -t . -k 2 \
+  | sort -n -t . -k 3                       \
   | while read MIB VALUE
     do
       case ${MIB} in
@@ -136,8 +156,8 @@ echo "${SYSCTL}" \
           PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "\\." $2 "\\." $3 "\\."}' )
           if [ "${TEMP_MAX_CPU}" = "1" ]
           then
-            MAX=$( echo "${SYSCTL}" \
-                     | grep "${PREFIX}" \
+            MAX=$( echo "${SYSCTL}"        \
+                     | grep "${PREFIX}"    \
                      | grep coretemp.tjmax \
                      | awk '{print $NF}' )
             printf "%38s %s (max: %s)\n" ${MIB} ${VALUE} ${MAX}
@@ -152,9 +172,9 @@ echo "${SYSCTL}" \
           PREFIX=$( echo ${MIB} | awk -F '.' '{print $1 "\\." $2 "\\." $3 "\\." $4 "\\."}' )
           if [ "${TEMP_MAX_ACPI}" = "1" ]
           then
-            MAX=$( echo "${SYSCTL}" \
+            MAX=$( echo "${SYSCTL}"     \
                      | grep "${PREFIX}" \
-                     | grep _CRT: \
+                     | grep _CRT:       \
                      | awk '{print $NF}' )
             printf "%38s %s (max: %s)\n" ${MIB} ${VALUE} ${MAX}
           else
@@ -174,6 +194,7 @@ unset TEMP_MAX_ACPI
 
 
 
+# HEADER: DISKS/TEMPERATURES
 echo
 printf "%38s\n" 'DISKS/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
@@ -202,19 +223,20 @@ do
     (cd*)
       continue
       ;;
+
     # THE nvd(4) AND nvme(4) DEVICES NEED SPECIAL HANDLING
     (nvd*)
       I=$( echo ${I} | sed -e 's/nvd/nvme/g' )
-      smartctl -a /dev/${I} \
+      smartctl -a /dev/${I}    \
         | grep -e Temperature: \
         | sed -E 's|\(.*\)||g' \
-        | tr -d ':' \
-        | awk -v DISK=${I} \
+        | tr -d ':'            \
+        | awk -v DISK=${I}     \
             '{MIB="smart." DISK "." tolower($1) ":"; printf("%38s %s.0C\n", MIB, $(NF-1))}'
       ;;
     # SATA/ATA/SCSI/USB DISKS
     (*)
-      smartctl -a /dev/${I} \
+      smartctl -a /dev/${I}    \
         | grep -e Temperature_ \
         | sed -E 's|\(.*\)||g' \
         | awk -v DISK=${I} \
@@ -223,5 +245,3 @@ do
   esac
 done
 echo
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
