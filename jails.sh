@@ -36,6 +36,9 @@ __usage() {
   echo "usage:"
   echo "  ${NAME}"
   echo "  ${NAME} -a"
+  echo "  ${NAME} -h"
+  echo "  ${NAME} --help"
+  echo "  ${NAME} help"
   echo "  ${NAME} version"
   exit 1
 }
@@ -62,6 +65,7 @@ case ${#} in
     # display help if needed
     if [ "${1}" = "-h"     -o \
          "${1}" = "--h"    -o \
+         "${1}" = "help"  -o \
          "${1}" = "-help"  -o \
          "${1}" = "--help" -o \
          "${#}" -eq "0"    -o \
