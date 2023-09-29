@@ -54,9 +54,20 @@ case ${#} in
     then
       echo "jails.sh"
       echo
-      echo "jails 0.3 2023/09/30"
+      echo "jails 0.4 2023/09/30"
       echo
       exit 0
+    fi
+
+    # display help if needed
+    if [ "${1}" = "-h"     -o \
+         "${1}" = "--h"    -o \
+         "${1}" = "-help"  -o \
+         "${1}" = "--help" -o \
+         "${#}" -eq "0"    -o \
+         "${#}" -eq "1" ]
+    then
+      __usage
     fi
 
     # do full listing with all interfaces and IP addresses
