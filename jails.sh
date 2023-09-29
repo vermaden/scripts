@@ -79,7 +79,7 @@ IFCONFIG=$( env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null )
         case ${TYPE} in
 
           (1)
-	          TYPE=VNET
+	          TYPE=vnet
             IFACE=$( jexec ${JAIL} env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null | tr ' ' '/' )
 	          ;;
 
@@ -105,7 +105,7 @@ EOF_IP
           (*)
             if echo "${CONFIG}" | grep -q 'vnet.interface'
             then
-              TYPE=VNET
+              TYPE=vnet
               IFACE=$( echo "${CONFIG}" | grep 'vnet.interface' | awk '{print $NF}' | tr -d ';"' )
             else
               TYPE=std
