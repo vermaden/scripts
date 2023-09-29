@@ -65,11 +65,9 @@ case ${#} in
     # display help if needed
     if [ "${1}" = "-h"     -o \
          "${1}" = "--h"    -o \
-         "${1}" = "help"  -o \
+         "${1}" = "help"   -o \
          "${1}" = "-help"  -o \
-         "${1}" = "--help" -o \
-         "${#}" -eq "0"    -o \
-         "${#}" -eq "1" ]
+         "${1}" = "--help"
     then
       __usage
     fi
