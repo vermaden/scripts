@@ -28,6 +28,49 @@
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
+
+
+# display usage information
+__usage() {
+  local NAME=${0##*/}
+  echo "usage:"
+  echo "  ${NAME}"
+  echo "  ${NAME} -a"
+  echo "  ${NAME} version"
+  exit 1
+}
+
+case ${#} in
+  (0)
+    # do nothing and just display list of jails
+    :
+    ;;
+
+  (1)
+    # display version
+    if [ "${1}" = "--version" -o \
+         "${1}" =  "-version" -o \
+         "${1}" =   "version" ]
+    then
+      echo "jails.sh"
+      echo
+      echo "jails 0.3 2023/09/30"
+      echo
+      exit 0
+    fi
+
+    # do full listing with all interfaces and IP addresses
+    if [ "${1}" = "-a" ]
+    then
+      FULL_LISTING=1
+    fi
+    ;;
+
+  (*)
+    __usage
+    ;;
+esac
+
 JLS=$( jls 2> /dev/null )
 IFCONFIG=$( env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null )
 
@@ -36,13 +79,13 @@ IFCONFIG=$( env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null )
   echo "---- --- ---- --- --- ----- -----"
   grep -h '^[^#]' \
     /etc/jail.conf \
-    /etc/jail.conf.d/* \
-    | grep -h -E '[[:space:]]*[[:alpha:]][[:space:]]*\{' \
+    /etc/jail.conf.d/* 2> /dev/null \
+    | grep -h -E '[[:space:]]*[[:alnum:]][[:space:]]*\{' \
     | tr -d '\ \t{' \
     | while read JAIL
       do
 
-        CONFIG=$( grep -h '^[^#]' /etc/jail.conf /etc/jail.conf.d/* \
+        CONFIG=$( grep -h '^[^#]' /etc/jail.conf /etc/jail.conf.d/* 2> /dev/null \
                     | grep -A 512 -E "[[:space:]]*${JAIL}*[[:space:]]*\{" \
                     | grep -B 512 -m 1 ".*[[:space:]]*\}[[:space:]]*$" )
 
@@ -52,13 +95,14 @@ IFCONFIG=$( env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null )
         then
           DIR=$( grep -h '^[^#]' \
                    /etc/jail.conf \
-                   /etc/jail.conf.d/* \
-                   | grep -A 512 -h -E '[[:alpha:]][[:space:]]\{' \
+                   /etc/jail.conf.d/* 2> /dev/null \
+                   | grep -A 512 -h -E '[[:alnum:]][[:space:]]\{' \
                    | grep -m 1 path \
                    | awk '{print $NF}' \
                    | tr -d ';' \
                    | sed -e "s.\${name}.${JAIL}.g" \
-                         -e "s.\$name.${JAIL}.g" )
+                         -e "s.\$name.${JAIL}.g" \
+                   | tr -d '"' )
         fi
 
         VER=$( chroot ${DIR} freebsd-version -u 2> /dev/null \
@@ -67,20 +111,42 @@ IFCONFIG=$( env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null )
                        -e s.STABLE.S.g \
                        -e s.BETA.B.g )
 
-        IPS=$( jexec ${JAIL} env IFCONFIG_FORMAT=inet:cidr ifconfig 2> /dev/null \
-                 | grep 'inet ' \
-                 | grep -v 127.0.0.1 \
-                 | awk '{print $2}' \
-                 | tr '\n' '+' \
-                 | sed '$s/.$//' )
-
         TYPE=$( jexec ${JAIL} sysctl -n security.jail.vnet 2> /dev/null )
 
         case ${TYPE} in
 
           (1)
             TYPE=vnet
-            IFACE=$( jexec ${JAIL} env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null | tr ' ' '/' )
+            IFACE=$( jexec ${JAIL} env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null | tr ' ' '\n' )
+            case ${FULL_LISTING} in
+              (1)
+                IFACE=$( echo "${IFACE}" | tr '\n' '/' )
+                IPS=$( jexec ${JAIL} env IFCONFIG_FORMAT=inet:cidr ifconfig 2> /dev/null \
+                         | grep 'inet ' \
+                         | grep -v 127.0.0.1 \
+                         | awk '{print $2}' \
+                         | tr '\n' '+' \
+                         | sed '$s/.$//' )
+                ;;
+
+              (*)
+                if [ $( echo "${IFACE}" | wc -l | tr -d ' ' ) -gt 3 ]
+                then
+                  IFACE=$( echo "${IFACE}" | head -3 | tr '\n' ' ' | tr ' ' '/' )
+                else
+                  IFACE=$( echo "${IFACE}" | tr '\n' ' ' | tr ' ' '/' )
+                fi
+                IFACE="${IFACE}(...)"
+                IPS=$( jexec ${JAIL} env IFCONFIG_FORMAT=inet:cidr ifconfig 2> /dev/null \
+                         | grep 'inet ' \
+                         | grep -v 127.0.0.1 \
+                         | awk '{print $2}' \
+                         | head -3 \
+                         | tr '\n' '+' \
+                         | sed '$s/.$//' )
+                ;;
+
+            esac
             ;;
 
           (0)
@@ -89,6 +155,7 @@ IFCONFIG=$( env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null )
             do
               while read INTERFACE
               do
+
                 if env IFCONFIG_FORMAT=inet:cidr ifconfig ${INTERFACE} 2> /dev/null | grep -q "inet ${IP}"
                 then
                   IFACE=${INTERFACE}
