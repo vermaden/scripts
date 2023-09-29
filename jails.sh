@@ -67,7 +67,7 @@ case ${#} in
          "${1}" = "--h"    -o \
          "${1}" = "help"   -o \
          "${1}" = "-help"  -o \
-         "${1}" = "--help"
+         "${1}" = "--help" ]
     then
       __usage
     fi
