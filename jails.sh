@@ -55,9 +55,16 @@ case ${#} in
          "${1}" =  "-version" -o \
          "${1}" =   "version" ]
     then
-      echo "jails.sh"
+
+      echo "                        ___        __ ____ __  "
+      echo "        ___        ___ /  /       / //    \\\\ \\ "
+      echo "       /__/____   /__//  / _____ / //  /  / \\ \\"
+      echo "      /  //    \ /  //  / /  __// / \\     \\ / /"
+      echo "     /  //  /  //  //  /_ \__  \\\\ \\ /  /  // / "
+      echo "  __/  / \\_____\\\\__\\\\___//_____/ \\_\\\\____//_/  "
+      echo " /____/                                        "
       echo
-      echo "jails 0.4 2023/09/30"
+      echo "jails 0.5 2023/09/30"
       echo
       exit 0
     fi
@@ -87,28 +94,42 @@ esac
 JLS=$( jls 2> /dev/null )
 IFCONFIG=$( env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null )
 
+eval $( grep '^[^#]' /usr/local/etc/bastille/bastille.conf 2> /dev/null \
+          | grep -m 1 bastille_prefix \
+          | awk '{print $1}' )
+
+if [ "${bastille_prefix}" != "" ]
+then
+  BAST_DIR="${bastille_prefix}"
+  unset bastille_prefix
+fi
+
 (
   echo "JAIL JID TYPE VER DIR IFACE IP(s)"
   echo "---- --- ---- --- --- ----- -----"
   grep -h '^[^#]' \
     /etc/jail.conf \
-    /etc/jail.conf.d/* 2> /dev/null \
+    /etc/jail.conf.d/* \
+    "${BAST_DIR}"/jails/*/jail.conf 2> /dev/null \
     | grep -h -E '[[:space:]]*[[:alnum:]][[:space:]]*\{' \
     | tr -d '\ \t{' \
     | while read JAIL
       do
 
-        CONFIG=$( grep -h '^[^#]' /etc/jail.conf /etc/jail.conf.d/* 2> /dev/null \
+        CONFIG=$( grep -h '^[^#]' /etc/jail.conf \
+                                  /etc/jail.conf.d/* \
+                                  "${BAST_DIR}"/jails/*/jail.conf 2> /dev/null \
                     | grep -A 512 -E "[[:space:]]*${JAIL}*[[:space:]]*\{" \
                     | grep -B 512 -m 1 ".*[[:space:]]*\}[[:space:]]*$" )
 
-        DIR=$( echo "${JLS}" | awk '{print $NF}' | grep -E "/${JAIL}$" )
+        DIR=$( echo "${JLS}" | awk '{print $NF}' | grep -E -e "/${JAIL}$" -e "/${JAIL}/root" )
 
         if [ "${DIR}" = "" ]
         then
           DIR=$( grep -h '^[^#]' \
                    /etc/jail.conf \
-                   /etc/jail.conf.d/* 2> /dev/null \
+                   /etc/jail.conf.d/* \
+                   "${BAST_DIR}"/jails/*/jail.conf 2> /dev/null \
                    | grep -A 512 -h -E '[[:alnum:]][[:space:]]\{' \
                    | grep -m 1 path \
                    | awk '{print $NF}' \
@@ -124,6 +145,13 @@ IFCONFIG=$( env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null )
                        -e s.STABLE.S.g \
                        -e s.BETA.B.g )
 
+        IPS=$( jexec ${JAIL} env IFCONFIG_FORMAT=inet:cidr ifconfig 2> /dev/null \
+                 | grep 'inet ' \
+                 | grep -v 127.0.0.1 \
+                 | awk '{print $2}' \
+                 | tr '\n' '+' \
+                 | sed '$s/.$//' )
+
         TYPE=$( jexec ${JAIL} sysctl -n security.jail.vnet 2> /dev/null )
 
         case ${TYPE} in
@@ -131,32 +159,22 @@ IFCONFIG=$( env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null )
           (1)
             TYPE=vnet
             IFACE=$( jexec ${JAIL} env IFCONFIG_FORMAT=inet:cidr ifconfig -l ether 2> /dev/null | tr ' ' '\n' )
+
             case ${FULL_LISTING} in
+
               (1)
-                IFACE=$( echo "${IFACE}" | tr '\n' '/' )
-                IPS=$( jexec ${JAIL} env IFCONFIG_FORMAT=inet:cidr ifconfig 2> /dev/null \
-                         | grep 'inet ' \
-                         | grep -v 127.0.0.1 \
-                         | awk '{print $2}' \
-                         | tr '\n' '+' \
-                         | sed '$s/.$//' )
+                IFACE=$( echo "${IFACE}" | tr '\n' '/' | sed '$s/.$//' )
                 ;;
 
               (*)
+                IPS=$( echo "${IPS}" | tr '+' '\n' | head -3 | tr '\n' '+' | sed '$s/.$//' )
                 if [ $( echo "${IFACE}" | wc -l | tr -d ' ' ) -gt 3 ]
                 then
                   IFACE=$( echo "${IFACE}" | head -3 | tr '\n' ' ' | tr ' ' '/' )
+                  IFACE="${IFACE}(...)"
                 else
-                  IFACE=$( echo "${IFACE}" | tr '\n' ' ' | tr ' ' '/' )
+                  IFACE=$( echo "${IFACE}" | tr '\n' '/' | sed '$s/.$//' )
                 fi
-                IFACE="${IFACE}(...)"
-                IPS=$( jexec ${JAIL} env IFCONFIG_FORMAT=inet:cidr ifconfig 2> /dev/null \
-                         | grep 'inet ' \
-                         | grep -v 127.0.0.1 \
-                         | awk '{print $2}' \
-                         | head -3 \
-                         | tr '\n' '+' \
-                         | sed '$s/.$//' )
                 ;;
 
             esac
