@@ -214,7 +214,7 @@ EOF_IP
 
         esac
 
-        JID=$( echo "${JLS}" | grep -E "/${JAIL}$" | awk '{print $1}' )
+        JID=$( echo "${JLS}" | grep -E -e "/${JAIL}$" -e "/${JAIL}/root" | awk '{print $1}' )
 
         if ! jexec ${JAIL} echo / 1> /dev/null 2> /dev/null
         then
