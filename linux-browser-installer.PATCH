@@ -1,0 +1,64 @@
+--- linux-browser-installer.BCK	2023-10-11 08:59:18.296949000 +0200
++++ linux-browser-installer	2023-10-11 10:20:21.429686000 +0200
+@@ -127,7 +127,7 @@
+ 		echo "Chrome already installed" >&2
+ 		exit 1
+ 	fi
+-	echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ " \
++	echo "deb [trusted=yes arch=amd64] http://dl.google.com/linux/chrome/deb/ " \
+ 	     "stable main" > \
+ 		"${chroot_path}/etc/apt/sources.list.d/google-chrome.list"
+ 	fetch -o ${chroot_path} \
+@@ -166,7 +166,7 @@
+ 		'curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | apt-key --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add -' || \
+ 		bail "'curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | apt-key --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add -' failed"
+ 	chroot ${chroot_path} /bin/bash -c \
+-		'echo "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" > /etc/apt/sources.list.d/brave-browser-release.list'
++		'echo "deb [trusted=yes arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" > /etc/apt/sources.list.d/brave-browser-release.list'
+ 	chroot ${chroot_path} /bin/bash -c "apt update"
+ 	chroot ${chroot_path} /bin/bash -c "apt install -y brave-browser" || \
+ 		bail "'apt install -y brave-browser' failed"
+@@ -191,7 +191,7 @@
+ 		echo "Vivaldi already installed" >&2
+ 		exit 1
+ 	fi
+-	echo "deb [arch=amd64] https://repo.vivaldi.com/archive/deb/ " \
++	echo "deb [trusted=yes arch=amd64] https://repo.vivaldi.com/archive/deb/ " \
+ 	     "stable main" > \
+ 		"${chroot_path}/etc/apt/sources.list.d/vivaldi.list"
+ 	fetch -o ${chroot_path} \
+@@ -230,7 +230,7 @@
+ 		'curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | apt-key --keyring /etc/apt/trusted.gpg.d/microsoft.gpg add -' || \
+ 		bail "'curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | apt-key --keyring /etc/apt/trusted.gpg.d/microsoft.gpg add -' failed"
+ 	chroot ${chroot_path} /bin/bash -c \
+-		'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-stable.list'
++		'echo "deb [trusted=yes arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-stable.list'
+ 	chroot ${chroot_path} /bin/bash -c "apt update"
+ 	chroot ${chroot_path} /bin/bash -c "apt install -y microsoft-edge-stable" || \
+ 		bail "'apt install -y microsoft-edge-stable' failed"
+@@ -262,7 +262,7 @@
+ 		'curl https://deb.opera.com/archive.key | apt-key add -' || \
+ 		bail "'curl https://deb.opera.com/archive.key | apt-key add -' failed"
+ 	chroot ${chroot_path} /bin/bash -c \
+-		'echo "deb https://deb.opera.com/opera-stable/ stable non-free" > /etc/apt/sources.list.d/opera-stable.list'
++		'echo "deb [trusted=yes] https://deb.opera.com/opera-stable/ stable non-free" > /etc/apt/sources.list.d/opera-stable.list'
+ 	chroot ${chroot_path} /bin/bash -c "apt update"
+ 	chroot ${chroot_path} /bin/bash -c "apt install -y opera-stable" || \
+ 		bail "'apt install -y opera-stable' failed"
+@@ -336,13 +336,13 @@
+ 		bail "debootstrap failed"
+ 	echo "APT::Cache-Start 251658240;" > \
+ 		${chroot_path}/etc/apt/apt.conf.d/00aptitude
+-	echo "deb http://archive.ubuntu.com/ubuntu/ ${ubuntu_version} " \
++	echo "deb [trusted=yes] http://archive.ubuntu.com/ubuntu/ ${ubuntu_version} " \
+ 	     "main restricted universe multiverse" > \
+ 		${chroot_path}/etc/apt/sources.list
+-	echo "deb http://archive.ubuntu.com/ubuntu/ ${ubuntu_version}-updates " \
++	echo "deb [trusted=yes] http://archive.ubuntu.com/ubuntu/ ${ubuntu_version}-updates " \
+ 	     "main restricted universe multiverse" >> \
+ 		${chroot_path}/etc/apt/sources.list
+-	echo "deb http://archive.ubuntu.com/ubuntu/ ${ubuntu_version}-security " \
++	echo "deb [trusted=yes] http://archive.ubuntu.com/ubuntu/ ${ubuntu_version}-security " \
+ 	     "main restricted universe multiverse" >> \
+ 		${chroot_path}/etc/apt/sources.list
+ 	fix_ld_path
