@@ -154,7 +154,7 @@
   alias grepMAC='grep -i -E "[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}"'
   alias grepIP='grep -E "([0-9]+\.){3}[0-9]+"'
 
-# SET ls(1) COLORS
+# SET ls(1) AND gls(1) COLORS
   export LSCOLORS='exExcxdxcxexhxhxhxbxhx'
   export LS_COLORS='no=00:fi=00:di=00;34:ln=00;36:pi=40;33:so=00;35:bd=40;33;01:cd=40;33;01:or=01;05;37;41:mi=01;05;37;41:ex=00;32'
 
@@ -197,7 +197,7 @@
   cPWD="%F{magenta}%B"
   cSTD="%b%f"
   export PS1="${cTIM}%T${cSTD} ${cSRV}%m${cSTD} ${cUSR}%n${cSTD} ${cPWD}%~${cSTD} ${cPMT}%#${cSTD} "
-  export PS2="${cTIM}%T${cSTD} ${cUSR}>$c{STD} ${cPWD}"
+  export PS2="${cTIM}%T${cSTD} ${cUSR}>${cSTD} ${cPWD}"
 # export RPS1=$'%{\e[0;34m%}%T%{\e[0m%}'
 
 # COLOR MAN PAGES WITH less(1) OR bat(1)
@@ -740,5 +740,3 @@
     fi
     seq -f "%g day" "${@}" | gdate --file - +%F
   }
-
-
