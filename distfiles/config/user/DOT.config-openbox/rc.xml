@@ -1,0 +1,885 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_config xmlns="http://openbox.org/3.6/rc">
+
+  <!-- SNAP WINDOWS SETTINGS -->
+  <resistance>
+    <strength>16</strength>
+    <screen_edge_strength>16</screen_edge_strength>
+  </resistance>
+
+  <!-- FOCUS SETTINGS -->
+  <focus>
+    <focusNew>yes</focusNew>
+    <followMouse>no</followMouse>
+    <underMouse>yes</underMouse>
+    <focusLast>yes</focusLast>
+    <focusDelay>200</focusDelay>
+    <raiseOnFocus>yes</raiseOnFocus>
+  </focus>
+
+  <!-- NEW WINDOWS PLACEMENT SETTINGS -->
+  <placement>
+    <policy>Smart</policy>
+    <center>no</center>
+    <monitor>Mouse</monitor>
+    <primaryMonitor/>
+  </placement>
+
+  <!-- THEME AND FONTS -->
+  <theme>
+    <name>openbox_flat</name>
+    <titleLayout>NLDSIMC</titleLayout>
+    <!-- available characters are NDSLIMC each once -->
+    <!--   N: window icon                           -->
+    <!--   L: window label (title)                  -->
+    <!--   I: iconify                               -->
+    <!--   M: maximize                              -->
+    <!--   C: close                                 -->
+    <!--   S: shade                                 -->
+    <!--   D: omnipresent (stick)                   -->
+    <keepBorder>yes</keepBorder>
+    <animateIconify>no</animateIconify>
+
+    <!-- FONTS -->
+    <font place="ActiveWindow">
+      <name>Clear Sans</name>
+      <size>10</size>
+      <weight>Bold</weight>
+      <slant>Normal</slant>
+    </font>
+    <font place="InactiveWindow">
+      <!-- <name>Trebuchet MS</name> -->
+      <name>Clear Sans</name>
+      <size>10</size>
+      <weight>Bold</weight>
+      <slant>Normal</slant>
+    </font>
+    <font place="MenuHeader">
+      <name>Ubuntu Mono</name>
+      <size>10</size>
+      <weight>Bold</weight>
+      <slant>Normal</slant>
+    </font>
+    <font place="MenuItem">
+      <name>Ubuntu Mono</name>
+      <size>10</size>
+      <weight>Normal</weight>
+      <slant>Normal</slant>
+    </font>
+    <font place="ActiveOnScreenDisplay">
+      <name>Clear Sans</name>
+      <size>10</size>
+      <weight>Bold</weight>
+      <slant>Normal</slant>
+    </font>
+    <font place="InactiveOnScreenDisplay">
+      <name>Clear Sans</name>
+      <size>10</size>
+      <weight>Normal</weight>
+      <slant>Normal</slant>
+    </font>
+  </theme>
+
+  <!-- DESKTOPS -->
+  <desktops>
+    <number>4</number>
+    <names>
+      <name>1/</name>
+      <name>2/</name>
+      <name>3/</name>
+      <name>4/</name>
+    </names>
+    <popupTime>750</popupTime>
+  </desktops>
+
+  <!-- WINDOW RESIZE -->
+  <resize>
+    <drawContents>yes</drawContents>
+    <popupShow>Nonpixel</popupShow>
+    <popupPosition>Center</popupPosition>
+    <popupFixedPosition>
+      <x>0</x>
+      <y>0</y>
+    </popupFixedPosition>
+  </resize>
+
+  <!-- DESKTOP MARGINS -->
+  <margins>
+    <top>29</top>
+    <bottom>1</bottom>
+    <left>1</left>
+    <right>1</right>
+  </margins>
+
+  <!-- KEYBOARD SHORTCUTS -->
+  <keyboard>
+
+    <!-- KEYBOARD / TASK MANAGER -->
+    <keybind key="C-S-Escape">
+      <action name="Execute">
+        <execute>xterm.sh -g 200x50 -e doas htop</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / SHOW DESKTOP -->
+    <keybind key="W-d">
+      <action name="ToggleShowDesktop"/>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / CENTER -->
+    <keybind key="W-Escape">
+      <action name="Execute">
+        <execute>aero-snap.sh C</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / TOP -->
+    <keybind key="W-Up">
+      <action name="Execute">
+        <execute>aero-snap.sh T</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / BOTTOM -->
+    <keybind key="W-Down">
+      <action name="Execute">
+        <execute>aero-snap.sh B</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / SHIFT-TOP -->
+    <keybind key="W-S-Up">
+      <action name="Execute">
+        <execute>aero-snap.sh SHIFT-T</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / SHIFT-BOTTOM -->
+    <keybind key="W-S-Down">
+      <action name="Execute">
+        <execute>aero-snap.sh SHIFT-B</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / LEFT -->
+    <keybind key="W-Left">
+      <action name="Execute">
+        <execute>aero-snap.sh L</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / RIGHT -->
+    <keybind key="W-Right">
+      <action name="Execute">
+        <execute>aero-snap.sh R</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / SHIFT-LEFT -->
+    <keybind key="W-S-Left">
+      <action name="Execute">
+        <execute>aero-snap.sh SHIFT-L</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / SHIFT-RIGHT -->
+    <keybind key="W-S-Right">
+      <action name="Execute">
+        <execute>aero-snap.sh SHIFT-R</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / TOP LEFT -->
+    <keybind key="W-C-Up">
+      <action name="Execute">
+        <execute>aero-snap.sh TL</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / BOTTOM LEFT -->
+    <keybind key="W-C-Down">
+      <action name="Execute">
+        <execute>aero-snap.sh BL</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / TOP RIGHT -->
+    <keybind key="W-A-Up">
+      <action name="Execute">
+        <execute>aero-snap.sh TR</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / BOTTOM RIGHT -->
+    <keybind key="W-A-Down">
+      <action name="Execute">
+        <execute>aero-snap.sh BR</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / SHIFT TOP LEFT -->
+    <keybind key="W-C-S-Up">
+      <action name="Execute">
+        <execute>aero-snap.sh SHIFT-TL</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / SHIFT BOTTOM LEFT -->
+    <keybind key="W-C-S-Down">
+      <action name="Execute">
+        <execute>aero-snap.sh SHIFT-BL</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / SHIFT TOP RIGHT -->
+    <keybind key="W-A-S-Up">
+      <action name="Execute">
+        <execute>aero-snap.sh SHIFT-TR</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / AERO / SHIFT BOTTOM RIGHT -->
+    <keybind key="W-A-S-Down">
+      <action name="Execute">
+        <execute>aero-snap.sh SHIFT-BR</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / TILE -->
+    <keybind key="A-a">
+      <action name="Execute">
+        <execute>tile.sh tile</execute>
+      </action>
+    </keybind>
+    <keybind key="A-a-s">
+      <action name="Execute">
+        <execute>tile.sh double</execute>
+      </action>
+    </keybind>
+    <keybind key="A-W-c">
+      <action name="Execute">
+        <execute>tile.sh tile-swap</execute>
+      </action>
+    </keybind>
+    <keybind key="A-x-c">
+      <action name="Execute">
+        <execute>tile.sh double-swap</execute>
+      </action>
+    </keybind>
+    <keybind key="A-c-x">
+      <action name="Execute">
+        <execute>tile.sh double-swap</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / DESKTOP SWITCHING -->
+    <keybind key="A-F1">
+      <action name="Desktop">
+        <desktop>1</desktop>
+      </action>
+    </keybind>
+    <keybind key="A-F2">
+      <action name="Desktop">
+        <desktop>2</desktop>
+      </action>
+    </keybind>
+    <keybind key="A-F3">
+      <action name="Desktop">
+        <desktop>3</desktop>
+      </action>
+    </keybind>
+    <keybind key="A-F4">
+      <action name="Desktop">
+        <desktop>4</desktop>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / SEND WINDOW TO DESKTOP -->
+    <keybind key="A-S-F1">
+      <action name="SendToDesktop">
+        <desktop>1</desktop>
+      </action>
+    </keybind>
+    <keybind key="A-S-F2">
+      <action name="SendToDesktop">
+        <desktop>2</desktop>
+      </action>
+    </keybind>
+    <keybind key="A-S-F3">
+      <action name="SendToDesktop">
+        <desktop>3</desktop>
+      </action>
+    </keybind>
+    <keybind key="A-S-F4">
+      <action name="SendToDesktop">
+        <desktop>4</desktop>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / ALT-TAB -->
+    <keybind key="A-Tab">
+      <action name="NextWindow"/>
+    </keybind>
+    <keybind key="A-S-Tab">
+      <action name="PreviousWindow"/>
+    </keybind>
+
+    <!-- KEYBOARD / START FILE MANAGER PRIMARY -->
+    <keybind key="W-e">
+      <action name="Execute">
+        <execute>caja --no-desktop</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / START FILE MANAGER ALTERNATIVE -->
+    <keybind key="W-S-e">
+      <action name="Execute">
+        <execute>thunar</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / START DMENU -->
+    <keybind key="W-r">
+      <action name="Execute">
+        <execute>__openbox_dmenu.sh</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / LOCK -->
+    <keybind key="W-l">
+      <action name="Execute">
+        <execute>__openbox_lock.sh</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / LOCK / SUSPEND -->
+    <keybind key="W-A-C-l">
+      <action name="Execute">
+        <execute>__openbox_lock_zzz.sh</execute>
+      </action>
+    </keybind>
+
+    <!-- MONITOR / OFF / ON / CYCLE -->
+    <keybind key="W-A-C-m">
+      <action name="Execute">
+        <execute>__openbox_monitor_off_auto.sh</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / CLOSE WINDOW -->
+    <keybind key="C-A-q">
+      <action name="Close"/>
+    </keybind>
+
+    <!-- KEYBOARD / SHADE WINDOW -->
+    <keybind key="A-Up">
+      <action name="ToggleShade"/>
+      <action name="FocusToBottom"/>
+      <action name="Unfocus"/>
+    </keybind>
+
+    <!-- KEYBOARD / FULLSCREEN WINDOW -->
+    <keybind key="C-A-f">
+      <action name="ToggleMaximizeFull"/>
+    </keybind>
+
+    <!-- KEYBOARD / MINIMIZE WINDOW -->
+    <keybind key="A-Down">
+      <action name="Iconify"/>
+    </keybind>
+
+    <!-- KEYBOARD / SEND WINDOW BELOW -->
+    <keybind key="A-Escape">
+      <action name="Lower"/>
+      <action name="FocusToBottom"/>
+      <action name="Unfocus"/>
+    </keybind>
+
+    <!-- KEYBOARD / CLIENT MENU -->
+    <keybind key="A-space">
+      <action name="ShowMenu">
+        <menu>client-menu</menu>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / ROOT MENU -->
+    <keybind key="W-space">
+      <action name="ShowMenu">
+        <menu>root-menu</menu>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / WINDOW LIST -->
+    <keybind key="W-A-space">
+      <action name="ShowMenu">
+        <menu>client-list-combined-menu</menu>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / VOLUME -->
+    <keybind key="W-A-Prior">
+      <action name="Execute">
+        <execute>mixer vol.volume=+5%</execute>
+      </action>
+    </keybind>
+    <keybind key="W-A-Next">
+      <action name="Execute">
+        <execute>mixer vol.volume=-5%</execute>
+      </action>
+    </keybind>
+
+    <!-- KEYBOARD / SCREENSHOT -->
+    <keybind key="C-Print">
+      <action name="Execute">
+        <execute>shot.sh</execute>
+      </action>
+    </keybind>
+    <keybind key="C-Shift-Print">
+      <action name="Execute">
+        <execute>shot.sh -s</execute>
+      </action>
+    </keybind>
+
+  </keyboard>
+
+  <!-- MOUSE SETTINGS -->
+  <mouse>
+
+    <!-- MOUSE GENERAL SETTINGS -->
+    <dragThreshold>1</dragThreshold>
+    <doubleClickTime>200</doubleClickTime>
+    <screenEdgeWarpTime>200</screenEdgeWarpTime>
+
+    <!-- MOUSE / FRAME / CONTEXT -->
+    <context name="Frame">
+
+      <!-- MOUSE / FRAME / CLICK TO UNSHADE -->
+      <mousebind button="A-Left" action="Click">
+        <action name="Unshade"/>
+      </mousebind>
+
+      <!-- MOUSE / FRAME / MOVE -->
+      <mousebind button="A-Left" action="Drag">
+        <action name="Raise"/>
+        <action name="Move"/>
+      </mousebind>
+
+      <!-- MOUSE / FRAME/ RESIZE -->
+      <mousebind button="A-Right" action="Drag">
+        <action name="Raise"/>
+        <action name="Resize"/>
+      </mousebind>
+
+      <!-- MOUSE / FRAME / SEND WINDOW BELOW -->
+      <mousebind button="A-Middle" action="Press">
+        <action name="Lower"/>
+        <action name="FocusToBottom"/>
+        <action name="Unfocus"/>
+      </mousebind>
+
+    </context>
+
+    <!-- MOUSE / TITLEBAR / CONTEXT -->
+    <context name="Titlebar">
+
+      <!-- MOUSE / TITLEBAR / CLICK TO RAISE -->
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+
+      <!-- MOUSE / TITLEBAR / MOVE -->
+      <mousebind button="Left" action="Drag">
+        <action name="Move"/>
+      </mousebind>
+
+      <!-- MOUSE / TITLEBAR / DOUBLCLICK TO MAXIMIZE -->
+      <mousebind button="Left" action="DoubleClick">
+        <action name="ToggleMaximizeFull"/>
+      </mousebind>
+
+      <!-- MOUSE / TITLEBAR / MIDDLE SEND WINDOW BELOW -->
+      <mousebind button="Middle" action="Press">
+        <action name="Lower"/>
+        <action name="FocusToBottom"/>
+        <action name="Unfocus"/>
+      </mousebind>
+
+      <!-- MOUSE / TITLEBAR / LOWER ON MOUSE SCROLL -->
+      <mousebind button="Up" action="Click">
+        <action name="Shade"/>
+        <action name="FocusToBottom"/>
+        <action name="Unfocus"/>
+        <action name="Lower"/>
+      </mousebind>
+
+      <!-- MOUSE / TITLEBAR / RAISE ON MOUSE SCROLL -->
+      <mousebind button="Down" action="Click">
+        <action name="Unshade"/>
+        <action name="Raise"/>
+        <action name="Focus"/>
+      </mousebind>
+
+      <!-- MOUSE / TITLEBAR / SHOW CLIENT MENU -->
+      <mousebind button="Right" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="ShowMenu">
+          <menu>client-menu</menu>
+        </action>
+      </mousebind>
+
+    </context>
+
+    <!-- MOUSE / TOP / CONTEXT -->
+    <context name="Top">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="Unshade"/>
+      </mousebind>
+      <mousebind button="Left" action="Drag">
+        <action name="Resize">
+          <edge>top</edge>
+        </action>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / LEFT / CONTEXT -->
+    <context name="Left">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Left" action="Drag">
+        <action name="Resize">
+          <edge>left</edge>
+        </action>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / RIGHT / CONTEXT -->
+    <context name="Right">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Left" action="Drag">
+        <action name="Resize">
+          <edge>right</edge>
+        </action>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / BOTTOM / CONTEXT -->
+    <context name="Bottom">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Left" action="Drag">
+        <action name="Resize">
+          <edge>bottom</edge>
+        </action>
+      </mousebind>
+      <mousebind button="Middle" action="Press">
+        <action name="Lower"/>
+        <action name="FocusToBottom"/>
+        <action name="Unfocus"/>
+      </mousebind>
+      <mousebind button="Right" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="ShowMenu">
+          <menu>client-menu</menu>
+        </action>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / CORNERS / CONTEXT -->
+    <context name="BLCorner">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Left" action="Drag">
+        <action name="Resize"/>
+      </mousebind>
+    </context>
+    <context name="BRCorner">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Left" action="Drag">
+        <action name="Resize"/>
+      </mousebind>
+    </context>
+    <context name="TLCorner">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="Unshade"/>
+      </mousebind>
+      <mousebind button="Left" action="Drag">
+        <action name="Resize"/>
+      </mousebind>
+    </context>
+    <context name="TRCorner">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="Unshade"/>
+      </mousebind>
+      <mousebind button="Left" action="Drag">
+        <action name="Resize"/>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / CLIENT / CONTEXT -->
+    <context name="Client">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Middle" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Right" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / ICON / CONTEXT -->
+    <context name="Icon">
+      <mousebind button="Middle" action="Click">
+        <action name="Close"/>
+      </mousebind>
+      <mousebind button="Left" action="Click">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="Unshade"/>
+        <action name="ShowMenu">
+          <menu>client-menu</menu>
+        </action>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / ALLDESKTOPS / CONTEXT -->
+    <context name="AllDesktops">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="Unshade"/>
+      </mousebind>
+      <mousebind button="Left" action="Click">
+        <action name="ToggleOmnipresent"/>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / SHADE / CONTEXT -->
+    <context name="Shade">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Left" action="Click">
+        <action name="ToggleShade"/>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / ICONIFY / CONTEXT -->
+    <context name="Iconify">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Left" action="Click">
+        <action name="Iconify"/>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / MAXIMIZE / CONTEXT -->
+    <context name="Maximize">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="Unshade"/>
+      </mousebind>
+      <mousebind button="Middle" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="Unshade"/>
+      </mousebind>
+      <mousebind button="Right" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="Unshade"/>
+      </mousebind>
+      <mousebind button="Left" action="Click">
+        <action name="ToggleMaximizeFull"/>
+      </mousebind>
+      <mousebind button="Middle" action="Click">
+        <action name="ToggleMaximizeVert"/>
+      </mousebind>
+      <mousebind button="Right" action="Click">
+        <action name="ToggleMaximizeHorz"/>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / CLOSE / CONTEXT -->
+    <context name="Close">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+        <action name="Unshade"/>
+      </mousebind>
+      <mousebind button="Left" action="Click">
+        <action name="Close"/>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / DESKTOP / CONTEXT -->
+    <context name="Desktop">
+      <mousebind button="Up" action="Click">
+        <action name="DesktopPrevious"/>
+      </mousebind>
+      <mousebind button="Down" action="Click">
+        <action name="DesktopNext"/>
+      </mousebind>
+
+      <!-- MOUSE / DESKTOP / VOLUME -->
+      <mousebind button="A-Up" action="Click">
+        <action name="Execute">
+          <execute>mixer vol +5</execute>
+        </action>
+      </mousebind>
+      <mousebind button="A-Down" action="Click">
+        <action name="Execute">
+          <execute>mixer vol -5</execute>
+        </action>
+      </mousebind>
+
+      <!-- MOUSE / DESKTOP / CLICK TO FOCUS -->
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+      <mousebind button="Right" action="Press">
+        <action name="Focus"/>
+        <action name="Raise"/>
+      </mousebind>
+
+    </context>
+
+    <!-- MOUSE / ROOT / CONTEXT -->
+    <context name="Root">
+      <mousebind button="Middle" action="Press">
+        <action name="ShowMenu">
+          <menu>client-list-combined-menu</menu>
+        </action>
+      </mousebind>
+      <mousebind button="Right" action="Press">
+        <action name="ShowMenu">
+          <menu>root-menu</menu>
+        </action>
+      </mousebind>
+    </context>
+
+    <!-- MOUSE / MOVERESIZE / CONTEXT -->
+    <context name="MoveResize">
+      <mousebind button="Up" action="Click">
+        <action name="DesktopPrevious"/>
+      </mousebind>
+      <mousebind button="Down" action="Click">
+        <action name="DesktopNext"/>
+      </mousebind>
+      <mousebind button="A-Up" action="Click">
+        <action name="DesktopPrevious"/>
+      </mousebind>
+      <mousebind button="A-Down" action="Click">
+        <action name="DesktopNext"/>
+      </mousebind>
+    </context>
+
+  </mouse>
+
+  <!-- MENU SETTINGS -->
+  <menu>
+    <file>menu.xml</file>
+    <showIcons>yes</showIcons>
+    <hideDelay>200</hideDelay>
+    <middle>no</middle>
+    <submenuShowDelay>200</submenuShowDelay>
+    <applicationIcons>yes</applicationIcons>
+    <manageDesktops>no</manageDesktops>
+  </menu>
+
+  <!-- APPLICATION SETTINGS -->
+  <applications>
+
+    <!-- PER APPLICATION SETTINGS -->
+    <application name="Dzen2">
+      <layer>lower</layer>
+    </application>
+    <application name="dzen2">
+      <layer>lower</layer>
+    </application>
+    <application class="Dzen2">
+      <layer>lower</layer>
+    </application>
+    <application class="dzen2">
+      <layer>lower</layer>
+    </application>
+    <application name="galculator" class="Galculator">
+      <layer>above</layer>
+    </application>
+    <application class="Gimp*">
+      <!-- gimp-toolbox gimp-image-window -->
+      <desktop>4</desktop>
+    </application>
+
+    <!-- OMIT termbar IN [ALT]-[TAB] AND TASK BARS -->
+    <!-- START xterm(1) AS: % xterm -name termbar  -->
+    <application name="termbar">
+      <skip_taskbar>yes</skip_taskbar>
+      <skip_pager>yes</skip_pager>
+      <decor>no</decor>
+      <layer>above</layer>
+      <!--
+      <maximized>Horizontal</maximized>
+      <position force="yes">
+        <x>0</x>
+        <y>0</y>
+        <monitor>1</monitor>
+      </position>
+      <size>
+        <width>100%</width>
+        <height>30</height>
+      </size>
+      -->
+    </application>
+
+    <!-- DISABLE WINDOW DECORATIONS -->
+    <!-- <application class="*">    -->
+    <!--   <decor>no</decor>        -->
+    <!-- </application>             -->
+
+  </applications>
+
+  <!-- DOCK SETTINGS -->
+  <dock>
+    <position>TopLeft</position>
+    <floatingX>0</floatingX>
+    <floatingY>0</floatingY>
+    <stacking>Above</stacking>
+    <direction>Vertical</direction>
+    <noStrut>no</noStrut>
+    <autoHide>no</autoHide>
+    <hideDelay>300</hideDelay>
+    <showDelay>300</showDelay>
+  </dock>
+
+</openbox_config>

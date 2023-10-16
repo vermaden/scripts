@@ -1,0 +1,1165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openbox_menu xmlns="http://openbox.org/3.6/menu">
+<menu id="root-menu" label="openbox">
+
+<!-- BEGIN -->
+
+<separator label="FreeBSD openbox³"/>
+
+<item label="xterm" icon="/home/vuk/.config/openbox/icons/terminal1.png">
+  <action name="Execute">
+    <command>xterm.sh</command>
+  </action>
+</item>
+
+<item label="urxvt" icon="/home/vuk/.config/openbox/icons/terminal1.png">
+  <action name="Execute">
+    <command>urxvt.sh</command>
+  </action>
+</item>
+
+<item label="sakura" icon="/home/vuk/.config/openbox/icons/terminal1.png">
+  <action name="Execute">
+    <command>sakura -c 158 -r 36</command>
+  </action>
+</item>
+
+<item label="cal/ncal" icon="/home/vuk/.config/openbox/icons/calendar1.png">
+  <action name="Execute">
+    <command>xterm -g 80x30 -e 'cal-dashboard.sh'</command>
+  </action>
+</item>
+
+<item label="leafpad" icon="/home/vuk/.config/openbox/icons/leafpad.png">
+  <action name="Execute">
+    <command>leafpad</command>
+  </action>
+</item>
+
+<item label="geany" icon="/home/vuk/.config/openbox/icons/geany2.png">
+  <action name="Execute">
+    <command>geany</command>
+  </action>
+</item>
+
+<item label="caja" icon="/home/vuk/.config/openbox/icons/nautilus.png">
+  <action name="Execute">
+    <command>caja --browser --no-desktop</command>
+  </action>
+</item>
+
+<item label="thunar" icon="/home/vuk/.config/openbox/icons/thunar.png">
+  <action name="Execute">
+    <command>thunar</command>
+  </action>
+</item>
+
+<item label="libreoffice" icon="/home/vuk/.config/openbox/icons/libre5.png">
+  <action name="Execute">
+    <command>libreoffice --nologo</command>
+  </action>
+</item>
+
+<item label="galculator" icon="/home/vuk/.config/openbox/icons/calc4.png">
+  <action name="Execute">
+    <command>galculator</command>
+  </action>
+</item>
+
+<item label="pidgin" icon="/home/vuk/.config/openbox/icons/pidgin.png">
+  <action name="Execute">
+    <command>pidgin</command>
+  </action>
+</item>
+
+<item label="firefox" icon="/home/vuk/.config/openbox/icons/firefox.png">
+  <action name="Execute">
+    <command>firefox -new-window -browser</command>
+   </action>
+</item>
+
+<item label="firefox-portable (wine)" icon="/home/vuk/.config/openbox/icons/firefox.png">
+  <action name="Execute">
+    <command>firefox-portable.sh</command>
+  </action>
+</item>
+
+<!--
+<item label="librewolf" icon="/home/vuk/.config/openbox/icons/librewolf.png">
+  <action name="Execute">
+    <command>librewolf -new-window -browser</command>
+   </action>
+</item>
+-->
+
+<item label="chromium" icon="/home/vuk/.config/openbox/icons/chrome.png">
+  <action name="Execute">
+    <command>chrome</command>
+  </action>
+</item>
+
+<!--
+<item label="chromium" icon="/home/vuk/.config/openbox/icons/chrome.png">
+  <action name="Execute">
+    <command>chrome --ignore-certificate-errors</command>
+  </action>
+</item>
+-->
+
+<item label="chrome (linux)" icon="/home/vuk/.config/openbox/icons/chrome.colors.png">
+  <action name="Execute">
+    <command>/usr/local/bin/linux-chrome</command>
+  </action>
+</item>
+
+<item label="tor-browser" icon="/home/vuk/.config/openbox/icons/tor-browser.png">
+  <action name="Execute">
+    <command>tor-browser</command>
+  </action>
+</item>
+
+<item label="liferea" icon="/home/vuk/.config/openbox/icons/RSS.png">
+  <action name="Execute">
+    <command>liferea</command>
+  </action>
+</item>
+
+<item label="deadbeef" icon="/home/vuk/.config/openbox/icons/deadbeef.png">
+  <action name="Execute">
+    <command>deadbeef.sh</command>
+  </action>
+</item>
+
+<item label="sayonara" icon="/home/vuk/.config/openbox/icons/sayonara.png">
+  <action name="Execute">
+    <command>sayonara</command>
+  </action>
+</item>
+
+<item label="transmission" icon="/home/vuk/.config/openbox/icons/transmission.png">
+  <action name="Execute">
+    <command>transmission-gtk</command>
+  </action>
+</item>
+
+<item label="telegram" icon="/home/vuk/.config/openbox/icons/telegram-desktop.png">
+  <action name="Execute">
+    <command>telegram-desktop</command>
+  </action>
+</item>
+
+<item label="signal" icon="/home/vuk/.config/openbox/icons/signal.white.png">
+  <action name="Execute">
+    <command>signal-desktop --disable-gpu --no-sandbox --use-tray-icon</command>
+  </action>
+</item>
+
+<item label="winscp (wine)" icon="/home/vuk/.config/openbox/icons/winscp.png">
+  <action name="Execute">
+    <command>winscp.sh</command>
+  </action>
+</item>
+
+<item label="xnview (wine)" icon="/home/vuk/.config/openbox/icons/xnview.png">
+  <action name="Execute">
+    <command>xnview.sh</command>
+  </action>
+</item>
+
+<item label="xkill" icon="/home/vuk/.config/openbox/icons/xkill3.png">
+  <action name="Execute">
+    <command>xkill</command>
+  </action>
+</item>
+
+
+
+<separator />
+
+
+
+<menu id="utilities-menu" label="utilities" icon="/home/vuk/.config/openbox/icons/toolbox1.png">
+
+  <item label="gnumeric">
+    <action name="Execute">
+      <command>gnumeric</command>
+    </action>
+  </item>
+
+  <item label="audacity">
+    <action name="Execute">
+      <command>audacity</command>
+    </action>
+  </item>
+
+  <item label="filezilla">
+    <action name="Execute">
+      <command>filezilla</command>
+    </action>
+  </item>
+
+  <item label="midori">
+    <action name="Execute">
+      <command>midori</command>
+    </action>
+  </item>
+
+  <item label="inkscape">
+    <action name="Execute">
+      <command>inkscape</command>
+    </action>
+  </item>
+
+  <item label="gimp">
+    <action name="Execute">
+      <command>gimp</command>
+    </action>
+  </item>
+
+  <item label="lupe">
+    <action name="Execute">
+      <command>lupe -noshape -mag 2 -nohud -geometry 300x200 -noreticle -noiff</command>
+    </action>
+  </item>
+
+  <item label="qt5ct">
+    <action name="Execute">
+      <command>qt5ct</command>
+    </action>
+  </item>
+
+  <separator />
+
+  <item label="trash: browse">
+    <action name="Execute">
+      <command>caja ~/.local/share/Trash/files</command>
+    </action>
+  </item>
+
+  <item label="trash: delete">
+    <action name="Execute">
+      <command>__openbox_trash_delete.sh</command>
+    </action>
+  </item>
+
+  <separator />
+
+  <item label="cache: firefox">
+    <action name="Execute">
+      <command>firefox-clean.sh</command>
+    </action>
+  </item>
+
+  <item label="cache: thumbnails">
+    <action name="Execute">
+      <command>rm -rf ~/.cache/thumbnails ~/.thumbnails</command>
+    </action>
+  </item>
+
+  <separator />
+
+  <item label="kill: firefox">
+    <action name="Execute">
+      <command>killall -9 firefox</command>
+    </action>
+  </item>
+
+  <item label="kill: signal-desktop">
+    <action name="Execute">
+      <command>pkill -9 signal-desktop</command>
+    </action>
+  </item>
+
+  <item label="kill: telegram-desktop">
+    <action name="Execute">
+      <command>pkill -9 telegram-desktop</command>
+    </action>
+  </item>
+
+  <item label="kill: soffice">
+    <action name="Execute">
+      <command>killall -9 soffice.bin</command>
+    </action>
+  </item>
+
+  <item label="kill: caja">
+    <action name="Execute">
+      <command>killall -9 caja</command>
+    </action>
+  </item>
+
+  <item label="kill: thunar">
+    <action name="Execute">
+      <command>killall -9 thunar</command>
+    </action>
+  </item>
+
+  <item label="kill: wine">
+    <action name="Execute">
+      <command>killall -9 wineserver wine wine.bin wine64.bin</command>
+    </action>
+    <action name="Execute">
+      <command>xrandr -s 0</command>
+    </action>
+  </item>
+
+  <separator />
+
+  <item label="cpu: 800 MHz">
+    <action name="Execute">
+      <command>__openbox_cpufreq.sh 800 800</command>
+    </action>
+  </item>
+
+  <item label="cpu: 1200 MHz">
+    <action name="Execute">
+      <command>__openbox_cpufreq.sh 800 1200</command>
+    </action>
+  </item>
+
+  <item label="cpu: 1800 MHz">
+    <action name="Execute">
+      <command>__openbox_cpufreq.sh 800 1800</command>
+    </action>
+  </item>
+
+  <item label="cpu: 3000 MHz">
+    <action name="Execute">
+      <command>__openbox_cpufreq.sh 800 3000</command>
+    </action>
+  </item>
+
+</menu>
+
+
+
+<menu id="virtualbox" label="virtualbox" icon="/home/vuk/.config/openbox/icons/vbox.png">
+
+  <item label="virtualbox: OSE GUI">
+    <action name="Execute">
+      <command>VirtualBox</command>
+    </action>
+  </item>
+
+  <menu id="virtualbox_generate" label="more ..." execute="__openbox_virtualbox.sh" />
+
+</menu>
+
+
+
+<menu id="system" label="system" icon="/home/vuk/.config/openbox/icons/freebsd2.png">
+
+  <menu id="ps-killall" label="ps(1) | killall(1)" execute="__openbox_stats_ps_KILLALL.sh" />
+
+  <separator />
+
+  <menu id="top-cpu-renice" label="top(1) | CPU | renice(1)" execute="__openbox_stats_top_cpu_RENICE.sh" />
+  <menu id="top-mem-renice" label="top(1) | MEM | renice(1)" execute="__openbox_stats_top_mem_RENICE.sh" />
+
+  <separator />
+
+  <menu id="top-cpu-kill" label="top(1) | CPU | kill(1)" execute="__openbox_stats_top_cpu_KILL.sh" />
+  <menu id="top-mem-kill" label="top(1) | MEM | kill(1)" execute="__openbox_stats_top_mem_KILL.sh" />
+
+  <separator />
+
+  <item label="/boot/loader.conf">
+    <action name="Execute">
+      <execute>doas xterm -g 120x40 -T /boot/loader.conf -e doas vi /boot/loader.conf</execute>
+    </action>
+  </item>
+
+  <item label="/etc/rc.conf">
+    <action name="Execute">
+      <execute>doas xterm -g 120x40 -T /etc/rc.conf -e doas vi /etc/rc.conf</execute>
+    </action>
+  </item>
+
+  <item label="/etc/sysctl.conf">
+    <action name="Execute">
+      <execute>doas xterm -g 120x40 -T /etc/sysctl.conf -e doas vi /etc/sysctl.conf</execute>
+    </action>
+  </item>
+
+  <item label="/etc/make.conf">
+    <action name="Execute">
+      <execute>doas xterm -g 120x40 -T /etc/make.conf -e doas vi /etc/make.conf</execute>
+    </action>
+  </item>
+
+  <item label="/etc/newsyslog.conf">
+    <action name="Execute">
+      <execute>doas xterm -g 120x40 -T /etc/newsyslog.conf -e doas vi /etc/newsyslog.conf</execute>
+    </action>
+  </item>
+
+  <item label="/etc/wpa__supplicant.conf">
+    <action name="Execute">
+      <execute>doas xterm -g 120x40 -T /etc/wpa_supplicant.conf -e doas vi /etc/wpa_supplicant.conf</execute>
+    </action>
+  </item>
+
+  <item label="/etc/fstab">
+    <action name="Execute">
+      <execute>doas xterm -g 120x40 -T /etc/fstab -e doas vi /etc/fstab</execute>
+    </action>
+  </item>
+
+  <separator />
+
+  <item label="/var/log/automount.log">
+    <action name="Execute">
+      <execute>xterm -g 140x30 -e 'tail -n 30 -f /var/log/automount.log'</execute>
+    </action>
+  </item>
+
+  <item label="/var/log/ppp.log">
+    <action name="Execute">
+      <execute>xterm -g 140x30 -e "doas tail -f /var/log/ppp.log 2>&amp;1 | sed s/'\^M'//g"</execute>
+    </action>
+  </item>
+
+  <item label="/var/log/messages">
+    <action name="Execute">
+      <execute>xterm -g 140x30 -e 'tail -n 30 -f /var/log/messages'</execute>
+    </action>
+  </item>
+
+</menu>
+
+
+
+<menu id="recent" label="recent" execute="__openbox_recent.sh" icon="/home/vuk/.config/openbox/icons/clock1.png" />
+
+
+
+<menu id="sound" label="sound" execute="__openbox_freebsd_sound.sh" icon="/home/vuk/.config/openbox/icons/speaker.png" />
+
+
+
+<menu id="games" label="games" icon="/home/vuk/.config/openbox/icons/games.png">
+
+  <separator label="native/FreeBSD" />
+
+  <item label="2048" icon="/home/vuk/.config/openbox/icons/2048.png">
+    <action name="Execute">
+      <execute>xterm -e ~/scripts/bin/2048</execute>
+    </action>
+  </item>
+
+  <item label="ctris" icon="/home/vuk/.config/openbox/icons/ctris.png">
+    <action name="Execute">
+      <execute>xterm -e ctris</execute>
+    </action>
+  </item>
+
+  <item label="Battle for Wesnoth" icon="/home/vuk/.config/openbox/icons/battle.for.wesnoth.png">
+    <action name="Execute">
+      <execute>wesnoth</execute>
+    </action>
+  </item>
+
+  <item label="Diablo I: Hellfire" icon="/home/vuk/.config/openbox/icons/diablo.png">
+    <action name="Execute">
+      <execute>games-diablo.sh</execute>
+    </action>
+  </item>
+
+  <item label="Pinball Space Cadet" icon="/home/vuk/.config/openbox/icons/pinball.space.cadet.png">
+    <action name="Execute">
+      <execute>games-pinball-space-cadet-NATIVE.sh</execute>
+    </action>
+  </item>
+
+
+
+  <separator label="higan/NES" />
+
+  <item label="Super Mario Bros" icon="/home/vuk/.config/openbox/icons/super.mario.AA.png">
+    <action name="Execute">
+      <execute>games-super-mario-bros.sh</execute>
+    </action>
+  </item>
+
+
+
+  <separator label="fs-uae/AMIGA" />
+
+  <item label="All Terrain Racing (CD32)" icon="/home/vuk/.config/openbox/icons/all.terrain.racing.png">
+    <action name="Execute">
+      <execute>games-all-terrain-racing.sh</execute>
+    </action>
+  </item>
+
+
+
+  <separator label="dosbox/DOS" />
+
+  <item label="Cannon Fodder" icon="/home/vuk/.config/openbox/icons/cannon.fodder.png">
+    <action name="Execute">
+      <execute>games-cannon-fodder.sh</execute>
+    </action>
+  </item>
+
+  <item label="Cannon Fodder 2" icon="/home/vuk/.config/openbox/icons/cannon.fodder.2.png">
+    <action name="Execute">
+      <execute>games-cannon-fodder-2.sh</execute>
+    </action>
+  </item>
+
+  <item label="Sensible World of Soccer (SFX)" icon="/home/vuk/.config/openbox/icons/sensible.soccer.png">
+    <action name="Execute">
+      <execute>games-sensible-world-of-soccer-SFX.sh</execute>
+    </action>
+  </item>
+
+  <item label="Sensible World of Soccer (UPG)" icon="/home/vuk/.config/openbox/icons/sensible.soccer.png">
+    <action name="Execute">
+      <execute>games-sensible-world-of-soccer-UPG.sh</execute>
+    </action>
+  </item>
+
+  <item label="Sensible World of Soccer" icon="/home/vuk/.config/openbox/icons/sensible.soccer.png">
+    <action name="Execute">
+      <execute>games-sensible-world-of-soccer.sh</execute>
+    </action>
+  </item>
+
+  <item label="Sensible Golf" icon="/home/vuk/.config/openbox/icons/sensible.golf.png">
+    <action name="Execute">
+      <execute>games-sensible-golf.sh</execute>
+    </action>
+  </item>
+
+  <item label="Settlers" icon="/home/vuk/.config/openbox/icons/settlers.1.png">
+    <action name="Execute">
+      <execute>games-settlers.sh</execute>
+    </action>
+  </item>
+
+  <item label="Theme Hospital" icon="/home/vuk/.config/openbox/icons/theme.hospital.png">
+    <action name="Execute">
+      <execute>games-theme-hospital.sh</execute>
+    </action>
+  </item>
+
+  <item label="Swing" icon="/home/vuk/.config/openbox/icons/swing.png">
+    <action name="Execute">
+      <execute>games-swing.sh</execute>
+    </action>
+  </item>
+
+  <separator/>
+
+  <item label="DOSBOX" icon="/home/vuk/.config/openbox/icons/DOSBOX.png">
+    <action name="Execute">
+      <execute>games-DOSBOX.sh</execute>
+    </action>
+  </item>
+
+
+
+  <separator label="wine/WINDOWS" />
+
+  <item label="Heroes of Might and Magic III: Complete (fullscreen)" icon="/home/vuk/.config/openbox/icons/heroes.might.magic.III.png">
+    <action name="Execute">
+      <execute>games-heroes-of-might-and-magic-III-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Heroes of Might and Magic III: Complete (window)" icon="/home/vuk/.config/openbox/icons/heroes.might.magic.III.png">
+    <action name="Execute">
+      <execute>games-heroes-of-might-and-magic-III-window.sh</execute>
+    </action>
+  </item>
+
+  <item label="Heroes of Might and Magic III: HotA (fullscreen)" icon="/home/vuk/.config/openbox/icons/heroes.might.magic.III.hota.png">
+    <action name="Execute">
+      <execute>games-heroes-of-might-and-magic-III-HotA-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Heroes of Might and Magic III: HotA (window)" icon="/home/vuk/.config/openbox/icons/heroes.might.magic.III.hota.png">
+    <action name="Execute">
+      <execute>games-heroes-of-might-and-magic-III-HotA-window.sh</execute>
+    </action>
+  </item>
+
+  <item label="Colin McRae Rally 2.0 (fullscreen)" icon="/home/vuk/.config/openbox/icons/colin.mcrae.rally.2.0.png">
+    <action name="Execute">
+      <execute>games-colin-mcrae-rally-2.0-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Colin McRae Rally 2.0 (window)" icon="/home/vuk/.config/openbox/icons/colin.mcrae.rally.2.0.png">
+    <action name="Execute">
+      <execute>games-colin-mcrae-rally-2.0-window.sh</execute>
+    </action>
+  </item>
+
+  <item label="Worms Armageddon (fullscreen)" icon="/home/vuk/.config/openbox/icons/worms.armageddon.png">
+    <action name="Execute">
+      <execute>games-worms-armageddon-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Worms Armageddon (window)" icon="/home/vuk/.config/openbox/icons/worms.armageddon.png">
+    <action name="Execute">
+      <execute>games-worms-armageddon-window.sh</execute>
+    </action>
+  </item>
+
+  <item label="Fallout 2 (fullscreen)" icon="/home/vuk/.config/openbox/icons/fallout.2.png">
+    <action name="Execute">
+      <execute>games-fallout-2-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Fallout 2 (window)" icon="/home/vuk/.config/openbox/icons/fallout.2.png">
+    <action name="Execute">
+      <execute>games-fallout-2-window.sh</execute>
+    </action>
+  </item>
+
+  <item label="Baldurs Gate I (fullscreen)" icon="/home/vuk/.config/openbox/icons/baldurs.gate.I.png">
+    <action name="Execute">
+      <execute>games-baldurs-gate-I-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Baldurs Gate I (window)" icon="/home/vuk/.config/openbox/icons/baldurs.gate.I.png">
+    <action name="Execute">
+      <execute>games-baldurs-gate-I-window.sh</execute>
+    </action>
+  </item>
+
+  <item label="Baldurs Gate I: Enhanced Edition (fullscreen)" icon="/home/vuk/.config/openbox/icons/baldurs.gate.I.ee.png">
+    <action name="Execute">
+      <execute>games-baldurs-gate-I-ee-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Baldurs Gate I: Enhanced Edition (window)" icon="/home/vuk/.config/openbox/icons/baldurs.gate.I.ee.png">
+    <action name="Execute">
+      <execute>games-baldurs-gate-I-ee-window.sh</execute>
+    </action>
+  </item>
+
+  <item label="Baldurs Gate II: Enhanced Edition (fullscreen)" icon="/home/vuk/.config/openbox/icons/baldurs.gate.II.ee.png">
+    <action name="Execute">
+      <execute>games-baldurs-gate-II-ee-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Baldurs Gate II: Enhanced Edition (window)" icon="/home/vuk/.config/openbox/icons/baldurs.gate.II.ee.png">
+    <action name="Execute">
+      <execute>games-baldurs-gate-II-ee-window.sh</execute>
+    </action>
+  </item>
+
+  <item label="Icewind Dale: Enhanced Edition (fullscreen)" icon="/home/vuk/.config/openbox/icons/icewind.dale.ee.png">
+    <action name="Execute">
+      <execute>games-icewind-dale-ee-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Icewind Dale: Enhanced Edition (window)" icon="/home/vuk/.config/openbox/icons/icewind.dale.ee.png">
+    <action name="Execute">
+      <execute>games-icewind-dale-ee-window.sh</execute>
+    </action>
+  </item>
+
+  <item label="Lionheart: Legacy of the Crusader (fullscreen)" icon="/home/vuk/.config/openbox/icons/lionheart.png">
+    <action name="Execute">
+      <execute>games-lionheart-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Lionheart: Legacy of the Crusader (window)" icon="/home/vuk/.config/openbox/icons/lionheart.png">
+    <action name="Execute">
+      <execute>games-lionheart-window.sh</execute>
+    </action>
+  </item>
+
+  <item label="Pinball Space Cadet" icon="/home/vuk/.config/openbox/icons/pinball.space.cadet.png">
+    <action name="Execute">
+      <execute>games-pinball-space-cadet.sh</execute>
+    </action>
+  </item>
+
+  <item label="Chuzzle Deluxe" icon="/home/vuk/.config/openbox/icons/chuzzle.png">
+    <action name="Execute">
+      <execute>games-chuzzle.sh</execute>
+    </action>
+  </item>
+
+  <item label="Pro Pinball Timeshock (fullscreen)" icon="/home/vuk/.config/openbox/icons/timeshock.png">
+    <action name="Execute">
+      <execute>games-pro-pinball-timeshock-fullscreen.sh</execute>
+    </action>
+  </item>
+
+  <item label="Pro Pinball Timeshock (window)" icon="/home/vuk/.config/openbox/icons/timeshock.png">
+    <action name="Execute">
+      <execute>games-pro-pinball-timeshock-window.sh</execute>
+    </action>
+  </item>
+
+
+
+  <separator label="wine/FLASH" />
+
+  <item label="Governor of Poker 2" icon="/home/vuk/.config/openbox/icons/governor.poker.png">
+    <action name="Execute">
+      <execute>games-governor-of-poker.sh</execute>
+    </action>
+  </item>
+
+  <item label="Robokill 1" icon="/home/vuk/.config/openbox/icons/robokill.1.png">
+    <action name="Execute">
+      <execute>games-robokill-1.sh</execute>
+    </action>
+  </item>
+
+  <item label="Robokill 2" icon="/home/vuk/.config/openbox/icons/robokill.2.png">
+    <action name="Execute">
+      <execute>games-robokill-2.sh</execute>
+    </action>
+  </item>
+
+  <item label="Pinball Short Circuit" icon="/home/vuk/.config/openbox/icons/pinball.short.circuit.png">
+    <action name="Execute">
+      <execute>games-pinball-short-circuit.sh</execute>
+    </action>
+  </item>
+
+  <item label="Canyon Defence" icon="/home/vuk/.config/openbox/icons/canyon.defence.png">
+    <action name="Execute">
+      <execute>games-canyon-defence.sh</execute>
+    </action>
+  </item>
+
+
+</menu>
+
+
+
+<menu id="daemons" label="daemons" icon="/home/vuk/.config/openbox/icons/gear.png">
+
+  <!-- NO WWAN CARD IN LAPTOP SINCE AGES -->
+  <!--
+  <item label="NETWORK/WWAN: start">
+    <action name="Execute">
+      <execute>network.sh wwan start</execute>
+    </action>
+  </item>
+  -->
+
+  <item label="NETWORK/WLAN: start">
+    <action name="Execute">
+      <execute>network.sh wlan start</execute>
+    </action>
+  </item>
+
+  <item label="NETWORK/WLAN: start (wifissid) @ DHCP">
+    <action name="Execute">
+      <execute>network.sh wlan start wifissid</execute>
+    </action>
+  </item>
+
+  <item label="NETWORK/WLAN: start (wifissid) @ 10.10.10.30/24">
+    <action name="Execute">
+      <execute>network.sh wlan start wifissid 10.10.10.30/24 10.10.10.1</execute>
+    </action>
+  </item>
+
+  <item label="NETWORK/WLAN: start (wifinet)">
+    <action name="Execute">
+      <execute>network.sh wlan start wifinet</execute>
+    </action>
+  </item>
+
+  <item label="NETWORK/WLAN: restart">
+    <action name="Execute">
+      <execute>network.sh wlan restart</execute>
+    </action>
+  </item>
+
+  <item label="NETWORK/LAN: start @ DHCP">
+    <action name="Execute">
+      <execute>network.sh lan start</execute>
+    </action>
+  </item>
+
+  <item label="NETWORK/LAN: start @ 10.10.10.30/24">
+    <action name="Execute">
+      <execute>network.sh lan start 10.10.10.30/24 10.10.10.1</execute>
+    </action>
+  </item>
+
+  <separator/>
+
+  <item label="NETWORK: stop">
+    <action name="Execute">
+      <execute>network.sh stop</execute>
+    </action>
+  </item>
+
+  <separator/>
+
+  <item label="NETWORK/DNS: GATEWAY">
+    <action name="Execute">
+      <execute>network.sh dns gw</execute>
+    </action>
+  </item>
+
+  <item label="NETWORK/DNS: OpenNIC">
+    <action name="Execute">
+      <execute>network.sh dns onic</execute>
+    </action>
+  </item>
+
+  <item label="NETWORK/DNS: 1.1.1.1">
+    <action name="Execute">
+      <execute>network.sh dns 1.1.1.1</execute>
+    </action>
+  </item>
+
+  <item label="NETWORK/DNS: 9.9.9.9">
+    <action name="Execute">
+      <execute>network.sh dns 9.9.9.9</execute>
+    </action>
+  </item>
+
+  <item label="NETWORK/DNS: UncensoredDNS">
+    <action name="Execute">
+      <execute>network.sh udns onic</execute>
+    </action>
+  </item>
+
+  <separator/>
+
+  <item label="START/RESTART: conky">
+    <action name="Execute">
+      <execute>__openbox_restart_conky.sh</execute>
+    </action>
+  </item>
+
+  <item label="START/RESTART: dzen2">
+    <action name="Execute">
+      <execute>__openbox_restart_dzen2.sh</execute>
+    </action>
+  </item>
+
+  <item label="START/RESTART: tint2">
+    <action name="Execute">
+      <execute>__openbox_restart_tint2.sh</execute>
+    </action>
+  </item>
+
+  <item label="START/RESTART: compton/picom">
+    <action name="Execute">
+      <execute>__openbox_restart_compton.sh</execute>
+    </action>
+  </item>
+
+  <item label="START/RESTART: plank">
+    <action name="Execute">
+      <execute>__openbox_restart_plank.sh</execute>
+    </action>
+  </item>
+
+  <item label="START/RESTART: xbindkeys">
+    <action name="Execute">
+      <execute>__openbox_restart_xbindkeys.sh</execute>
+    </action>
+  </item>
+
+  <separator/>
+
+  <item label="STOP: conky">
+    <action name="Execute">
+      <execute>__openbox_stop_conky.sh</execute>
+    </action>
+  </item>
+
+  <item label="STOP: dzen2">
+    <action name="Execute">
+      <execute>__openbox_stop_dzen2.sh</execute>
+    </action>
+  </item>
+
+  <item label="STOP: tint2">
+    <action name="Execute">
+      <execute>__openbox_stop_tint2.sh</execute>
+    </action>
+  </item>
+
+  <item label="STOP: compton/picom">
+    <action name="Execute">
+      <execute>__openbox_stop_compton.sh</execute>
+    </action>
+  </item>
+
+  <item label="STOP: plank">
+    <action name="Execute">
+      <execute>__openbox_stop_plank.sh</execute>
+    </action>
+  </item>
+
+  <item label="STOP: xbindkeys">
+    <action name="Execute">
+      <execute>__openbox_stop_xbindkeys.sh</execute>
+    </action>
+  </item>
+
+  <separator/>
+
+  <item label="POWER: speed">
+    <action name="Execute">
+      <execute>power-speed.sh</execute>
+    </action>
+  </item>
+
+  <item label="POWER: time">
+    <action name="Execute">
+      <execute>power-time.sh</execute>
+    </action>
+  </item>
+
+</menu>
+
+
+
+<menu id="x11" label="x11" icon="/home/vuk/.config/openbox/icons/xorg.png">
+
+  <item label="screen off">
+    <action name="Execute">
+      <command>__openbox_monitor_off_auto.sh</command>
+    </action>
+  </item>
+
+  <item label="screen lock">
+    <action name="Execute">
+      <command>__openbox_lock.sh</command>
+    </action>
+  </item>
+
+  <item label="sleep">
+    <action name="Execute">
+      <command>__openbox_lock_zzz.sh</command>
+    </action>
+  </item>
+
+  <separator />
+
+  <item label="monitor: add (right)">
+    <action name="Execute">
+      <command>monitor-right.sh add</command>
+    </action>
+  </item>
+
+  <item label="monitor: delete (right)">
+    <action name="Execute">
+      <command>monitor-right.sh delete</command>
+    </action>
+  </item>
+
+  <item label="arandr">
+    <action name="Execute">
+      <command>arandr</command>
+    </action>
+  </item>
+
+  <item label="xrandr: default resolution">
+    <action name="Execute">
+      <command>xrandr -s 0</command>
+    </action>
+    <action name="Execute">
+      <command>random-wallpaper-always.sh ~/gfx/wallpapers</command>
+    </action>
+  </item>
+
+  <separator />
+
+  <item label="fc-cache: reload">
+    <action name="Execute">
+      <command>xterm -e fc-cache.sh</command>
+    </action>
+  </item>
+
+  <separator />
+
+  <item label="pointer speed: touchpad (builtin)">
+    <action name="Execute">
+      <command>xset m 16 1</command>
+    </action>
+  </item>
+
+  <item label="pointer speed: mouse (usb)">
+    <action name="Execute">
+      <command>xset m 4/3 1</command>
+    </action>
+  </item>
+
+  <separator />
+
+  <item label="~/.xinitrc">
+    <action name="Execute">
+      <execute>geany ~/.xinitrc</execute>
+    </action>
+  </item>
+
+  <item label="~/.config/openbox/menu.xml">
+    <action name="Execute">
+      <execute>geany ~/.config/openbox/menu.xml</execute>
+    </action>
+  </item>
+
+  <item label="~/.config/openbox/rc.xml">
+    <action name="Execute">
+      <execute>geany ~/.config/openbox/rc.xml</execute>
+    </action>
+  </item>
+
+  <item label="~/.gtk-bookmarks">
+    <action name="Execute">
+      <execute>geany ~/.gtk-bookmarks</execute>
+    </action>
+  </item>
+
+  <item label="~/.config/user-dirs.dirs">
+    <action name="Execute">
+      <execute>geany ~/.config/user-dirs.dirs</execute>
+    </action>
+  </item>
+
+  <item label="~/.gtkrc-2.0">
+    <action name="Execute">
+      <execute>geany ~/.gtkrc-2.0</execute>
+    </action>
+  </item>
+
+  <item label="~/.config/gtk-3.0/settings.ini">
+    <action name="Execute">
+      <execute>geany ~/.config/gtk-3.0/settings.ini</execute>
+    </action>
+  </item>
+
+  <separator />
+
+  <item label="screenshot: show last">
+    <action name="Execute">
+      <command>__openbox_show_screenshot.sh</command>
+    </action>
+  </item>
+
+  <item label="screenshot: edit last">
+    <action name="Execute">
+      <command>__openbox_edit_screenshot.sh</command>
+    </action>
+  </item>
+
+  <item label="screenshot: browse (caja)">
+    <action name="Execute">
+      <command>caja ~/gfx/screenshots</command>
+    </action>
+  </item>
+
+  <item label="screenshot: browse (thunar)">
+    <action name="Execute">
+      <command>thunar ~/gfx/screenshots</command>
+    </action>
+  </item>
+
+  <separator />
+
+  <menu id="wallpaper-delete" label="wallpaper: delete">
+
+    <item label="confirm">
+      <action name="Execute">
+        <command>__openbox_delete_wallpaper.sh</command>
+      </action>
+    </item>
+
+  </menu>
+
+  <menu id="wallpaper-current" label="wallpaper: current" execute="__openbox_current_wallpaper.sh" />
+
+  <menu id="wallpaper-phaseout" label="wallpaper: phaseout">
+
+    <item label="confirm">
+      <action name="Execute">
+        <command>__openbox_phaseout_wallpaper.sh</command>
+      </action>
+    </item>
+
+  </menu>
+
+  <item label="wallpaper: edit (gimp)">
+    <action name="Execute">
+      <command>__openbox_edit_wallpaper_gimp.sh</command>
+    </action>
+  </item>
+
+  <item label="wallpaper: reload">
+    <action name="Execute">
+      <command>__openbox_reload_wallpaper.sh</command>
+    </action>
+  </item>
+
+  <item label="wallpaper: random">
+    <action name="Execute">
+      <command>random-wallpaper-always.sh ~/gfx/wallpapers</command>
+    </action>
+  </item>
+
+  <item label="wallpaper: browse (caja)">
+    <action name="Execute">
+      <command>caja ~/gfx/wallpapers</command>
+    </action>
+  </item>
+
+  <item label="wallpaper: browse (thunar)">
+    <action name="Execute">
+      <command>thunar ~/gfx/wallpapers</command>
+    </action>
+  </item>
+
+</menu>
+
+
+
+<separator />
+
+
+
+<menu id="kill" label="kill x11" icon="/home/vuk/.config/openbox/icons/freebsd.png">
+
+  <item label="confirm">
+    <action name="Execute">
+      <command>sudo pkill X</command>
+    </action>
+  </item>
+
+</menu>
+
+<menu id="exit" label="exit x11" icon="/home/vuk/.config/openbox/icons/freebsd.png">
+
+  <item label="confirm">
+    <action name="Exit">
+      <prompt>no</prompt>
+    </action>
+  </item>
+
+</menu>
+
+<item label="reconfigure" icon="/home/vuk/.config/openbox/icons/refresh.png">
+  <action name="Reconfigure" />
+</item>
+
+<!-- END -->
+
+</menu>
+</openbox_menu>

@@ -1,0 +1,63 @@
+#|13.x|# # VOLUME UP // Mouse // FreeBSD 13.x or EARLIER
+#|13.x|# "for I in /dev/mixer*; do mixer -f ${I} pcm 100; mixer -f ${I} vol +5; done"
+#|13.x|#   m:0x0 + b:9
+#|13.x|#
+#|13.x|# # VOLUME UP // ThinkPad // FreeBSD 13.x or EARLIER
+#|13.x|# "for I in /dev/mixer*; do mixer -f ${I} pcm 100; mixer -f ${I} vol +5; done"
+#|13.x|#   XF86AudioRaiseVolume
+#|13.x|#
+#|13.x|# # VOLUME DOWN // Mouse // FreeBSD 13.x or EARLIER
+#|13.x|# "for I in /dev/mixer*; do mixer -f ${I} pcm 100; mixer -f ${I} vol -5; done"
+#|13.x|#   m:0x0 + b:8
+#|13.x|#
+#|13.x|# # VOLUME DOWN // ThinkPad // FreeBSD 13.x or EARLIER
+#|13.x|# "for I in /dev/mixer*; do mixer -f ${I} pcm 100; mixer -f ${I} vol -5; done"
+#|13.x|#   XF86AudioLowerVolume
+
+# VOLUME UP // Mouse
+"for I in /dev/mixer*; do mixer -f ${I} pcm.volume=1.00; mixer -f ${I} vol.volume=+0.05; done"
+m:0x0 + b:9
+
+# VOLUME DOWN // Mouse
+"for I in /dev/mixer*; do mixer -f ${I} pcm.volume=1.00; mixer -f ${I} vol.volume=-0.05; done"
+  m:0x0 + b:8
+
+# VOLUME UP // Mouse
+"for I in /dev/mixer*; do mixer -f ${I} pcm.volume=1.00; mixer -f ${I} vol.volume=+0.05; done"
+m:0x0 + b:9
+
+# VOLUME DOWN // Mouse
+"for I in /dev/mixer*; do mixer -f ${I} pcm.volume=1.00; mixer -f ${I} vol.volume=-0.05; done"
+  m:0x0 + b:8
+
+# VOLUME UP // ThinkPad
+"for I in /dev/mixer*; do mixer -f ${I} pcm.volume=1.00; mixer -f ${I} vol.volume=+0.05; done"
+  XF86AudioRaiseVolume
+
+# VOLUME DOWN // ThinkPad
+"for I in /dev/mixer*; do mixer -f ${I} pcm.volume=1.00; mixer -f ${I} vol.volume=-0.05; done"
+  XF86AudioLowerVolume
+
+# DEADBEEF/SAYONARA TOGGLE PAUSE/PLAY
+"~/scripts/toggle-play-pause.sh"
+  m:0xc + c:23
+
+# PAUSE BREAK | Pause
+"~/scripts/desktop-pause.sh -a"
+  Pause
+
+# SHIFT PAUSE BREAK | Shift + Pause
+"~/scripts/desktop-pause.sh -s"
+  Shift + Pause
+
+# SCROLL LOCK | Scroll Lock
+"~/scripts/desktop-debug.sh"
+  m:0x0 + c:78
+
+# TURN OFF DISPLAY
+"~/scripts/__openbox_monitor_off_auto.sh"
+  Control+Shift + F12
+
+# EXPOSE
+"skippy-xd"
+  Shift + Escape
