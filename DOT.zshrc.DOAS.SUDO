@@ -32,18 +32,22 @@ then
   if [   ${DOAS} -eq 0 -a ${SUDO} -eq 1 -a ${SUDO_WHICH} -eq 1 ]
   then
     CMD=sudo
+    alias doas=sudo
   elif [ ${DOAS} -eq 1 -a ${SUDO} -eq 0 -a ${DOAS_WHICH} -eq 1 ]
   then
     CMD=doas
+    alias sudo=doas
   elif [ ${DOAS} -eq 1 -a ${SUDO} -eq 1 -a ${DOAS_WHICH} -eq 1 ]
   then
     CMD=doas
+    alias sudo=doas
   fi
 elif [ ${ROOT} -eq 1 ]
 then
   CMD=''
 else
-  echo "NOPE: This script needs 'doas' or 'sudo' to work properly."
+  echo "NOPE: This script needs doas(1) or sudo(8) to work properly."
+  echo "INFO: Install 'security/doas' or 'security/sudo' package."
   exit 1
 fi
 

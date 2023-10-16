@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2017-2021 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2017-2022 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -32,7 +32,7 @@
 # https://vermaden.wordpress.com
 
 # SETTINGS
-UNBOUND=1
+UNBOUND=0
 LAN_IF=em0
 LAN_RANDOM_MAC=0
 WLAN_IF=wlan0
@@ -155,7 +155,7 @@ __net_shares_umount() {
 
   #DOAS# permit nopass :network as root cmd killall
   #SUDO# %network ALL = NOPASSWD: /usr/bin/killall *
-  ${CMD} killall -9 sshfs &
+       ${CMD} killall -9 sshfs 1> /dev/null 2> /dev/null &
   echo ${CMD} killall -9 sshfs
 
   mount -t ${NETFS} -p \
@@ -165,13 +165,50 @@ __net_shares_umount() {
 
         #DOAS# permit nopass :network as root cmd umount
         #SUDO# %network ALL = NOPASSWD: /sbin/umount -f *
-        ${CMD} umount -f "${MNT}" &
+             ${CMD} umount -f "${MNT}" &
         echo ${CMD} umount -f "${MNT}"
 
       done
 }
 
-# network_status() ------------------------------------------------------------
+# bhyve_networking() ----------------------------------------------------------
+__bhyve_networking() {
+  # WHEN bhyve(8) IS USED RESTART ITS vm-bhyve NETWORKING
+  if ! kldstat -m vmm 1> /dev/null 2> /dev/null
+  then
+    return 0
+  fi
+  # ADD IP ADDRESS TO EACH vm-bhyve SWITCH
+  doas vm switch list \
+    | sed 1d \
+    | while read NAME TYPE IFACE ADDRESS PRIVATE MTU VLAN PORTS
+      do
+        #DOAS# permit nopass :network as root cmd vm switch address
+        #SUDO# %network ALL = NOPASSWD: /usr/local/sbin/vm switch address *
+             ${CMD} vm switch address ${NAME} ${ADDRESS} 1> /dev/null 2> /dev/null
+        echo ${CMD} vm switch address ${NAME} ${ADDRESS}
+      done
+  # SET TO 'up' ALL vm-bhyve SWITCH MEMBERS
+  doas vm switch list \
+    | sed 1d \
+    | awk '{print $1}' \
+    | while read SWITCH
+      do
+        ifconfig vm-${SWITCH} \
+          | awk '/member:/ {print $2}' \
+          | while read INTERFACE
+            do
+              #DOAS# permit nopass :network as root cmd ifconfig
+              #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig * up
+                   ${CMD} ifconfig ${INTERFACE} up 1> /dev/null 2> /dev/null
+              echo ${CMD} ifconfig ${INTERFACE} up
+            done
+      done
+
+}
+
+
+  # network_status() ------------------------------------------------------------
 __network_status() {
 
   local COL1='\033[38;05;1m'
@@ -192,8 +229,8 @@ __network_status() {
   fi
 
   echo -e "${COL1}// Print Network Interfaces with netstat(1)${COLe}"
-  echo -e "# ${COL2}netstat -W -i -f inet${COLe}"
-  netstat -W -i -f inet | grep --color -C 256 -E "${IP_REGEX}"
+  echo -e "# ${COL2}netstat -Win -f inet${COLe}"
+  netstat -Win -f inet | grep --color -C 256 -E "${IP_REGEX}"
   echo
 
   echo -e "${COL1}// Print Network Interfaces with ifconfig(8)${COLe}"
@@ -236,27 +273,27 @@ __network_reset() {
 
   #DOAS# permit nopass :network as root cmd killall args -9 wpa_supplicant
   #SUDO# %network ALL = NOPASSWD: /usr/bin/killall -9 wpa_supplicant
-  ${CMD} killall -9 wpa_supplicant 1> /dev/null 2> /dev/null
+       ${CMD} killall -9 wpa_supplicant 1> /dev/null 2> /dev/null
   echo ${CMD} killall -9 wpa_supplicant
 
   #DOAS# permit nopass :network as root cmd killall args -9 ppp
   #SUDO# %network ALL = NOPASSWD: /usr/bin/killall -9 ppp
-  ${CMD} killall -9 ppp            1> /dev/null 2> /dev/null
+       ${CMD} killall -9 ppp 1> /dev/null 2> /dev/null
   echo ${CMD} killall -9 ppp
 
   #DOAS# permit nopass :network as root cmd killall args -9 dhclient
   #SUDO# %network ALL = NOPASSWD: /usr/bin/killall -9 dhclient
-  ${CMD} killall -9 dhclient       1> /dev/null 2> /dev/null
+       ${CMD} killall -9 dhclient 1> /dev/null 2> /dev/null
   echo ${CMD} killall -9 dhclient
 
   #DOAS# permit nopass :network as root cmd ifconfig
   #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-  ${CMD} ifconfig ${LAN_IF} down
+       ${CMD} ifconfig ${LAN_IF} down 1> /dev/null 2> /dev/null
   echo ${CMD} ifconfig ${LAN_IF} down
 
   #DOAS# permit nopass :network as root cmd ifconfig
   #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-  ${CMD} ifconfig ${WLAN_IF} down
+       ${CMD} ifconfig ${WLAN_IF} down 1> /dev/null 2> /dev/null
   echo ${CMD} ifconfig ${WLAN_IF} down
 
 # ${CMD} ifconfig ${WLAN_IF} destroy 2> /dev/null    # INSTANT KERNEL PANIC
@@ -268,13 +305,13 @@ __network_reset() {
   then
     #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
     #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
-    echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
+          echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
     echo "echo | ${CMD} tee /etc/resolv.conf"
   fi
 
   #DOAS# permit nopass :network as root cmd /etc/rc.d/netif args onerestart
   #SUDO# %network ALL = NOPASSWD: /etc/rc.d/netif onerestart
-  ${CMD} /etc/rc.d/netif restart 1> /dev/null 2> /dev/null
+       ${CMD} /etc/rc.d/netif restart 1> /dev/null 2> /dev/null
   echo ${CMD} /etc/rc.d/netif restart
 }
 
@@ -318,16 +355,16 @@ __dns_check() {
 
 # squid_restart() -------------------------------------------------------------
 __squid_restart() {
-  echo '__squid_restart()'
   if pgrep squid 1> /dev/null 2> /dev/null
   then
-
-    #DOAS# permit nopass :network as root cmd /usr/sbin/service args squid onerestart
-    #SUDO# %network ALL = NOPASSWD: /usr/sbin/service squid onerestart
-    doas service squid onerestart 1> /dev/null 2> /dev/null
-    echo '__squid_restart()'
-
+    return 0
   fi
+  echo '__squid_restart()'
+  #DOAS# permit nopass :network as root cmd /usr/sbin/service args squid onerestart
+  #SUDO# %network ALL = NOPASSWD: /usr/sbin/service squid onerestart
+       ${CMD} service squid onerestart 1> /dev/null 2> /dev/null
+  echo ${CMD} service squid onerestart
+
 }
 
 # usage() ---------------------------------------------------------------------
@@ -404,7 +441,8 @@ __usage_wlan() {
   echo "EXAMPLES:"
   echo "  ${NAME} wlan scan"
   echo "  ${NAME} wlan start"
-  echo "  ${NAME} wlan start HOME-NETWORK-SSID"
+  echo "  ${NAME} wlan start NETWORK"
+  echo "  ${NAME} wlan start NETWORK 192.168.0.100/24 192.168.0.1"
   echo "  ${NAME} wlan example"
   echo "  ${NAME} status"
   echo "  ${NAME} stop"
@@ -516,8 +554,8 @@ NOLOGGING DNS SERVERS:
    89.233.43.71   (unicast)
 
   Swiss Privacy Foundation http://privacyfoundation.ch/de/service/server.html
-    77.109.138.45
-    77.109.139.29
+    185.95.218.42
+    185.95.218.43
 
   CCC http://www.ccc.de/censorship/dns-howto
     85.214.20.141
@@ -567,16 +605,17 @@ case ${1} in
           #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
           echo '__random_mac()'
           MAC=$( __random_mac )
-          ${CMD} ifconfig ${LAN_IF} ether ${MAC}
+               ${CMD} ifconfig ${LAN_IF} ether ${MAC} 1> /dev/null 2> /dev/null
           echo ${CMD} ifconfig ${LAN_IF} ether ${MAC}
           unset MAC
         fi
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${LAN_IF} up
+             ${CMD} ifconfig ${LAN_IF} up 1> /dev/null 2> /dev/null
         echo ${CMD} ifconfig ${LAN_IF} up
 
+        # IP ADDRESS AND GATEWAY SPECIFIED
         if [ ${3} ]
         then # STATIC
 
@@ -589,7 +628,7 @@ case ${1} in
 
           #DOAS# permit nopass :network as root cmd ifconfig
           #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-          ${CMD} ifconfig ${LAN_IF} inet ${IP}
+               ${CMD} ifconfig ${LAN_IF} inet ${IP} 1> /dev/null 2> /dev/null
           echo ${CMD} ifconfig ${LAN_IF} inet ${IP}
 
           if [ ${4} ]
@@ -603,12 +642,12 @@ case ${1} in
 
             #DOAS# permit nopass :network as root cmd route
             #SUDO# %network ALL = NOPASSWD: /sbin/route *
-            ${CMD} route add default ${4} 1> /dev/null 2> /dev/null
+                 ${CMD} route add default ${4} 1> /dev/null 2> /dev/null
             echo ${CMD} route add default ${4}
 
             #DOAS# permit nopass :network as root cmd route
             #SUDO# %network ALL = NOPASSWD: /sbin/route *
-            ${CMD} route change default ${4} 1> /dev/null 2> /dev/null
+                 ${CMD} route change default ${4} 1> /dev/null 2> /dev/null
             echo ${CMD} route change default ${4}
 
           fi
@@ -617,16 +656,18 @@ case ${1} in
 
           #DOAS# permit nopass :network as root cmd dhclient
           #SUDO# %network ALL = NOPASSWD: /sbin/dhclient *
-          ${CMD} dhclient -q ${LAN_IF} 1> /dev/null 2> /dev/null
+               ${CMD} dhclient -q ${LAN_IF} 1> /dev/null 2> /dev/null
           echo ${CMD} dhclient -q ${LAN_IF}
 
-          __dns_check_gateway
-
-          __dns_check
-
-          __squid_restart
-
         fi
+
+        __dns_check_gateway
+
+        __dns_check
+
+        __bhyve_networking
+
+        __squid_restart
 
         ;;
 
@@ -652,28 +693,29 @@ case ${1} in
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH} 2> /dev/null
+             ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH} 1> /dev/null 2> /dev/null
         echo ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH}
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${WLAN_IF} country ${WLAN_COUNTRY} regdomain ${WLAN_REGDOMAIN}
+             ${CMD} ifconfig ${WLAN_IF} country ${WLAN_COUNTRY} regdomain ${WLAN_REGDOMAIN} 1> /dev/null 2> /dev/null
         echo ${CMD} ifconfig ${WLAN_IF} country ${WLAN_COUNTRY} regdomain ${WLAN_REGDOMAIN}
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${WLAN_IF} up
+             ${CMD} ifconfig ${WLAN_IF} up 1> /dev/null 2> /dev/null
         echo ${CMD} ifconfig ${WLAN_IF} up
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ifconfig ${WLAN_IF} scan &
-        echo ifconfig ${WLAN_IF} scan &
+             ifconfig ${WLAN_IF} scan 1> /dev/null 2> /dev/null &
+        echo ifconfig ${WLAN_IF} scan
+
         sleep 3
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ifconfig ${WLAN_IF} list scan
+             ifconfig ${WLAN_IF} list scan
         echo ifconfig ${WLAN_IF} list scan
 
         ;;
@@ -686,7 +728,7 @@ case ${1} in
         then
           #DOAS# permit nopass :network as root cmd ifconfig
           #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-          ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH} 2> /dev/null
+               ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH} 1> /dev/null 2> /dev/null
           echo ${CMD} ifconfig ${WLAN_IF} create wlandev ${WLAN_PH}
         fi
 
@@ -696,45 +738,72 @@ case ${1} in
           #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
           echo '__random_mac()'
           MAC=$( __random_mac )
-          ${CMD} ifconfig ${WLAN_IF} ether ${MAC}
+               ${CMD} ifconfig ${WLAN_IF} ether ${MAC} 1> /dev/null 2> /dev/null
           echo ${CMD} ifconfig ${WLAN_IF} ether ${MAC}
           MAC=0
         fi
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${WLAN_IF} up
+             ${CMD} ifconfig ${WLAN_IF} up 1> /dev/null 2> /dev/null
         echo ${CMD} ifconfig ${WLAN_IF} up
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${WLAN_IF} scan &
-        echo ${CMD} ifconfig ${WLAN_IF} scan &
+             ${CMD} ifconfig ${WLAN_IF} scan 1> /dev/null 2> /dev/null &
+        echo ${CMD} ifconfig ${WLAN_IF} scan
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${WLAN_IF} ssid -
+             ${CMD} ifconfig ${WLAN_IF} ssid - 1> /dev/null 2> /dev/null
         echo ${CMD} ifconfig ${WLAN_IF} ssid -
 
+        # WIFI NETWORK/SSID SPECIFIED AS ARGUMENT
         if [ "${3}" ]
         then
+
           #DOAS# permit nopass :network as root cmd ifconfig
           #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-          ${CMD} ifconfig ${WLAN_IF} ssid "${3}"
+               ${CMD} ifconfig ${WLAN_IF} ssid "${3}" 1> /dev/null 2> /dev/null
           echo ${CMD} ifconfig ${WLAN_IF} ssid "${3}"
+
         fi
 
         #DOAS# permit nopass :network as root cmd wpa_supplicant
         #SUDO# %network ALL = NOPASSWD: /usr/sbin/wpa_supplicant *
-        ${CMD} wpa_supplicant -i ${WLAN_IF} -c /etc/wpa_supplicant.conf -s -B
+             ${CMD} wpa_supplicant -i ${WLAN_IF} -c /etc/wpa_supplicant.conf -s -B 1> /dev/null 2> /dev/null
         echo ${CMD} wpa_supplicant -i ${WLAN_IF} -c /etc/wpa_supplicant.conf -s -B
 
         __wlan_wait_associated
 
-        #DOAS# permit nopass :network as root cmd dhclient
-        #SUDO# %network ALL = NOPASSWD: /sbin/dhclient *
-        ${CMD} dhclient -q ${WLAN_IF} 1> /dev/null 2> /dev/null
-        echo ${CMD} dhclient -q ${WLAN_IF}
+        # IP ADDRESS AND GATEWAY SPECIFIED AS ARGUMENTS
+        if [ "${4}" -a "${5}" ]
+        then
+
+          #DOAS# permit nopass :network as root cmd ifconfig
+          #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
+               ${CMD} ifconfig ${WLAN_IF} inet ${4} up
+          echo ${CMD} ifconfig ${WLAN_IF} inet ${4} up
+
+          #DOAS# permit nopass :network as root cmd route
+          #SUDO# %network ALL = NOPASSWD: /sbin/route *
+               ${CMD} route add default ${5}
+          echo ${CMD} route add default ${5}
+
+          #DOAS# permit nopass :network as root cmd route
+          #SUDO# %network ALL = NOPASSWD: /sbin/route *
+               ${CMD} route change default ${5}
+          echo ${CMD} route change default ${5}
+
+        else
+        # JUST USE dhclient(8) TO SET IP AND GATEWAY
+
+          #DOAS# permit nopass :network as root cmd dhclient
+          #SUDO# %network ALL = NOPASSWD: /sbin/dhclient *
+               ${CMD} dhclient -q ${WLAN_IF} 1> /dev/null 2> /dev/null
+          echo ${CMD} dhclient -q ${WLAN_IF}
+
+        fi
 
         __dns_check_gateway
 
@@ -744,8 +813,10 @@ case ${1} in
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${WLAN_IF} powersave
+             ${CMD} ifconfig ${WLAN_IF} powersave 1> /dev/null 2> /dev/null
         echo ${CMD} ifconfig ${WLAN_IF} powersave
+
+        __bhyve_networking
 
         ;;
 
@@ -753,30 +824,32 @@ case ${1} in
 
         #DOAS# permit nopass :network as root cmd killall args -9 dhclient
         #SUDO# %network ALL = NOPASSWD: /usr/bin/killall -9 dhclient
-        ${CMD} killall -9 dhclient       1> /dev/null 2> /dev/null
+             ${CMD} killall -9 dhclient 1> /dev/null 2> /dev/null
         echo ${CMD} killall -9 dhclient
 
         #DOAS# permit nopass :network as root cmd killall args -9 wpa_supplicant
         #SUDO# %network ALL = NOPASSWD: /usr/bin/killall -9 wpa_supplicant
-        ${CMD} killall -9 wpa_supplicant 1> /dev/null 2> /dev/null
+             ${CMD} killall -9 wpa_supplicant 1> /dev/null 2> /dev/null
         echo ${CMD} killall -9 wpa_supplicant
 
         #DOAS# permit nopass :network as root cmd wpa_supplicant
         #SUDO# %network ALL = NOPASSWD: /usr/sbin/wpa_supplicant *
-        ${CMD} wpa_supplicant -i ${WLAN_IF} -c /etc/wpa_supplicant.conf -s -B
+             ${CMD} wpa_supplicant -i ${WLAN_IF} -c /etc/wpa_supplicant.conf -s -B 1> /dev/null 2> /dev/null
         echo ${CMD} wpa_supplicant -i ${WLAN_IF} -c /etc/wpa_supplicant.conf -s -B
 
         __wlan_wait_associated
 
         #DOAS# permit nopass :network as root cmd dhclient
         #SUDO# %network ALL = NOPASSWD: /sbin/dhclient *
-        ${CMD} dhclient -q ${WLAN_IF} 1> /dev/null 2> /dev/null
+             ${CMD} dhclient -q ${WLAN_IF} 1> /dev/null 2> /dev/null
         echo ${CMD} dhclient -q ${WLAN_IF}
 
         #DOAS# permit nopass :network as root cmd ifconfig
         #SUDO# %network ALL = NOPASSWD: /sbin/ifconfig *
-        ${CMD} ifconfig ${WLAN_IF} powersave
+             ${CMD} ifconfig ${WLAN_IF} powersave 1> /dev/null 2> /dev/null
         echo ${CMD} ifconfig ${WLAN_IF} powersave
+
+        __bhyve_networking
 
         ;;
 
@@ -812,10 +885,12 @@ case ${1} in
 
         #DOAS# permit nopass :network as root cmd ppp
         #SUDO# %network ALL = NOPASSWD: /usr/sbin/ppp *
-        ${CMD} ppp -ddial ${WWAN_PROFILE} 1> /dev/null 2> /dev/null
+             ${CMD} ppp -ddial ${WWAN_PROFILE} 1> /dev/null 2> /dev/null
         echo ${CMD} ppp -ddial ${WWAN_PROFILE}
 
         __dns_check
+
+        __bhyve_networking
 
         __squid_restart
 
@@ -848,13 +923,13 @@ case ${1} in
 
           #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
-          echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
+                echo | ${CMD} tee /etc/resolv.conf 1> /dev/null 2> /dev/null
           echo "echo | ${CMD} tee /etc/resolv.conf"
 
           #DOAS# permit nopass :network as root cmd tee args -a /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee -a /etc/resolv.conf
-          echo "nameserver ${GW}" | ${CMD} tee -a /etc/resolv.conf 1> /dev/null
-          echo "echo 'nameserver ${GW}' | ${CMD} tee -a /etc/resolv.conf"
+                echo nameserver ${GW} | ${CMD} tee -a /etc/resolv.conf 1> /dev/null 2> /dev/null
+          echo "echo nameserver ${GW} | ${CMD} tee -a /etc/resolv.conf"
 
         fi
 
@@ -867,13 +942,13 @@ case ${1} in
 
           #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
-          echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
+                echo | ${CMD} tee /etc/resolv.conf 1> /dev/null 2> /dev/null
           echo "echo | ${CMD} tee /etc/resolv.conf"
 
           #DOAS# permit nopass :network as root cmd tee args -a /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee -a /etc/resolv.conf
-          echo 'nameserver 87.98.175.85' | ${CMD} tee -a /etc/resolv.conf 1> /dev/null
-          echo "echo 'nameserver 87.98.175.85' | ${CMD} tee -a /etc/resolv.conf"
+                echo nameserver 87.98.175.85 | ${CMD} tee -a /etc/resolv.conf 1> /dev/null 2> /dev/null
+          echo "echo nameserver 87.98.175.85 | ${CMD} tee -a /etc/resolv.conf"
 
         fi
 
@@ -886,13 +961,13 @@ case ${1} in
 
           #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
-          echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
+                echo | ${CMD} tee /etc/resolv.conf 1> /dev/null 2> /dev/null
           echo "echo | ${CMD} tee /etc/resolv.conf"
 
           #DOAS# permit nopass :network as root cmd tee args -a /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee -a /etc/resolv.conf
-          echo 'nameserver 91.239.100.100' | ${CMD} tee -a /etc/resolv.conf 1> /dev/null
-          echo "echo 'nameserver 91.239.100.100' | ${CMD} tee -a /etc/resolv.conf"
+                echo nameserver 91.239.100.100 | ${CMD} tee -a /etc/resolv.conf 1> /dev/null 2> /dev/null
+          echo "echo nameserver 91.239.100.100 | ${CMD} tee -a /etc/resolv.conf"
 
         fi
 
@@ -905,13 +980,13 @@ case ${1} in
 
           #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
-          echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
+                echo | ${CMD} tee /etc/resolv.conf 1> /dev/null 2> /dev/null
           echo "echo | ${CMD} tee /etc/resolv.conf"
 
           #DOAS# permit nopass :network as root cmd tee args -a /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee -a /etc/resolv.conf
-          echo 'nameserver 1.1.1.1' | ${CMD} tee -a /etc/resolv.conf 1> /dev/null
-          echo "echo 'nameserver 1.1.1.1' | ${CMD} tee -a /etc/resolv.conf"
+                echo nameserver 1.1.1.1 | ${CMD} tee -a /etc/resolv.conf 1> /dev/null 2> /dev/null
+          echo "echo nameserver 1.1.1.1 | ${CMD} tee -a /etc/resolv.conf"
 
         fi
 
@@ -924,13 +999,13 @@ case ${1} in
 
           #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
-          echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
+                echo | ${CMD} tee /etc/resolv.conf 1> /dev/null 2> /dev/null
           echo "echo | ${CMD} tee /etc/resolv.conf"
 
           #DOAS# permit nopass :network as root cmd tee args -a /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee -a /etc/resolv.conf
-          echo 'nameserver 9.9.9.9' | ${CMD} tee -a /etc/resolv.conf 1> /dev/null
-          echo "echo 'nameserver 9.9.9.9' | ${CMD} tee -a /etc/resolv.conf"
+                echo nameserver 9.9.9.9 | ${CMD} tee -a /etc/resolv.conf 1> /dev/null 2> /dev/null
+          echo "echo nameserver 9.9.9.9 | ${CMD} tee -a /etc/resolv.conf"
 
         fi
 
@@ -943,13 +1018,13 @@ case ${1} in
 
           #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
-          echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
+                echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
           echo "echo | ${CMD} tee /etc/resolv.conf"
 
           #DOAS# permit nopass :network as root cmd tee args -a /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee -a /etc/resolv.conf
-          echo 'nameserver 45.90.30.114' | ${CMD} tee -a /etc/resolv.conf 1> /dev/null
-          echo "echo 'nameserver 45.90.30.114' | ${CMD} tee -a /etc/resolv.conf"
+                echo nameserver 45.90.30.114 | ${CMD} tee -a /etc/resolv.conf 1> /dev/null 2> /dev/null
+          echo "echo nameserver 45.90.30.114 | ${CMD} tee -a /etc/resolv.conf"
 
         fi
 
@@ -962,20 +1037,20 @@ case ${1} in
 
           #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
-          echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
+                echo | ${CMD} tee /etc/resolv.conf 1> /dev/null 2> /dev/null
           echo "echo | ${CMD} tee /etc/resolv.conf"
 
           #DOAS# permit nopass :network as root cmd tee args -a /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee -a /etc/resolv.conf
-          cat << __EOF | sort -R | head -1 | ${CMD} tee -a /etc/resolv.conf 1> /dev/null
+          cat << __EOF | sort -R | head -1 | ${CMD} tee -a /etc/resolv.conf 1> /dev/null 2> /dev/null
 nameserver 1.1.1.1
 nameserver 9.9.9.9
 nameserver 87.98.175.85
 nameserver 193.183.98.66
 nameserver 91.239.100.100
 nameserver 89.233.43.71
-nameserver 77.109.138.45
-nameserver 77.109.139.29
+nameserver 185.95.218.42
+nameserver 185.95.218.43
 nameserver 85.214.20.141
 nameserver 204.152.184.76
 nameserver 194.150.168.168
@@ -1010,7 +1085,7 @@ __EOF
 
           #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
-          echo | ${CMD} tee /etc/resolv.conf 1> /dev/null
+                echo | ${CMD} tee /etc/resolv.conf 1> /dev/null 2> /dev/null
           echo "echo | ${CMD} tee /etc/resolv.conf"
 
           if ! echo ${2} | grep -E "${IP_REGEX}" 1> /dev/null 2> /dev/null
@@ -1021,8 +1096,8 @@ __EOF
 
           #DOAS# permit nopass :network as root cmd tee args -a /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee -a /etc/resolv.conf
-          echo "nameserver ${2}" | ${CMD} tee -a /etc/resolv.conf 1> /dev/null
-          echo "echo 'nameserver ${2}' | ${CMD} tee -a /etc/resolv.conf"
+                echo nameserver ${2} | ${CMD} tee -a /etc/resolv.conf 1> /dev/null 2> /dev/null
+          echo "echo nameserver ${2} | ${CMD} tee -a /etc/resolv.conf"
 
         fi
 
