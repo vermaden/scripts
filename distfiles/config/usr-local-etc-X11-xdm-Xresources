@@ -1,0 +1,14 @@
+xlogin.Login.fail:                Fail.
+xlogin.Login.changePasswdMessage: Change.
+xlogin.Login.namePrompt:          Username:
+xlogin.Login.passwdPrompt:        Password:
+xlogin.Login.echoPasswd:          true
+xlogin.Login.background:          black
+xlogin.Login.foreground:          white
+xlogin.Login.failColor:           #cccccc
+xlogin.Login.inpColor:            black
+xlogin.Login.promptColor:         #aaaaaa
+xlogin.Login.face:                courier:size=13:style=Bold
+xlogin.Login.failFace:            courier:size=13:style=Bold
+xlogin.Login.promptFace:          courier:size=13:style=Normal
+xlogin.Login.greetFace:           courier:size=13

@@ -1,0 +1,12 @@
+# POWER SAVE USB DEVICES
+usbconfig \
+  | grep -v 'Logitech USB Receiver' \
+  | awk '{print $1}' \
+  | sed 's|ugen||'g \
+  | tr -d : \
+  | awk -F '.' '{print $1 " " $2 }' \
+  | while read U A
+    do
+      usbconfig -u ${U} -a ${A} power_save 2> /dev/null
+    done
+

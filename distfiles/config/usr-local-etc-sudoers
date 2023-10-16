@@ -1,0 +1,19 @@
+root   ALL=(ALL) ALL
+%wheel ALL=(ALL) NOPASSWD: ALL
+
+%network ALL = NOPASSWD: /etc/rc.d/netif onerestart
+%network ALL = NOPASSWD: /sbin/dhclient *
+%network ALL = NOPASSWD: /sbin/ifconfig *
+%network ALL = NOPASSWD: /sbin/route *
+%network ALL = NOPASSWD: /sbin/umount -f *
+%network ALL = NOPASSWD: /usr/bin/killall -9 dhclient
+%network ALL = NOPASSWD: /usr/bin/killall -9 ppp
+%network ALL = NOPASSWD: /usr/bin/killall -9 wpa_supplicant
+%network ALL = NOPASSWD: /usr/bin/tee -a /etc/resolv.conf
+%network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
+%network ALL = NOPASSWD: /usr/sbin/ppp *
+%network ALL = NOPASSWD: /usr/sbin/service squid onerestart
+%network ALL = NOPASSWD: /usr/sbin/wpa_supplicant *
+
+#includedir /usr/local/etc/sudoers.d
+
