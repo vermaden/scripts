@@ -1,0 +1,9 @@
+set bell-style                 none
+set completion-ignore-case     off
+set completion-query-items     100
+set disable-completion         off
+set enable-keypad              on
+set mark-symlinked-directories on
+set match-hidden-files         off
+
+

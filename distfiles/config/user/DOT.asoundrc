@@ -1,0 +1,5 @@
+pcm.OSS {
+  type oss
+  device /dev/dsp0.0
+}
+

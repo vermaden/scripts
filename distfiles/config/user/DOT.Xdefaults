@@ -1,0 +1,195 @@
+!FONTS!
+  Xft.antialias:  true
+  Xft.hinting:    false
+  Xft.hintstyle:  0
+  Xft.dpi:        75
+  Xft.rgba:       none
+
+!CURSOR!
+  Xcursor.theme: Vanilla-DMZ
+  Xcursor.size:  24
+
+!ALL/XTERM/URXVT!
+  *background:             #222222
+  *foreground:             #aaaaaa
+  *cursorColor:            #93a1a1
+  *pointerColorBackground: #586e75
+  *pointerColorForeground: #93a1a1
+
+!XTERM!
+  xterm*VT100.geometry:       158x38
+  xterm*termName:             xterm-256color
+  xterm*internalBorder:       1
+  xterm*iconHint:             /home/vuk/.icons/vermaden/xterm.xpm
+  xterm*SimpleMenu*font:      -*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2
+  xterm*faceName:             UbuntuMono Nerd Font Mono
+  xterm*faceSize:             11.5
+  xterm*scaleHeight:          1.0
+  xterm*allowBoldFonts:       true
+  xterm*allowWindowOps:       true
+  xterm*fullscreen:           false
+  xterm*keepSelection:        true
+  xterm*omitTranslation:      fullscreen
+  xterm*title:                xterm
+  xterm*boldMode:             true
+  xterm*cutNewline:           true
+  xterm*on4Clicks:            group
+  xterm*on5Clicks:            page
+  xterm*metaSendsEscape:      true
+  xterm*cursorBlink:          false
+  xterm*veryBoldColors:       14
+  xterm*loginShell:           true
+  xterm*charClass:            33:48,35:48,37:48,43:48,45-47:48,64:48,95:48,126:48,35:48,58:48,63:48,61:48,44:48,38:48,59:48
+  xterm*jumpScroll:           true
+  xterm*fastScroll:           true
+  xterm*multiScroll:          true
+  xterm*scrollKey:            true
+  xterm*scrollTtyOutput:      false
+  xterm*saveLines:            1024000
+  xterm*VT100*translations:   #override                                                             \n\
+                                           <Btn1Up>:    select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0) \n\
+                                Ctrl       <Key> minus: smaller-vt-font()                           \n\
+                                Ctrl       <Key> plus:  larger-vt-font()                            \n\
+                                Ctrl Shift <Key> C:     copy-selection(CLIPBOARD)                   \n\
+                                Ctrl Shift <Key> V:     insert-selection(CLIPBOARD)                 \n\
+                                Ctrl Shift <Key> P:     print(noAttrs, noNewLine)
+
+!URXVT!
+  urxvt.font:              -*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2
+  urxvt.boldFont:          -*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2
+! urxvt.font:              xft:ubuntu mono:pixelsize=10
+  urxvt.keysym.C-0:        command:\033]710;xft:ubuntu mono:pixelsize=10\007
+  urxvt.keysym.C-minus:    command:\033]710;xft:ubuntu mono:pixelsize=13\007
+  urxvt.keysym.C-equal:    command:\033]710;xft:ubuntu mono:pixelsize=16\007
+  urxvt.iconFile:          /home/vuk/.icons/vermaden/xterm.xpm
+  urxvt.perl-ext-common:   default,-confirm-paste
+  urxvt.geometry:          158x41
+  urxvt.cutchars:          ,;
+  urxvt.scrollBar:         false
+  urxvt.imLocale:          en_US.UTF-8
+  urxvt.loginShell:        true
+  urxvt.saveLines:         65535
+  urxvt.inheritPixmap:     false
+  urxvt.shading:           20
+  urxvt.xftAntialias:      true
+  urxvt.jumpScroll:        true
+  urxvt.tintColor:         black
+  urxvt.internalBorder:    2
+  urxvt.cursorBlink:       false
+  urxvt.cursorColor:       #dd9900
+  urxvt.cursorColor2:      #000000
+  urxvt.colorBD:           #eeeeee
+  urxvt.colorIT:           #bbbbbb
+  urxvt.colorUL:           #999999
+  urxvt.underlineColor:    #999999
+
+!TERMBAR!
+  termbar*internalBorder:       1
+  termbar*SimpleMenu*font:      -*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2
+  termbar*faceName:             Consolas
+  termbar*faceSize:             11
+  termbar*scaleHeight:          1.0
+  termbar*allowBoldFonts:       true
+  termbar*allowWindowOps:       true
+  termbar*selectToClipboard:    true
+  termbar*VT100.translations:   #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
+  termbar*keepSelection:        true
+  termbar*omitTranslation:      fullscreen
+  termbar*title:                termbar
+  termbar*boldMode:             false
+  termbar*cutNewline:           true
+  termbar*metaSendsEscape:      true
+  termbar*cursorBlink:          false
+  termbar*scrollBar:            false
+  termbar*scrollTtyOutput:      false
+  termbar*saveLines:            3
+
+!VERMADEN/COLORS!
+! black
+  *color0:  #303030
+  *color8:  #666666
+! red
+  *color1:  #ff6565
+  *color9:  #ff8d8d
+! green
+  *color2:  #93d44f
+  *color10: #c8e7a8
+! yellow
+  *color3:  #ce5c00
+  *color11: #f57900
+! blue
+  *color4:  #537dba
+  *color12: #6798d7
+! magenta
+  *color5:  #B7416E
+  *color13: #E16A98
+! cyan
+  *color6:  #89b6e2
+  *color14: #46a4ff
+! white
+  *color7:  #cccccc
+  *color15: #ffffff
+
+!XCALC!
+  xcalc*ti.button1.vertDistance:          4
+  xcalc*ti.button2.vertDistance:          4
+  xcalc*ti.button3.vertDistance:          4
+  xcalc*ti.button4.vertDistance:          4
+  xcalc*ti.button5.vertDistance:          4
+  xcalc*ti.background:                    gray90
+  xcalc*ti.bevel.borderColor:             gray65
+  xcalc*ti.bevel.borderWidth:             1
+  xcalc*ti.bevel.vertDistance:            4
+  xcalc*ti.bevel.defaultDistance:         0
+  xcalc*ti.bevel.background:              rgb:b/c/b
+  xcalc*ti.bevel.screen*background:       rgb:b/c/b
+  xcalc*ti.bevel.screen.borderColor:      rgb:b/c/b
+  xcalc*ti.bevel.screen.vertDistance:     10
+  xcalc*ti.bevel.screen.horizDistance:    10
+  xcalc*ti.bevel.screen*left:             chainLeft
+  xcalc*ti.bevel.screen*right:            chainRight
+  xcalc*ti.bevel.screen*top:              chainTop
+  xcalc*ti.bevel.screen*bottom:           chainBottom
+  xcalc*ti.bevel.screen*LCD.foreground:   gray10
+  xcalc*ti.bevel.screen*INV.vertDistance: 0
+  xcalc*ti.Command.borderColor:           gray65
+  xcalc*ti.Command.background:            gray85
+  xcalc*ti.Command.foreground:            gray30
+  xcalc*ti.button5.background:            rgb:e/b/b
+  xcalc*ti.button20.background:           rgb:e/d/c
+  xcalc*ti.button25.background:           rgb:e/d/c
+  xcalc*ti.button30.background:           rgb:e/d/c
+  xcalc*ti.button35.background:           rgb:e/d/c
+  xcalc*ti.button40.background:           rgb:b/b/e
+  xcalc*ti.button22.background:           gray95
+  xcalc*ti.button23.background:           gray95
+  xcalc*ti.button24.background:           gray95
+  xcalc*ti.button27.background:           gray95
+  xcalc*ti.button28.background:           gray95
+  xcalc*ti.button29.background:           gray95
+  xcalc*ti.button32.background:           gray95
+  xcalc*ti.button33.background:           gray95
+  xcalc*ti.button34.background:           gray95
+  xcalc*ti.button37.background:           gray95
+  xcalc*ti.button38.background:           gray95
+  xcalc*ti.button39.background:           gray95
+
+!XMESSAGE!
+  xmessage*form.okay.shapeStyle:          rectangle
+  xmessage*form.okay.background:          IndianRed
+  xmessage*form.okay.foreground:          rgb:e/b/b
+  xmessage*message*background:            ivory3
+  xmessage*background:                    gray85
+  xmessage*foreground:                    gray15
+  xmessage*Scrollbar.width:               1
+  xmessage*Scrollbar.borderWidth:         0
+  xmessage*Text.?.cursorColor:            rgb:d/5/5
+  xmessage*Text.borderColor:              gray65
+  xmessage*Text*background:               gray95
+  xmessage*Command.highlightThickness:    1
+  xmessage*Command.internalWidth:         5
+  xmessage*Command.internalHeight:        3
+  xmessage*Command.borderColor:           gray40
+  xmessage*Command.shapeStyle:            Rectangle
+  xmessage*Command.background:            gray80
+  xmessage*font:                          -*-clean-*-*-*-*-*-*-*-*-*-*-iso8859-2
