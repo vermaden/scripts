@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2017-2022 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2017-2023 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -65,7 +65,7 @@ then
   echo "  \  \  \ '__\  \_ \  \  \ \  \  \    \__\__  \ /  / "
   echo "   \__\__\__/ \___\______/____/\__\_/\_\_/____//__/  "
   echo
-  echo "network.sh 0.7 2021/01/25"
+  echo "network.sh 0.8 2023/09/11"
   echo
   exit 0
 fi
@@ -919,7 +919,7 @@ case ${1} in
         if [ "${UNBOUND}" != "1" ]
         then
 
-          GW=$( route -n -4 -v get default 2> /dev/null | awk 'END{print $2}' )
+          GW=$( route -n -4 -v get default 2> /dev/null | awk '/gateway:/ {print $NF}' )
 
           #DOAS# permit nopass :network as root cmd tee args /etc/resolv.conf
           #SUDO# %network ALL = NOPASSWD: /usr/bin/tee /etc/resolv.conf
@@ -1140,5 +1140,3 @@ __EOF
     ;;
 
 esac
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
