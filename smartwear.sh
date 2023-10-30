@@ -50,14 +50,15 @@ then
   exit 1
 fi
 
-if [ ! -e "${1}" ]
+if [ ! -e "${1}" -a ! -e "/dev/${1}" ]
 then
   echo "NOPE: device '${1}' does not exists"
   exit 1
 fi
 
-SMARTCTL=$( smartctl -a "${1}" )
-DISK=$( diskinfo -v "${1}" | awk -F '#' '/Disk descr./ {print $1}' | tr -d '\t' )
+SMARTCTL=$( smartctl -a "${1}" 2> /dev/null || smartctl -a "/dev/${1}" 2> /dev/null )
+DISKINFO=$( diskinfo -v "${1}" 2> /dev/null || diskinfo -v "/dev/${1}" 2> /dev/null )
+DISK=$( echo "${DISKINFO}" | awk -F '#' '/Disk descr./ {print $1}' | tr -d '\t' )
 SECTOR=$( echo "${SMARTCTL}" | awk '/Sector Size/ {print $3}' )
 LBA=$( echo "${SMARTCTL}" | awk '/Total_LBAs_Written/ {print $NF}' )
 
@@ -78,5 +79,3 @@ if [ ${2} ]
 then
   printf "Written/TBW (%%): %3.1f\n" $( echo ${WRITTEN} / ${2} \* 100 | bc -l )
 fi
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

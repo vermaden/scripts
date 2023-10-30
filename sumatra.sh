@@ -23,6 +23,3 @@ else
     zenity --title 'Sumatra PDF' --info --text 'WINE not available in \${PATH}.\n\nInstall WINE.'
   fi
 fi
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
-

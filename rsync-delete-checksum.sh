@@ -24,7 +24,7 @@ case ${#} in
     }
     echo "${1}" | grep : 1> /dev/null 2> /dev/null && SSH='-e "ssh -C"'
     echo "${2}" | grep : 1> /dev/null 2> /dev/null && SSH='-e "ssh -C"'
-    eval rsync ${SSH} --modify-window=1 -l -t -r -D -v -S -H \
+    eval rsync ${SSH} --modify-window=1 -l -t -r -D -v -S -H -p \
                       --force --progress --rsync-path=/usr/local/bin/rsync \
                       --no-whole-file --numeric-ids \
                       --delete-after \
@@ -40,5 +40,3 @@ case ${#} in
 esac
 
 # --archive --hard-links --sparse --xattrs --numeric-ids
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

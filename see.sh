@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2017-2022 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2017-2021 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -59,20 +59,24 @@ case ${#} in
 
       # CHM
       ( [Cc][Hh][Mm] )
-        xchm "${@}" &
+        xchm "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # HTM
       # HTML
       ( [Hh][Tt][Mm][Ll] \
       | [Hh][Tt][Mm]     )
-        firefox -new-tab "${@}" &
+        case "${@}" in
+          (/*) midori -p          "${@}" 1> /dev/null 2> /dev/null & ;;
+          (*)  midori -p $( pwd )/"${@}" 1> /dev/null 2> /dev/null & ;;
+        esac
+        # firefox -new-tab "${@}" &
         ;;
 
       # ODT
       ( [Oo][Dd][Tt] )
-        env QT_FONT_DPI=80 libreoffice "${@}" &
-        ;;
+        env QT_FONT_DPI=80 libreoffice "${@}" 1> /dev/null 2> /dev/null &
+	;;
 
       # MP3
       # M4A
@@ -80,7 +84,7 @@ case ${#} in
       ( [Mm][Pp][3] \
       | [Mm][4][Aa] \
       | [Mm][Pp][4][Aa] )
-        deadbeef --queue "${@}" &
+        deadbeef --queue "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # MHT
@@ -110,7 +114,7 @@ case ${#} in
       | [Xx][Bb][Mm]     \
       | [Bb][Mm][Pp]     \
       | [Ss][Vv][Gg]     )
-        viewnior "${@}" &
+        viewnior "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # MOBI
@@ -124,7 +128,7 @@ case ${#} in
       | [Pp][Dd][Ff]     )
         mupdf.sh "${@}" 1> /dev/null 2> /dev/null &
         # sumatra.sh "${@}" 1> /dev/null 2> /dev/null &
-        # evince "${@}"
+        # evince "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # DJVU
@@ -147,53 +151,53 @@ case ${#} in
       | [Pp][Ll]     \
       | [pP][uU][bB] \
       | [Vv][Cc][Ff] )
-        leafpad "${@}" &
+        leafpad "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # XML
       ( [Xx][Mm][Ll] )
-        geany --new-instance "${@}" &
+        geany --new-instance "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # SH
       # AWK
       ( [Ss][Hh] )
-        geany "${@}" &
+        geany "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # CSV
       # GNUMERIC
       ( [Cc][Ss][Vv]                     \
       | [Gg][Nn][Uu][Mm][Ee][Rr][Ii][Cc] )
-        gnumeric "${@}" &
+        gnumeric "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # ODS
       # RTF
       ( [Oo][Dd][Ss] \
       | [Rr][Tt][Ff] )
-        env QT_FONT_DPI=80 libreoffice --nologo "${@}" &
+        env QT_FONT_DPI=80 libreoffice --nologo "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # XLSX
       # XLS
       ( [Xx][Ll][Ss]     \
       | [Xx][Ll][Ss][Xx] )
-        env QT_FONT_DPI=80 libreoffice --nologo "${@}" &
+        env QT_FONT_DPI=80 libreoffice --nologo "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # DOCX
       # DOC
       ( [Dd][Oo][Cc]     \
       | [Dd][Oo][Cc][Xx] )
-        env QT_FONT_DPI=80 libreoffice --nologo "${@}" &
+        env QT_FONT_DPI=80 libreoffice --nologo "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # PPTX
       # PPT
       ( [Pp][Pp][Tt]     \
       | [Pp][Pp][Tt][Xx] )
-        env QT_FONT_DPI=80 libreoffice --nologo "${@}" &
+        env QT_FONT_DPI=80 libreoffice --nologo "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # AVI
@@ -205,6 +209,7 @@ case ${#} in
       # RMVB
       # WEBM
       # OGV
+      # TS
       # MPG
       ( [Aa][Vv][Ii]     \
       | [Mm][pP][4]      \
@@ -216,11 +221,13 @@ case ${#} in
       | [Ww][Ee][Bb][Mm] \
       | [Oo][Gg][Vv]     \
       | [Vv][Oo][Bb]     \
+      | [Tt][Ss]         \
       | [Mm][Pp][Gg]     )
         mpv "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # GZ
+      # BZ2
       # XZ
       # ISO
       # ZIP
@@ -232,28 +239,29 @@ case ${#} in
       | [Zz][Ii][Pp]     \
       | [Gg][Zz]         \
       | [Xx][Zz]         \
+      | [Bb][Zz][2]      \
       | [Rr][Aa][Rr]     \
       | [Ll][Zz][Mm][Aa] \
       | [7][Zz]          \
       | [Tt][Gg][Zz]     )
-        engrampa "${@}" &
+        engrampa "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # XML
       # NFO
       ( [Xx][Mm][Ll] \
       | [Nn][Ff][Oo] )
-        leafpad "${@}" &
+        leafpad "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # SWF
       ( [Ss][Ww][Ff] )
-        wine ~/win32/bin/flashplayer_32_sa.exe "${@}" &
+        wine ~/win32/bin/flashplayer_32_sa.exe "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       # EXE
       ( [Ee][Xx][Ee] )
-        wine "${@}" &
+        wine "${@}" 1> /dev/null 2> /dev/null &
         ;;
 
       (*)
@@ -262,15 +270,15 @@ case ${#} in
         case ${TYPE} in
 
           (ASCIItext)
-            leafpad "${@}" &
+            leafpad "${@}" 1> /dev/null 2> /dev/null &
             ;;
 
           (POSIXshellscript)
-            geany "${@}" &
+            geany "${@}" 1> /dev/null 2> /dev/null &
             ;;
 
           (awkscript)
-            geany "${@}" &
+            geany "${@}" 1> /dev/null 2> /dev/null &
             ;;
 
           (*)
@@ -294,11 +302,17 @@ case ${#} in
   (*)
     for FILE in "${@}"
     do
-      "${0}" "${FILE}" &
+      "${0}" "${FILE}" 1> /dev/null 2> /dev/null &
     done
     ;;
 
 esac
 
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
-
+# TODO
+#
+# (magnet:.*)                                  tremc "$1"
+# (.*.torrent)                                 tremc "$1"
+# (https://(?:www\.)?youtube.com/watch\?v=.*)  mpv "$1"
+# https://youtu.be/(.+)                        mpv "ytdl://$1"
+# (https?://?.*)                               w3m -o confirm_q=False "$1"
+# (git://.*\.git)                              git clone --recursive "$1"

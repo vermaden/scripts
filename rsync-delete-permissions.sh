@@ -39,5 +39,3 @@ case ${#} in
 esac
 
 # --archive --hard-links --sparse --xattrs --numeric-ids
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
