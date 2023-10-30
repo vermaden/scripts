@@ -32,5 +32,3 @@
 # https://vermaden.wordpress.com
 
 killall -9 conky
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

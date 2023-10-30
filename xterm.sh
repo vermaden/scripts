@@ -38,5 +38,3 @@ xrdb -load  ~/.Xdefaults
 xrdb -merge ~/.config/Xdefaults/themes/${THEME}
 
 cd ~ && xterm -title "xterm | ${TITLE}" ${@} &
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

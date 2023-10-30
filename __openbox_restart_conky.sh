@@ -52,5 +52,3 @@ nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.9 1
 nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.a 1> /dev/null 2> /dev/null &
 nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.b 1> /dev/null 2> /dev/null &
 nice -n 20 conky -c /home/vermaden/.conky/.conkyrc.${VERSION}.${PROFILE}.LOG.c 1> /dev/null 2> /dev/null &
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

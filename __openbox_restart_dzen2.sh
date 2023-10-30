@@ -31,14 +31,8 @@
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-# XRANDR=$( xrandr )
-# COUNT=$( echo "${XRANDR}" | grep -c " connected " )
-# PROFILE=T420s
-
 killall -9 dzen2
 
 sleep 0.3
 
 ~/scripts/dzen2-fifo.sh &
-
-echo '1' >> ~/scripts/stats/${0##*/}

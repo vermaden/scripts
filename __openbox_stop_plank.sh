@@ -36,5 +36,3 @@ DELAY=1
 killall plank
 sleep ${DELAY}
 killall -9 plank
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

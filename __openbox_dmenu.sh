@@ -54,5 +54,3 @@ then
 else
   xterm -title "${TITLE}" -e "${CMD};read" &
 fi
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

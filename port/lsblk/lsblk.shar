@@ -1,0 +1,61 @@
+# This is a shell archive.  Save it in a file, remove anything before
+# this line, and then unpack it by entering "sh file".  Note, it may
+# create directories; files and directories will be owned by you and
+# have default permissions.
+#
+# This archive contains:
+#
+#	lsblk
+#	lsblk/distinfo
+#	lsblk/Makefile
+#	lsblk/pkg-descr
+#
+echo c - lsblk
+mkdir -p lsblk > /dev/null 2>&1
+echo x - lsblk/distinfo
+sed 's/^X//' >lsblk/distinfo << 'b877ca4c448cc3b3e930f93cf1e668b2'
+XTIMESTAMP = 1570189598
+XSHA256 (lsblk-1.0.tar.gz) = ec6335ec27fd7ec1c56b2700d073c659c1704b816aa08c0f4d831d417dd2affb
+XSIZE (lsblk-1.0.tar.gz) = 4338
+X
+b877ca4c448cc3b3e930f93cf1e668b2
+echo x - lsblk/Makefile
+sed 's/^X//' >lsblk/Makefile << 'cb6e20b24038aaf985f589597c60bef0'
+XPORTNAME=	lsblk
+XPORTVERSION=	1.0
+XPORTREVISION=	0
+XCATEGORIES=	sysutils
+XMASTER_SITES=	\
+X		https://github.com/vermaden/scripts/raw/master/release/
+X
+XMAINTAINER=	vermaden@interia.pl
+XCOMMENT=	Lists information about block devices in the system.
+X
+XLICENSE=	BSD2CLAUSE
+X
+X# USE_GITHUB=	yes
+X# GH_ACCOUNT=	vermaden
+X
+XNO_BUILD=	YES
+XNO_ARCH=	YES
+X
+XCONFLICTS_INSTALL=	
+X
+XPLIST_FILES=	sbin/${PORTNAME}
+X
+Xdo-install:
+X	${INSTALL_SCRIPT} ${WRKSRC}/lsblk.sh \
+X	    ${STAGEDIR}${PREFIX}/sbin/${PORTNAME}
+X
+X.include <bsd.port.mk>
+X
+cb6e20b24038aaf985f589597c60bef0
+echo x - lsblk/pkg-descr
+sed 's/^X//' >lsblk/pkg-descr << '634b0ac83d6da8c4998500a898071ff2'
+XLists information about block devices in the system.
+X
+XWWW: https://github.com/vermaden/scripts/blob/master/lsblk.sh
+X
+634b0ac83d6da8c4998500a898071ff2
+exit
+

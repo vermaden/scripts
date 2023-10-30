@@ -193,5 +193,3 @@ snap() {
 }
 
 snap ${1}
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

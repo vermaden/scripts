@@ -32,6 +32,3 @@
 # https://vermaden.wordpress.com
 
 killall -9 compton picom
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
-

@@ -1,0 +1,202 @@
+artwork.cache.period 48
+artwork.enable_albumartorg 0
+artwork.enable_embedded 1
+artwork.enable_lastfm 0
+artwork.enable_localfolder 1
+artwork.enable_musicbrainz 0
+artwork.enable_wos 0
+artwork.filemask *cover*.jpg;*front*.jpg;*folder*.jpg;*cover*.png;*front*.png;*folder*.png
+artwork.missing_artwork 1
+artwork.nocover_path 
+artwork.scale_towards_longer 1
+cli_add_playlist_name Default
+cli_add_to_specific_playlist 1
+deadbeef_version 0.7.2
+filechooser.lastdir file:///home/vuk
+gtkui.action_separators 0
+gtkui.columns.playlist [{"title":"♫","id":"1","format":"%playstatus%","size":"41","align":"0","color_override":"0","color":"#ff000000"},{"title":"Duration","id":"-1","format":"%length%","size":"78","align":"0","color_override":"0","color":"#ff000000"},{"title":"File","id":"-1","format":"%filename_ext%","size":"558","align":"0","color_override":"0","color":"#ff3b3e45"}]
+gtkui.columns.search [{"title":"Artist / Album","id":"-1","format":"%artist% - %album%","size":"150","align":"0","color_override":"0","color":"#ff000000"},{"title":"Track No","id":"-1","format":"%tracknumber%","size":"50","align":"1","color_override":"0","color":"#ff000000"},{"title":"Title","id":"-1","format":"%title%","size":"270","align":"0","color_override":"0","color":"#ff000000"},{"title":"Duration","id":"-1","format":"%length%","size":"50","align":"0","color_override":"0","color":"#ff000000"}]
+gtkui.custom_tray_icon deadbeef_tray_icon
+gtkui.delete_files_ask 1
+gtkui.disable_seekbar_overlay 0
+gtkui.embolden_current_track 1
+gtkui.eq.visible 0
+gtkui.layout.0.6.2 vbox expand="0 1" fill="1 1" homogeneous=0 {hbox expand="0 1 0" fill="1 1 1" homogeneous=0 {playtb {} seekbar {} volumebar {} } tabbed_playlist hideheaders=0 width=1144 {} } 
+gtkui.mmb_delete_playlist 1
+gtkui.name_playlist_from_folder 1
+gtkui.pltbrowser.highlight_curr_plt 1
+gtkui.pltbrowser.mmb_delete_playlist 1
+gtkui.refresh_rate 1
+gtkui.sortby_fmt_v2 %f
+gtkui.sortby_order 0
+gtkui.statusbar.visible 0
+gtkui.sync 0
+gtkui.tabscroll 2064
+gtkui.titlebar_playing_tf Deadbeef
+gtkui.titlebar_stopped_tf Deadbeef
+gtkui.tray_volume_sensitivity 1
+gtkui.unicode_playstate 0
+gui_plugin GTK2
+hotkey.key01 "Ctrl f" 0 0 find
+hotkey.key02 "Ctrl o" 0 0 open_files
+hotkey.key03 "Ctrl q" 0 0 quit
+hotkey.key04 "Ctrl n" 0 0 new_playlist
+hotkey.key05 "Ctrl a" 0 0 select_all
+hotkey.key06 "Escape" 0 0 deselect_all
+hotkey.key07 "Ctrl m" 0 0 toggle_stop_after_current
+hotkey.key08 "Ctrl j" 0 0 jump_to_current_track
+hotkey.key09 "F1" 0 0 help
+hotkey.key10 "Delete" 1 0 remove_from_playlist
+hotkey.key11 "Ctrl w" 0 0 remove_current_playlist
+hotkey.key14 "Return" 0 0 play
+hotkey.key15 "Ctrl p" 0 0 toggle_pause
+hotkey.key16 "Alt 1" 0 0 playlist1
+hotkey.key17 "Alt 2" 0 0 playlist2
+hotkey.key18 "Alt 3" 0 0 playlist3
+hotkey.key19 "Alt 4" 0 0 playlist4
+hotkey.key20 "Alt 5" 0 0 playlist5
+hotkey.key21 "Alt 6" 0 0 playlist6
+hotkey.key22 "Alt 7" 0 0 playlist7
+hotkey.key23 "Alt 8" 0 0 playlist8
+hotkey.key24 "Alt 9" 0 0 playlist9
+hotkey.key25 "Alt 0" 0 0 playlist10
+hotkey.key26 z 0 0 prev
+hotkey.key27 x 0 0 play
+hotkey.key28 c 0 0 toggle_pause
+hotkey.key29 v 0 0 stop
+hotkey.key30 b 0 0 next
+hotkey.key31 n 0 0 playback_random
+hotkey.key32 "Ctrl k" 0 0 toggle_stop_after_album
+hotkeys_created 1
+ignore_archives 0
+junk.enable_cp1251_detection 1
+junk.enable_cp936_detection 1
+junk.enable_shift_jis_detection 1
+mainwin.geometry.h 778
+mainwin.geometry.maximized 0
+mainwin.geometry.w 1141
+mainwin.geometry.x 205
+mainwin.geometry.y 44
+mp3.disable_gapless 1
+network.http_user_agent deadbeef
+network.proxy.port 8080
+network.proxy.type HTTP
+output_plugin OSS output plugin
+playback.loop 0
+playback.order 1
+playback.volume 0.0000000
+playlist.current 43
+playlist.cursor.0 0
+playlist.cursor.1 13
+playlist.cursor.10 54
+playlist.cursor.11 0
+playlist.cursor.12 3
+playlist.cursor.13 32
+playlist.cursor.14 1
+playlist.cursor.15 0
+playlist.cursor.16 0
+playlist.cursor.17 1078
+playlist.cursor.18 68
+playlist.cursor.19 3
+playlist.cursor.2 46
+playlist.cursor.20 3
+playlist.cursor.21 58
+playlist.cursor.22 1
+playlist.cursor.23 34
+playlist.cursor.24 0
+playlist.cursor.25 1
+playlist.cursor.26 1
+playlist.cursor.27 6
+playlist.cursor.28 0
+playlist.cursor.29 0
+playlist.cursor.3 4
+playlist.cursor.30 0
+playlist.cursor.31 12
+playlist.cursor.32 14
+playlist.cursor.33 5
+playlist.cursor.34 14
+playlist.cursor.35 1
+playlist.cursor.36 0
+playlist.cursor.37 1
+playlist.cursor.38 7
+playlist.cursor.39 4
+playlist.cursor.4 62
+playlist.cursor.40 34
+playlist.cursor.41 0
+playlist.cursor.42 18
+playlist.cursor.43 0
+playlist.cursor.44 443
+playlist.cursor.45 3
+playlist.cursor.46 0
+playlist.cursor.5 23
+playlist.cursor.6 3
+playlist.cursor.7 0
+playlist.cursor.8 11
+playlist.cursor.9 54
+playlist.scroll.0 0
+playlist.scroll.1 0
+playlist.scroll.10 666
+playlist.scroll.11 0
+playlist.scroll.12 0
+playlist.scroll.13 287
+playlist.scroll.14 0
+playlist.scroll.15 0
+playlist.scroll.16 0
+playlist.scroll.17 19044
+playlist.scroll.18 611
+playlist.scroll.19 0
+playlist.scroll.2 125
+playlist.scroll.20 0
+playlist.scroll.21 836
+playlist.scroll.22 0
+playlist.scroll.23 307
+playlist.scroll.24 0
+playlist.scroll.25 0
+playlist.scroll.26 0
+playlist.scroll.27 0
+playlist.scroll.28 0
+playlist.scroll.29 0
+playlist.scroll.3 0
+playlist.scroll.30 0
+playlist.scroll.31 0
+playlist.scroll.32 127
+playlist.scroll.33 0
+playlist.scroll.34 0
+playlist.scroll.35 0
+playlist.scroll.36 0
+playlist.scroll.37 0
+playlist.scroll.38 0
+playlist.scroll.39 0
+playlist.scroll.4 756
+playlist.scroll.40 575
+playlist.scroll.41 0
+playlist.scroll.42 0
+playlist.scroll.43 0
+playlist.scroll.44 7181
+playlist.scroll.45 0
+playlist.scroll.46 0
+playlist.scroll.5 0
+playlist.scroll.6 0
+playlist.scroll.7 0
+playlist.scroll.8 0
+playlist.scroll.9 667
+playlist.scroll.cursorfollowplayback 1
+prefwin.geometry.h 459
+prefwin.geometry.w 587
+prefwin.geometry.x 315
+prefwin.geometry.y 323
+replaygain_mode 0
+replaygain_scale 0
+resume.paused 0
+resume.playlist 45
+resume.position 5.0619535
+resume.track 385
+searchwin.geometry.h 634
+searchwin.geometry.w 1187
+searchwin.geometry.x 607
+searchwin.geometry.y 385
+streamer.8_to_16 1
+trkproperties.geometry.h 491
+trkproperties.geometry.w 692
+trkproperties.geometry.x 3
+trkproperties.geometry.y 45
