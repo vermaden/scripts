@@ -106,7 +106,7 @@ echo "${SYSCTL}"                   \
 
 # CHECK IF power(8) IS RUNNING
 POWERD=0
-if pgrep -q powerd 1> /dev/null 2> /dev/null
+if pgrep -q -x -S "powerd" 1> /dev/null 2> /dev/null
 then
   printf "%38s %s\n" "powerd(8):" "running"
   POWERD=1
@@ -224,9 +224,9 @@ do
       continue
       ;;
 
-    # THE nvd(4) AND nvme(4) DEVICES NEED SPECIAL HANDLING
-    (nvd*)
-      I=$( echo ${I} | sed -e 's/nvd/nvme/g' )
+    # THE nvd(4)/nda(4)/nvme(4) DEVICES NEED SPECIAL HANDLING
+    (nvd*|nda*)
+      I=$( echo ${I} | sed -e 's/nvd/nvme/g' -e 's/nda/nvme/g' )
       smartctl -a /dev/${I}    \
         | grep -e Temperature: \
         | sed -E 's|\(.*\)||g' \
