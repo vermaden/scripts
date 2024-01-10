@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2018 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2022 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -26,7 +26,7 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # ------------------------------
-# openbox(1) WITH FREEBSD SOUND
+# automatic sound output switch
 # ------------------------------
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
@@ -84,47 +84,65 @@ unset SUDO_WHICH
 unset DOAS_WHICH
 unset ROOT
 
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-echo "<openbox_pipe_menu>"
+DISPLAY=:0
+USERNAME=vermaden
+DEFAULT=0
 
-echo "<item label=\"FreeBSD Sound Devices\" icon=\"/home/vermaden/.config/openbox/icons/speaker.png\">"
-echo "  <action name=\"Execute\">"
-echo "    <command>xterm -e 'cat /dev/sndstat; echo; read'</command>"
-echo "  </action>"
-echo "</item>"
+case ${1} in
+  (attach)
+    # WORKAROUND FOR RACE CONDITION
+    sleep 0.2
+    SNDSTAT=$( cat /dev/sndstat )
+    DEV=$(    echo "${SNDSTAT}" | awk '/^pcm/' | tail -1 | tr '>' ']' | tr '<' '[' )
+    LATEST=$( echo "${SNDSTAT}" | awk '/^pcm/ {print $1}' | tail -1 )
+    LATEST_NUMBER=$( echo "${LATEST}" | tr -c -d '\n0-9' )
+    UNIT=$( echo ${LATEST} | tr -c -d '[0-9]' )
+    ${CMD} sysctl hw.snd.default_unit=${UNIT}             &
+    pactl set-default-sink oss_output.dsp${LATEST_NUMBER} &
+    ;;
 
-echo "<item label=\"PulseAudio Volume Control\" icon=\"/home/vermaden/.config/openbox/icons/pavol.png\">"
-echo "  <action name=\"Execute\">"
-echo "    <command>pavucontrol</command>"
-echo "  </action>"
-echo "</item>"
+  (detach)
+    ${CMD} sysctl hw.snd.default_unit=${DEFAULT}    &
+    pactl set-default-sink oss_output.dsp${DEFAULT} &
+    DEV=$( grep pcm${DEFAULT} /dev/sndstat | tr '>' ']' | tr '<' '[' | sed s/default//g )
+    ;;
 
-echo "<separator />"
+  (*)
+    exit 0
+    ;;
 
-if [ -e /dev/sndstat ]
+esac
+
+UNIT=$( sysctl -n hw.snd.default_unit )
+PIDS=$( ${CMD} ps ax -U ${USERNAME} -o pid \
+          | while read PID
+            do
+              ${CMD} procstat files ${PID} 2> /dev/null
+            done \
+              | awk '/\/dev\/dsp/ {print "-", $1, $2}' \
+              | sort -u \
+              | grep -v pulseaudio )
+
+# CHECK HOW MANY PROCESSES NEED TO BE RESTARTED
+if [ "${PIDS}" = "" ]
 then
-  cat /dev/sndstat \
-    | sed 1d \
-    | grep play \
-    | while read DEVICE
-      do
-        NUMBER=$( echo "${DEVICE}" | awk -F':' '{print $1}' | grep -o -E "[0-9]+" | sed 's/</&lt;/g' | sed 's/>/&gt;/g' )
-        COMMAND="${CMD} sysctl hw.snd.default_unit=${NUMBER}"
-        NAME=$( echo "${DEVICE}" | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g' )
-        echo "<item label=\"${NAME}\">"
-        echo "  <action name=\"Execute\">"
-        echo "    <command>${COMMAND}</command>"
-        echo "  </action>"
-        echo "</item>"
-      done
-
-  echo "<separator />"
-
-  CURRENT=$( cat /dev/sndstat | grep 'default$' )
-  NAME=$( echo "${CURRENT}" | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g' )
-  echo "<item label=\"CURRENT: ${NAME}\" />"
+  # NO PROCESSES TO SWITCH TO NEW AUDIO SOURCE
+  env DISPLAY=${DISPLAY} \
+    zenity \
+      --info \
+      --no-wrap \
+      --text "New USB audio output attached.\n\nNew audio output:\n\n<b>- ${DEV}</b>" &
 else
-  echo "<separator label=\"The /dev/sndstat file is not available.\" />"
-fi
+  # SOME PROCESSES NEED TO SWITCH TO NEW AUDIO SOURCE
+  if env DISPLAY=${DISPLAY} \
+       zenity \
+         --question \
+         --default-cancel \
+         --no-wrap \
+         --text "New USB audio output attached.\n\nProcesses below needs to be killed/restarted to have new audio output.\n\nThey are in <b>PID</b> <b>PROCESSNAME</b> format.\n\n<b>${PIDS}</b>\n\nNew audio output:\n\n<b>- ${DEV}</b>\n\nWould You like to <b>kill(1)</b> these processes now?"
+  then
+    PIDS_KILL=$( echo "${PIDS}" | awk '{print $2}' | tr '\n' ' ' )
+    kill -9 ${PIDS_KILL}
+  fi
 
-echo "</openbox_pipe_menu>"
+fi
