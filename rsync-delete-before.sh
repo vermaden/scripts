@@ -12,7 +12,7 @@ __usage() {
 }
 
 __slash() {
-  [ $( echo "${@}" | grep -o -E ".$" ) = / ] && echo "${@}" || echo "${@}/"
+  echo "${@}/"
 }
 
 case ${#} in
@@ -24,13 +24,12 @@ case ${#} in
     }
     echo "${1}" | grep : 1> /dev/null 2> /dev/null && SSH='-e "ssh -C"'
     echo "${2}" | grep : 1> /dev/null 2> /dev/null && SSH='-e "ssh -C"'
-    eval rsync ${SSH} --modify-window=1 -l -t -r -D -v -S -H -p \
-                      --force --progress --rsync-path=/usr/local/bin/rsync \
-                      --no-whole-file --numeric-ids \
+    eval rsync ${SSH} --modify-window=1 -l -t -r -D -v -S -H -p --stats \
+                      --force --info=progress2 --no-whole-file \
+                      --numeric-ids --human-readable --no-inc-recursive \
                       --delete-before \
                       --exclude=.cache \
                       "$( __slash ${1} )" "$( __slash ${2} )"
-                      # --inplace
     ;;
 
   (*)
@@ -38,4 +37,11 @@ case ${#} in
     ;;
 esac
 
-# --archive --hard-links --sparse --xattrs --numeric-ids
+# REMOV # --progress
+# NOTES # --archive --hard-links --sparse --xattrs --numeric-ids --inplace
+
+# NEW / NOTES #
+# --no-inc-recursive
+# --info=progress2
+# --human-readable
+# --stats
