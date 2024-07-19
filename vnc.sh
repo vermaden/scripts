@@ -32,9 +32,11 @@ __usage() {
   NAME=${0##*/}
   cat << HELP
 usage:
+  ${NAME} -l
   ${NAME} <VM>
 
 example(s):
+  # ${NAME} -l
   # ${NAME} freebsd-14.1
   # ${NAME} netbsd-test-vm
 
@@ -58,6 +60,21 @@ then
 fi
 
 VM_LIST=$( doas vm list 2> /dev/null || sudo vm list 2> /dev/null )
+
+case ${1} in
+  (-l)
+    echo "${VM_LIST}" \
+      | while read NAME DATASTORE LOADER CPU MEMORY VNC AUTO STATE GARBAGE
+        do
+          if [ "${VNC}" != "-" ]
+          then
+            echo "${NAME} ${VNC}"
+          fi
+        done | column -t
+    exit 0
+    ;;
+esac
+
 VM=$( echo "${VM_LIST}" | grep -m 1 "^${1} " | awk '{print $1}' )
 if [ "${VM}" = "" ]
 then
