@@ -30,17 +30,19 @@
 # https://vermaden.wordpress.com
 
 __usage() {
-  NAME=${0##*/} 
+  NAME=${0##*/}
   cat << HELP
 usage:
   ${NAME} <OPTION> <VM>
 
 option(s):
+  -l  list paused VMs
   -p  VM pause
   -r  VM resume
   -t  VM toggle between pause and resume
-  
+
 example(s):
+  # ${NAME} -l
   # ${NAME} -p freebsd-14.1
   # ${NAME} -t netbsd-test-vm
 
@@ -48,61 +50,86 @@ HELP
   exit 1
 }
 
-[ ${#} -ne 2 ] && __usage
+[ ${#} -ne 2 -a ${#} -ne 1 ] && __usage
 
 case ${1} in
-  (-p|-r|-t) :       ;;
-  (*)        __usage ;;
-esac
 
-unalias vm    1> /dev/null 2> /dev/null
-if ! which vm 1> /dev/null 2> /dev/null
-then
-  echo "NOPE: install 'sysutils/vm-bhyve-devel' package"
-fi
+  (-p|-r|-t)
 
-VM_LIST=$( doas vm list 2> /dev/null || sudo vm list 2> /dev/null )
-VM=$( echo "${VM_LIST}" | grep -m 1 "^${2} " | awk '{print $1}' )
-if [ "${VM}" = "" ]
-then
-  echo "NOPE: virtual machine '${2}' does not exist"
-  exit 1
-fi
+    unalias vm    1> /dev/null 2> /dev/null
+    if ! which vm 1> /dev/null 2> /dev/null
+    then
+      echo "NOPE: install 'sysutils/vm-bhyve-devel' package"
+    fi
 
-while read NAME DATASTORE LOADER CPU MEMORY VNC AUTO STATE GARBAGE
-do
-  if [ "${STATE}" != "Running" ]
-  then
-    echo "NOPE: virtual machine '${2}' is stopped"
-  exit 1
-  fi
-done << ECHO
-  $( echo "${VM_LIST}" | grep -m 1 "^${2} " )
+    VM_LIST=$( doas vm list 2> /dev/null || sudo vm list 2> /dev/null )
+    VM=$( echo "${VM_LIST}" | grep -m 1 "^${2} " | awk '{print $1}' )
+    if [ "${VM}" = "" ]
+    then
+      echo "NOPE: virtual machine '${2}' does not exist"
+      exit 1
+    fi
+
+    while read NAME DATASTORE LOADER CPU MEMORY VNC AUTO STATE GARBAGE
+    do
+      if [ "${STATE}" != "Running" ]
+      then
+        echo "NOPE: virtual machine '${2}' is stopped"
+      exit 1
+      fi
+    done << ECHO
+      $( echo "${VM_LIST}" | grep -m 1 "^${2} " )
 ECHO
 
-PID=$( ps aww | grep -v grep | grep "bhyve: ${VM} (bhyve)" | awk '{print $1}' )
+    PID=$( ps aww | grep -v grep | grep "bhyve: ${VM} (bhyve)" | awk '{print $1}' )
 
-unset VM_LIST
+    unset VM_LIST
+    ;;
+
+  (-l)
+
+    echo "   PID VM"
+
+    ps -U root -o state,pid,command \
+      | grep 'bhyve:' \
+      | grep '^T' \
+      | grep -v '^Ts+' \
+      | sed 's|(bhyve)||g' \
+      | awk '{$1=""; print $0}'
+
+    exit 0
+    ;;
+
+  (*)
+    __usage
+    ;;
+
+esac
 
 case ${1} in
 
   (-p)
+
     kill -STOP ${PID} 2> /dev/null || {
-      echo "NOPE: permission denied "
+      echo "NOPE: permission denied"
       exit 1
-    } 
+    }
+
     echo "INFO: VM ${VM} - # kill -STOP ${PID}"
     ;;
 
   (-r)
+
     kill -CONT ${PID} 2> /dev/null || {
-      echo "NOPE: permission denied "
+      echo "NOPE: permission denied"
       exit 1
-    } 
+    }
+
     echo "INFO: VM ${VM} - # kill -CONT ${PID}"
     ;;
 
   (-t)
+
     STATE=$( ps -o state ${PID} | sed 1d )
 
     case ${STATE} in
@@ -113,14 +140,17 @@ case ${1} in
         exit 1
         ;;
     esac
+
     kill -${SIGNAL} ${PID} 2> /dev/null || {
-      echo "NOPE: permission denied "
+      echo "NOPE: permission denied"
       exit 1
-    } 
+    }
+
     echo "INFO: VM ${VM} - # kill -${SIGNAL} ${PID}"
-    ;; 
+    ;;
 
   (*)
+
     __usage
     ;;
 
