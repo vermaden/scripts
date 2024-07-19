@@ -1,7 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2022-2023 Slawomir Wojciech Wojtczak (vermaden)
-# Copyright (c) 2022 Trix Farrar
+# Copyright (c) 2023-2024 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
