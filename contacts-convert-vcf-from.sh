@@ -97,7 +97,6 @@ esac
           else
             vMAILS="${vMAILS};${vMAIL}"
           fi
-          MAIL=""
           ;;
 
         (NOTE*)
@@ -116,7 +115,6 @@ esac
           else
             vTELS="${vTELS};${vTEL}"
           fi
-          TEL=""
           ;;
 
         (END*)
