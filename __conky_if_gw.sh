@@ -31,13 +31,12 @@
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-GW=$( route -n -4 -v get default 2> /dev/null | awk 'END{print $2}' )
+# GW=$( route -n -4 -v get default 2> /dev/null | awk 'END{print $2}' )
+GW=$( route -n -4 -v get default 2> /dev/null | awk '/gateway:/ {printf("%s", $2)}' )
 
-if [ "${GW}" = "0.0.0.0" ]
+if [ "${GW}" = "0.0.0.0" -o "${GW}" = "" ]
 then
   GW=-
 fi
 
 echo -n "${GW}"
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

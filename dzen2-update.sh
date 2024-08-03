@@ -68,24 +68,33 @@ __math() {
   IF_DNS=$(  ~/scripts/__conky_if_dns.sh )
   IF_PING=$( ~/scripts/__conky_if_ping.sh dzen2 )
   IF_XFER=$( ~/scripts/__conky_if_xfer.sh )
-  VOL=$(     mixer -s vol | awk -F ':' '{printf("%s",$2)}' )
+  VOL=$(     for I in /dev/mixer*; do mixer -f ${I} vol | awk -F ':' '/vol.volume/ {printf("%s/",$2*100)}'; done | sed 's/.$//g' )
+# VOL=$(     mixer -s vol | awk -F ':' '{printf("%s",$2)}' )
+# VOL=$(     for I in /dev/mixer*; do mixer -f ${I} -s vol | awk -F ':' '{printf("%s/",$2)}'; done | sed 's/.$//g' )
+# VOL=$(     for I in /dev/mixer*
+#            do
+#              case   $( sysctl -n kern.osrelease ) in
+#                (15*|14*) mixer -f ${I} vol | awk -F ':' '/vol.volume/ {printf("%s/",$2*100)}' ;;
+#                (*)       mixer -f ${I} -s vol | awk -F ':' '{printf("%s/",$2)}'               ;;
+#              esac
+#            done | sed 's/.$//g' )
   FS=$(      zfs list -H -d 0 -o name,avail | awk '{printf("%s/%s ",$1,$2)}' )
   BAT=$(     ~/scripts/__conky_battery_separate.sh dzen2 )
   TOP=$(     echo "${PS}" | bsdgrep -v -E '(COMMAND|idle)$' | sort -r -n \
                | head -3 | awk '{printf("%s/%d%%/%.1fGB ",$3,$1,$2/1024/1024)}' )
+  MUSIC=$(   deadbeef --nowplaying "%f" 2> /dev/null | sed -E -e 's.^nothing$.N/A.g' )
 
 # PRESENT DATA
-echo -n        " ${CLA}date: ${CVA}${DATE} "
-echo -n "${CDE}| ${CLA}sys: ${CVA}${FREQ}MHz/${TEMP}/${CPU}/${MEM}GB "
-echo -n "${CDE}| ${CLA}ip: ${CVA}${IF_IP}"      # NO SPACE AT THE END
-echo -n "${CDE}| ${CLA}gw: ${CVA}${IF_GW} "
-echo -n "${CDE}| ${CLA}dns: ${CVA}${IF_DNS} "
-echo -n "${CDE}| ${CLA}ping: ${CVA}${IF_PING} "
-echo -n "${CDE}| ${CLA}xfer: ${CVA}${IF_XFER} "
-echo -n "${CDE}| ${CLA}vol: ${CVA}${VOL} "
-echo -n "${CDE}| ${CLA}fs: ${CVA}${FS}"         # NO SPACE AT THE END
-echo -n "${CDE}| ${CLA}bat: ${CVA}${BAT} "
-echo -n "${CDE}| ${CLA}top: ${CVA}${TOP}"       # NO SPACE AT THE END
+echo -n        " ${CLA}date:"  "${CVA}${DATE} "
+echo -n "${CDE}| ${CLA}sys:"   "${CVA}${FREQ}MHz/${TEMP}/${CPU}/${MEM}GB "
+echo -n "${CDE}| ${CLA}ip:"    "${CVA}${IF_IP}"     # NO SPACE AT THE END
+echo -n "${CDE}| ${CLA}gw:"    "${CVA}${IF_GW} "
+echo -n "${CDE}| ${CLA}dns:"   "${CVA}${IF_DNS} "
+echo -n "${CDE}| ${CLA}ping:"  "${CVA}${IF_PING} "
+echo -n "${CDE}| ${CLA}xfer:"  "${CVA}${IF_XFER} "
+echo -n "${CDE}| ${CLA}vol:"   "${CVA}${VOL} "
+echo -n "${CDE}| ${CLA}fs:"    "${CVA}${FS}"        # NO SPACE AT THE END
+echo -n "${CDE}| ${CLA}bat:"   "${CVA}${BAT} "
+echo -n "${CDE}| ${CLA}top:"   "${CVA}${TOP}"       # NO SPACE AT THE END
+echo -n "${CDE}| ${CLA}music:" "${CVA}${MUSIC}"
 echo
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

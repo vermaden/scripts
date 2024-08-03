@@ -64,7 +64,7 @@ NAME="${FILE}.EXTRACT.$( echo ${@} | tr ' ' '-' ).pdf"
 # echo file: ${FILE}
 # echo args: ${@}
 
-pdftk "${FILE}" cat ${@} output "${NAME}"
+pdftk "${FILE}" cat ${@} output "${NAME}" 2>&1 | grep -v '_JAVA_OPTIONS'
 
 # ALTERNATIVE gs(1) COMMAND
 # $ gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER \
@@ -75,5 +75,3 @@ if [ ${?} -eq 0 ]
 then
   echo "INFO: File '${NAME}' generated."
 fi
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

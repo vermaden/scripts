@@ -43,6 +43,5 @@ doas pkill \
   dconf-service \
   tumblerd \
   xfconfd \
+  upowerd \
   gst-plugin-scanner
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

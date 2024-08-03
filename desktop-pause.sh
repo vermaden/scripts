@@ -198,5 +198,3 @@ pgrep -P ${PID} \
       kill -${SIGNAL} ${I}
       echo "INFO: kill -${SIGNAL} ${I}"
     done
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

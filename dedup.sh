@@ -51,8 +51,8 @@ __prefix() {
   case $( id -u ) in
     (0) PREFIX="rm -rf" ;;
     (*) case $( uname ) in
-          (SunOS) PREFIX="pfexec rm -f" ;;
-          (*)     PREFIX="doas rm -f"   ;;
+          (SunOS) PREFIX="pfexec rm -rf" ;;
+          (*)     PREFIX="doas rm -rf"   ;;
         esac
         ;;
   esac
@@ -88,27 +88,31 @@ __crossplatform() {
 __md5() {
   __crossplatform
   :> ${DUPLICATES_FILE}
-  DATA=$( find "${1}" -type f -exec ${MD5} {} ';' | sort -k1.1,1.32 )
+  DATA=$( find "${1}" -type f -exec ${MD5} {} ';' | sort -n )
   echo "${DATA}" \
-    | cut -d ' ' -f1 \
-    | uniq -c -d \
+    | awk '{print $1}' \
+    | uniq -c \
     | while read LINE
       do
-        SUM=$( echo ${LINE} | cut -d ' ' -f2 )
-        echo "${DATA}" | grep ^${SUM} >> ${DUPLICATES_FILE}
+        COUNT=$( echo ${LINE} | awk '{print $1}' )
+        [ ${COUNT} -eq 1 ] && continue
+        SUM=$( echo ${LINE} | awk '{print $2}' )
+        echo "${DATA}" | grep ${SUM} >> ${DUPLICATES_FILE}
       done
 
   echo "${DATA}" \
-    | cut -d ' ' -f1 \
-    | uniq -c -d \
+    | awk '{print $1}' \
+    | sort -n \
+    | uniq -c \
     | while read LINE
       do
-        COUNT=$( echo ${LINE} | cut -d ' ' -f1 )
-        SUM=$( echo ${LINE} | cut -d ' ' -f2 )
+        COUNT=$( echo ${LINE} | awk '{print $1}' )
+        [ ${COUNT} -eq 1 ] && continue
+        SUM=$( echo ${LINE} | awk '{print $2}' )
         echo "count: ${COUNT} | md5: ${SUM}"
         grep ${SUM} ${DUPLICATES_FILE} \
           | cut -d ' ' -f 2-10000 2> /dev/null \
-          | while read -r LINE
+          | while read LINE
             do
               if [ -n "${PREFIX}" ]
               then
@@ -119,17 +123,19 @@ __md5() {
             done
         echo
       done
+  rm -rf ${DUPLICATES_FILE}
   }
 
 __size() {
   __crossplatform
   find "${1}" -type f -exec ${STAT} {} ';' \
     | sort -n \
-    | uniq -c -d \
+    | uniq -c \
     | while read LINE
       do
-        COUNT=$( echo ${LINE} | cut -d ' ' -f1 )
-        SIZE=$( echo ${LINE} | cut -d ' ' -f2 )
+        COUNT=$( echo ${LINE} | awk '{print $1}' )
+        [ ${COUNT} -eq 1 ] && continue
+        SIZE=$( echo ${LINE} | awk '{print $2}' )
         SIZE_KB=$( echo ${SIZE} / 1024 | bc )
         echo "count: ${COUNT} | size: ${SIZE_KB}KB (${SIZE} bytes)"
         if [ -n "${PREFIX}" ]
@@ -144,16 +150,19 @@ __size() {
 
 __file() {
   __crossplatform
-  find "${1}" -type f -exec basename {} \; 2> /dev/null \
+  find "${1}" -type f \
+    | xargs -n 1 basename 2> /dev/null \
     | tr '[A-Z]' '[a-z]' \
-    | sort \
-    | uniq -c -d \
-    | while read -r LINE
+    | sort -n \
+    | uniq -c \
+    | sort -n -r \
+    | while read LINE
       do
-        COUNT=$( echo ${LINE} | cut -d ' ' -f1 )
+        COUNT=$( echo ${LINE} | awk '{print $1}' )
+        [ ${COUNT} -eq 1 ] && break
         FILE=$( echo ${LINE} | cut -d ' ' -f 2-10000 2> /dev/null )
         echo "count: ${COUNT} | file: ${FILE}"
-        FILE=$( echo ${FILE} | sed -e s/'\\'/'\\\\'/g -e s/'\['/'\\\['/g -e s/'\]'/'\\\]'/g )
+        FILE=$( echo ${FILE} | sed -e s/'\['/'\\\['/g -e s/'\]'/'\\\]'/g )
         if [ -n "${PREFIX}" ]
         then
           find ${1} -iname "${FILE}" -exec echo "  ${PREFIX} \"{}\"" ';'
@@ -169,8 +178,7 @@ __file() {
 [ ${#} -ne 2  ] && __usage
 [ ! -d "${2}" ] && __usage
 
-DUPLICATES_FILE="/tmp/${0##*/}${$}_DUPLICATES_FILE.tmp"
-trap "rm -f ${DUPLICATES_FILE}; exit" INT TERM EXIT
+DUPLICATES_FILE="/tmp/${0##*/}_DUPLICATES_FILE.tmp"
 
 case ${1} in
   (-n)           __file "${2}" ;;
@@ -181,5 +189,3 @@ case ${1} in
   (-S) __prefix; __size "${2}" ;;
   (*)  __usage ;;
 esac
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

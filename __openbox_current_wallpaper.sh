@@ -43,5 +43,3 @@ echo "      <command>viewnior '${FILE}'</command>"
 echo "    </action>"
 echo "  </item>"
 echo "</openbox_pipe_menu>"
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

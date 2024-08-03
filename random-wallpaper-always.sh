@@ -61,6 +61,7 @@ fi
 if [ -d "${1}" ]
 then
   WALLS_LIST=$( find "${1}" | egrep "^.*\.[pPjJgG][nNpPiI][gGeEfF][gG]*$" )
+  WALLS_LIST=$( find "${1}" | egrep "^.*\.[sSpPjJgG][vVnNpPiI][gGeEfF][gG]*$" )
   WALLS_COUNT=$( echo "${WALLS_LIST}" | wc -l )
 # RANDOM=$( head -c 256 /dev/urandom | env LC_ALL=C tr -c -d '1-9' )
   RANDOM=$( env LC_ALL=C tr -c -d '1-9' < /dev/random | head -c 16 )
@@ -73,9 +74,7 @@ cp ~/.fehbg ~/.fehbg.BCK
 
 # SET WALLPAPER
 case "${FILE}" in
-  (*/TILE-*) feh --bg-tile  $( __absolute "${FILE}" ) 1> /dev/null 2> /dev/null ;;
-  (*)        feh --bg-scale $( __absolute "${FILE}" ) 1> /dev/null 2> /dev/null ;;
+  (*.[Ss][Vv][Gg]) display -window root "${FILE}"           1> /dev/null 2> /dev/null ;;
+  (*/TILE-*)       feh --bg-tile  $( __absolute "${FILE}" ) 1> /dev/null 2> /dev/null ;;
+  (*)              feh --bg-scale $( __absolute "${FILE}" ) 1> /dev/null 2> /dev/null ;;
 esac
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
-

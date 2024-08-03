@@ -108,5 +108,3 @@ case $( sysctl -n hw.acpi.acline ) in
     esac
     ;;
 esac
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

@@ -105,5 +105,3 @@ ps ax -o comm \
     done
 
 echo "</openbox_pipe_menu>"
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

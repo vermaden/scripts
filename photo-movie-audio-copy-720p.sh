@@ -9,7 +9,6 @@ fi
 
 VRATE=${1}
 
-ffmpeg -y -i "${2}" -acodec copy -vcodec libx264 -threads 1 \
-       -minrate 0k -bufsize ${1}k -maxrate ${1}k -s 1280x720 "${2}".x264.mkv
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
+nice -n 20 \
+  ffmpeg -y -i "${2}" -acodec copy -vcodec libx264 -threads 1 \
+         -minrate 0k -bufsize ${1}k -maxrate ${1}k -s 1280x720 "${2}".x264.mkv

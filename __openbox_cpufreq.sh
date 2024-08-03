@@ -119,5 +119,3 @@ case ${#} in
     ;;
 
 esac
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

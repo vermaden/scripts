@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2018-2022 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2018 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -160,5 +160,3 @@ case $( sysctl -n hw.acpi.acline ) in
     esac
     ;;
 esac
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

@@ -32,5 +32,3 @@
 # https://vermaden.wordpress.com
 
 gimp "$( awk -F\' '/feh/ {print $(NF-1)}' ~/.fehbg )"
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

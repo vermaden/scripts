@@ -61,7 +61,7 @@ then
   NAME="ALL.${RANDOM}.pdf"
 fi
 
-pdftk "${@}" cat output "${NAME}"
+pdftk "${@}" cat output "${NAME}" 2>&1 | grep -v '_JAVA_OPTIONS'
 
 # ALTERNATIVE gs(1) COMMAND
 # $ gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite \
@@ -71,5 +71,3 @@ if [ ${?} -eq 0 ]
 then
   echo "INFO: File '${NAME}' generated."
 fi
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

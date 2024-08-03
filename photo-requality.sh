@@ -19,7 +19,8 @@ DESIRED=${1}
   find . -type f -iname \*\.JPE
   find . -type f -iname \*\.jpeg
   find . -type f -iname \*\.JPEG
-) | while read FILE
+) | sort -u \
+  | while read FILE
     do
       QUALITY=$( identify -format %Q "${FILE}" )
 
@@ -34,9 +35,8 @@ DESIRED=${1}
         continue
       else
         convert -quality ${DESIRED} "${FILE}" "${FILE}"
-        echo "File '${FILE}' converted to '${DESIRED}' quality."
+        NAME=$( echo "${FILE}" | cut -c 3- )
+        echo "File '${NAME}' converted to '${DESIRED}' quality."
       fi
 
     done
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

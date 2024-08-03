@@ -31,6 +31,4 @@
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-~/scripts/random-wallpaper-always.sh "$( awk -F\' '/feh/ {print $(NF-1)}' ~/.fehbg )"
-
-echo '1' >> ~/scripts/stats/${0##*/}
+random-wallpaper-always.sh "$( awk -F\' '/feh/ {print $(NF-1)}' ~/.fehbg )"

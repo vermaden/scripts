@@ -39,5 +39,3 @@ then
 else
   echo -n -
 fi
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

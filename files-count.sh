@@ -47,5 +47,3 @@ find "${DIR}" -type d -maxdepth 1 -mindepth 1 \
       find "${I}" | wc -l | tr -d '\n'
       echo " ${I}"
     done | sort -n
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

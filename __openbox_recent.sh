@@ -88,5 +88,3 @@ else
   echo "ER: cannot find a readable 'recently-used.xbel' file" 1>&2
   exit 1
 fi
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

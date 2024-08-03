@@ -98,5 +98,3 @@ case $( ifconfig -u | grep -v '127.0.0.1' | grep -c 'inet ' ) in
     done
     ;;
 esac
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

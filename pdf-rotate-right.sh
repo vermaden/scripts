@@ -52,7 +52,5 @@ then
   exit 1
 fi
 
-pdftk "${1}" cat 1-endright output "${1}".ROTATED.RIGHT.pdf
+pdftk "${1}" cat 1-endright output "${1}".ROTATED.RIGHT.pdf 2>&1 | grep -v '_JAVA_OPTIONS'
 rm -f doc_data.txt
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

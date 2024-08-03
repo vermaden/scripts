@@ -68,5 +68,3 @@ awk '{print $2}' "${1}" \
         echo
       fi
     done
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

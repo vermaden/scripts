@@ -93,5 +93,6 @@ case ${1} in
 
 esac
 
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
-
+# mdconfig -l -v
+# mdconfig -d -u 0
+# mdconfig -a -t vnode -f FILE

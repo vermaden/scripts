@@ -40,7 +40,10 @@ __usage() {
 }
 
 # SETTINGS
-URI=96.47.72.84
+# URL=$( __conky_if_dns.sh )
+# URL=freebsd.org
+  URL=96.47.72.84
+  DELAY=1.25
 
 # TYPE
 case ${1} in
@@ -49,7 +52,7 @@ case ${1} in
 esac
 
 # WAIT 2 SECONDS WITH -t OPTION
-if ping -c 1 -s 0 -t 1 -q ${URI} 1> /dev/null 2> /dev/null
+if ping -c 1 -s 0 -t ${DELAY} -q ${URL} 1> /dev/null 2> /dev/null
 then
   echo -n OK
 else
@@ -58,5 +61,3 @@ else
     (dzen2) echo "^fg(RED)NOPE" ;;
   esac
 fi
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

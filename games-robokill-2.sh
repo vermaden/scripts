@@ -1,3 +1,1 @@
-wine ~/win32/bin/flashplayer_32_sa.exe ~/games.EXTRACT/robokill_2.swf
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
+  wine ~/win32/bin/flashplayer_32_sa.exe ~/games.EXTRACT/robokill_2.swf

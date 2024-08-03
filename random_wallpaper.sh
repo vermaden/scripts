@@ -84,5 +84,4 @@ case "${FILE}" in
   (*)        feh --bg-scale $( __absolute "${FILE}" ) 1> /dev/null 2> /dev/null ;;
 esac
 
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
 

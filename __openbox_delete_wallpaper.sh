@@ -33,6 +33,4 @@
 
 rm -f $( awk -F\' '/feh/ {print $(NF-1)}' ~/.fehbg )
 
-~/scripts/random-wallpaper-always.sh ~/gfx/wallpapers
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
+random-wallpaper-always.sh ~/gfx/wallpapers

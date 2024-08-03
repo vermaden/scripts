@@ -89,7 +89,7 @@ case ${1} in
       BOOKMARK="${3}"
     fi
 
-    pdftk "${2}" dump_data > "${BOOKMARK}"
+    pdftk "${2}" dump_data > "${BOOKMARK}" 2>&1 | grep -v '_JAVA_OPTIONS'
 
     echo
     echo "INFO: file '${BOOKMARK}' created"
@@ -104,7 +104,7 @@ case ${1} in
       __usage
     fi
 
-    pdftk "${2}" update_info "${3}" output "${2}".BOOKMARKS_NEW.pdf
+    pdftk "${2}" update_info "${3}" output "${2}".BOOKMARKS_NEW.pdf 2>&1 | grep -v '_JAVA_OPTIONS'
 
     echo
     echo "INFO: file '${2}.BOOKMARKS_NEW.pdf' created"
@@ -124,7 +124,7 @@ case ${1} in
       OUTPUT="${2}.BOOKMARKS_REMOVED.pdf"
     fi
 
-     pdftk A="${2}" cat A1-end output "${OUTPUT}"
+     pdftk A="${2}" cat A1-end output "${OUTPUT}" 2>&1 | grep -v '_JAVA_OPTIONS'
 
      echo
      echo "INFO: file '${OUTPUT}' created"
@@ -136,5 +136,3 @@ case ${1} in
     ;;
 
 esac
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

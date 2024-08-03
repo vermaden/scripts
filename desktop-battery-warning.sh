@@ -50,5 +50,3 @@ esac
     --text="BATTERY: 5%" \
     1> /dev/null 2> /dev/null
 }
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

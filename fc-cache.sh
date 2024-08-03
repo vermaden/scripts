@@ -58,5 +58,3 @@ ${CMD} fc-cache -sf
 
 echo "Reload USER Font Cache ..."
 fc-cache -f
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

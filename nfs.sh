@@ -69,5 +69,3 @@ mount -t nfs | grep -q ${MNT} || {
 }
 
 caja --browser --no-desktop ${MNT} &
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}

@@ -49,5 +49,3 @@ do
 done
 
 qpdf --decrypt "${1}" "${1}".DECRYPT.pdf
-
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
