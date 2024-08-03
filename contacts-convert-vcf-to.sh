@@ -57,7 +57,7 @@ vTELPREF=0
 ( cat "${1}"; echo ) \
   | grep -v '^NAME' \
   | grep -v '^#' \
-  | sed -e s/$'\r'//g \
+  | sed -e s/'\r'//g \
   | tr ',' ' ' \
   | while read vNAME vTELs vIMs vMAILs vNOTE
     do

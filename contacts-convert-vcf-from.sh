@@ -72,7 +72,7 @@ case "${1}" in
 esac
 
 ( cat "${2}"; echo ) \
-  | sed -e s/$'\r'//g \
+  | sed -e s/'\r'//g \
   | while read LINE
     do
 
