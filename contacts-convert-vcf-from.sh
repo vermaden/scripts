@@ -77,6 +77,11 @@ esac
     do
 
       case "${LINE}" in
+        (VERSION:*)
+          # IGNORE 'VERSION'
+          :
+          ;;
+
         (BEGIN*)
           :
           ;;
@@ -101,6 +106,22 @@ esac
 
         (NOTE*)
           vNOTE=$( echo "${LINE}" | tr -d '|' | tr ' ' ';' | awk -F ':' '{print $2}' )
+          if [ -z ${vNOTES} ]
+          then
+            vNOTES="${vNOTE}"
+          else
+            vNOTES="${vNOTES};${vNOTE}"
+          fi
+          ;;
+
+        (ORG*)
+          vNOTE=$( echo "${LINE}" | tr -d '|' | tr ' ' ';' | awk -F ':' '{print $2}' )
+          if [ -z ${vNOTES} ]
+          then
+            vNOTES="${vNOTE}"
+          else
+            vNOTES="${vNOTES};${vNOTE}"
+          fi
           ;;
 
         (X-QQ*)
@@ -108,7 +129,8 @@ esac
           ;;
 
         (TEL*)
-          vTEL=$( echo "${LINE}" | awk -F ':' '{print $2}' | tr -d ' ' | tr -d '-' | tr -d '+[]()' )
+        # vTEL=$( echo "${LINE}" | awk -F ':' '{print $2}' | tr -d ' ' | tr -d '-' | tr -d '+[]()' )
+          vTEL=$( echo "${LINE}" | awk -F ':' '{print $2=="tel"?$3:$2}' | tr -d ' ' | tr -d '-' | tr -d '[]()' | sed 's/^00/+/' )
           if [ -z ${vTELS} ]
           then
             vTELS="${vTEL}"
@@ -164,7 +186,18 @@ esac
 
           echo -n "${SEPARATOR}"
 
-          # NOTES
+          # NOTES (vNOTES)
+          if [ ${vNOTES} ]
+          then
+            echo -n "${vNOTES}"
+            vNOTES=""
+          else
+            echo -n "-"
+          fi
+
+          echo -n "${SEPARATOR}"
+
+          # NOTES (vNOTE)
           if [ ${vNOTE} ]
           then
             echo -n "${vNOTE}"
@@ -177,4 +210,4 @@ esac
           ;;
 
       esac
-    done | sort -n
+    done | sort -n | uniq
