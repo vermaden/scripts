@@ -1,6 +1,7 @@
 #! /bin/sh
 
-# Copyright (c) 2018-2020 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2018-2024 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2024 Jon Krom (pe1aqp)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -54,10 +55,11 @@ fi
 
 vTELPREF=0
 
+# START PARSING THE INPUT FILE
 ( cat "${1}"; echo ) \
   | grep -v '^NAME' \
   | grep -v '^#' \
-  | sed -e s/$'\r'//g \
+  | sed -e s/'\r'//g \
   | tr ',' ' ' \
   | while read vNAME vTELs vIMs vMAILs vNOTE
     do
@@ -68,7 +70,9 @@ vTELPREF=0
       if [ "${vNAME}" ]
       then
         echo "BEGIN:VCARD"
-        echo "VERSION:2.1"
+        echo "VERSION:4"
+
+        # NAME
         echo "FN:${vNAME}" | tr '-' ' '
 
         # PHONE NUMBERS
@@ -81,9 +85,9 @@ vTELPREF=0
                 if [ ${vTELPREF} -ne 1 ]
                 then
                   vTELPREF=1
-                  echo "TEL;PREF:${vTEL}"
+                  echo "TEL;TYPE=PREF:tel:${vTEL}"
                 else
-                  echo "TEL:${vTEL}"
+                  echo "TEL:tel:${vTEL}"
                 fi
               done
         fi
@@ -113,7 +117,7 @@ vTELPREF=0
         # NOTES
         if [ "x${vNOTE}" != "x-" ]
         then
-          echo "NOTE:${vNOTE}"
+          echo "NOTE:${vNOTE}" | sed -e "s+~;+~#~+g" -e "s+\;+ +g" -e "s+~#~+;+g"
         fi
 
         echo "END:VCARD"

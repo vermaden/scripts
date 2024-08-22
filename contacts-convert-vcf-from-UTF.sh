@@ -1,6 +1,7 @@
 #! /bin/sh
 
-# Copyright (c) 2018-2020 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2018-2024 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2024 Jon Krom (pe1aqp)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -42,6 +43,14 @@ __EOF
   exit 1
 }
 
+__missing_qprint() {
+  if [ ${QPRINTWARNING} = 1 ]
+  then
+    echo "INFO: package 'textproc/qprint' needed for this datafile"
+    QPRINTWARNING=0
+  fi
+}
+
 if [ ${#} -ne 2 ]
 then
   __usage
@@ -53,6 +62,15 @@ then
   echo
   __usage
   exit 1
+fi
+
+if [ -x "$( command -v qprint )" ]
+then
+  MYQPRINT="qprint --decode --noerrcheck"
+  QPRINTWARNING=0
+else
+  MYQPRINT="cat"
+  QPRINTWARNING=1
 fi
 
 # TYPE
@@ -71,57 +89,80 @@ case "${1}" in
     ;;
 esac
 
+# START PARSING THE INPUT FILE
 ( cat "${2}"; echo ) \
-  | sed -e s/$'\r'//g \
+  | ( LC_ALL=C.UTF-8 ${MYQPRINT} ) \
+  | sed -e s/'\r'//g \
   | while read LINE
     do
 
+      [ ${QPRINTWARNING} = 1 ] && (echo "${LINE}" | grep -q "QUOTED-PRINTABLE") && __missing_qprint
+
+echo $LINE
+
       case "${LINE}" in
         (BEGIN*)
+          # IGNORE BEGIN
           :
           ;;
 
-        (N:*)
+        (VERSION:*)
+          # IGNORE 'VERSION' - ONLY PROCESS 2.1 OR 4.0 VCARDS
+          :
+          ;;
+
+        (N:*|N\;*)
+          # IGNORE COMPLEX NAME
           :
           ;;
 
         (FN*)
+          # NAME
           vNAME=$( echo "${LINE}" | awk -F ':' '{print $2}' | tr -d ';' | tr ' ' '-' )
           ;;
 
         (EMAIL*)
+          # EMAIL
           vMAIL=$( echo "${LINE}" | awk -F ':' '{print $2}' | tr '[:upper:]' '[:lower:]' )
-          if [ -z ${vMAILS} ]
+          if [ -z "${vMAILS}" ]
           then
             vMAILS="${vMAIL}"
           else
             vMAILS="${vMAILS};${vMAIL}"
           fi
-          MAIL=""
           ;;
 
-        (NOTE*)
-          vNOTE=$( echo "${LINE}" | tr -d '|' | tr ' ' ';' | awk -F ':' '{print $2}' )
+        (NOTE*|ORG*)
+          # NOTES
+          vNOTE=$( echo "${LINE}" | tr -d '|' | sed -e "s+;+~;+g" -e "s+ +;+g" | awk -F ':' '{print $2}' )
+          if [ -z "${vNOTES}" ]
+          then
+            vNOTES="${vNOTE}"
+          else
+            vNOTES="${vNOTES}~;${vNOTE}"
+          fi
           ;;
 
         (X-QQ*)
+          # INSTANT MESSAGING
           vIM=$( echo "${LINE}" | grep -o -E ":.*$" | sed 's/^.//' | tr '[:upper:]' '[:lower:]' )
           ;;
 
         (TEL*)
-          vTEL=$( echo "${LINE}" | awk -F ':' '{print $2}' | tr -d ' ' | tr -d '-' | tr -d '+[]()' )
-          if [ -z ${vTELS} ]
+          # PHONE NUMBER
+        # vTEL=$( echo "${LINE}" | awk -F ':' '{print $2=="tel"?$3:$2}' | tr -d ' ' | tr -d '-' | tr -d '[]()' | sed 's/^00/+/' )
+          vTEL=$( echo "${LINE}" | awk -F ':' '{if($2=="tel"){print $3}else{print $2}}' | tr -d ' ' | tr -d '-' | tr -d '[]()' | sed 's/^00/+/' )
+          if [ -z "${vTELS}" ]
           then
             vTELS="${vTEL}"
           else
             vTELS="${vTELS};${vTEL}"
           fi
-          TEL=""
           ;;
 
         (END*)
           # CONTACT NAME
-          if [ ${vNAME} ]
+          if [ "${vNAME}" ]
           then
             echo -n "${vNAME}"
             vNAME=""
@@ -132,7 +173,7 @@ esac
           echo -n "${SEPARATOR}"
 
           # PHONE NUMBERS
-          if [ ${vTELS} ]
+          if [ "${vTELS}" ]
           then
             echo -n "${vTELS}"
             vTEL=""
@@ -141,9 +182,9 @@ esac
             echo -n "-"
           fi
 
-          # INSTANT MESSAGING
           echo -n "${SEPARATOR}"
 
+          # INSTANT MESSAGING
           if [ "${vIM}" ]
           then
             echo -n "${vIM}"
@@ -155,7 +196,7 @@ esac
           echo -n "${SEPARATOR}"
 
           # EMAILS
-          if [ ${vMAILS} ]
+          if [ "${vMAILS}" ]
           then
             echo -n "${vMAILS}"
             vMAIL=""
@@ -167,10 +208,10 @@ esac
           echo -n "${SEPARATOR}"
 
           # NOTES
-          if [ ${vNOTE} ]
+          if [ "${vNOTES}" ]
           then
-            echo -n "${vNOTE}"
-            vNOTE=""
+            echo -n "${vNOTES}"
+            vNOTES=""
           else
             echo -n "-"
           fi
@@ -178,7 +219,20 @@ esac
           echo
           ;;
 
-      esac
-    done | sort -n
+        ("")
+          # EAT EMPTY LINES
+          :
+          ;;
 
-echo '1' 2> /dev/null >> ~/scripts/stats/${0##*/}
+        (\#*)
+          # EAT COMMENT LINES
+          :
+          ;;
+
+        (*)
+          echo "NOPE: unknown line: ${LINE}"
+          :
+          ;;
+
+      esac
+    done | sort -u
