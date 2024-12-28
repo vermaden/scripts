@@ -38,12 +38,23 @@
   COLM='\\e[4;35m' # magenta
   COLC='\\e[4;36m' # cyan
   COLW='\\e[1;37m' # white
+  VM_DIR=/vm
 
 unalias vm    1> /dev/null 2> /dev/null
 if ! which vm 1> /dev/null 2> /dev/null
 then
   echo "NOPE: install 'sysutils/vm-bhyve-devel' package"
 fi
+
+case ${1} in
+  (-u|unlock)
+    if [ "${VM_DIR}" != "" ]
+    then
+      find ${VM_DIR} -name run.lock -delete
+    fi
+    exit 0
+    ;;
+esac
 
 VM_LIST=$( doas vm list 2> /dev/null || sudo vm list 2> /dev/null )
 
@@ -78,3 +89,4 @@ do
 done << EOF
   $( echo "${VM_LIST}" )
 EOF
+

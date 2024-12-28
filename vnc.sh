@@ -84,11 +84,13 @@ fi
 
 while read NAME DATASTORE LOADER CPU MEMORY VNC AUTO STATE GARBAGE
 do
-  if [ "${STATE}" != "Running" ]
-  then
-    echo "NOPE: virtual machine '${1}' is stopped"
-  exit 1
-  fi
+  case ${STATE} in
+    (Running.*|Locked.*)
+      # THE 'Locked' STATE IS USED WHEN 'vm install ...' COMMAND IS USED
+      echo "NOPE: virtual machine '${1}' is stopped"
+      exit 1
+      ;;
+  esac
 done << ECHO
   $( echo "${VM_LIST}" | grep -m 1 "^${1} " )
 ECHO
