@@ -38,7 +38,23 @@
   COLM='\\e[4;35m' # magenta
   COLC='\\e[4;36m' # cyan
   COLW='\\e[1;37m' # white
+  REGEX_MAC='[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}'
+  REGEX_UUID='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
   VM_DIR=/vm
+
+__usage() {
+  NAME=${0##*/}
+  cat << HELP
+usage:
+  ${NAME}                -  list VMs
+  ${NAME} -h | --help    -  print this help information
+  ${NAME} -l | --unlock  -  unlock are locked VMs
+  ${NAME} -m | --mac     -  check for duplicated MAC addresses in VMs
+  ${NAME} -u | --uuid    -  check for duplicated UUID values in VMs
+
+HELP
+  exit 1
+}
 
 unalias vm    1> /dev/null 2> /dev/null
 if ! which vm 1> /dev/null 2> /dev/null
@@ -47,13 +63,67 @@ then
 fi
 
 case ${1} in
-  (-u|unlock)
+  (-h|--help|-help|help)
+    __usage
+    ;;
+
+  (-l|--unlock)
     if [ "${VM_DIR}" != "" ]
     then
-      find ${VM_DIR} -name run.lock -delete
+      cd ${VM_DIR}
+      echo "INFO: VMs with 'run.lock' file:"
+      ls */run.lock
+      doas find ${VM_DIR} -name run.lock -delete
     fi
     exit 0
     ;;
+
+  (-m|--mac)
+    cd ${VM_DIR}
+    CONFS_MACS_LIST=$( grep -i mac */*.conf )
+    echo "${CONFS_MACS_LIST}" \
+      | grep -i -o -E "${REGEX_MAC}" \
+      | sort -n \
+      | uniq -d -i \
+      | while read MAC
+        do
+          echo "INFO: VMs with '${MAC}' mac address:"
+          cd ${VM_DIR}
+          grep -r -i ${MAC} */*.conf \
+            | awk -F':' '{print $1}' \
+            | sed -e 's|.conf||g' \
+            | while read VM
+              do
+                echo "  ${VM##*/}"
+              done
+          echo
+        done
+    exit 0
+    ;;
+
+  (-u|--uuid)
+    cd ${VM_DIR}
+    CONFS_MACS_LIST=$( grep -i uuid */*.conf )
+    echo "${CONFS_MACS_LIST}" \
+      | grep -i -o -E "${REGEX_UUID}" \
+      | sort -n \
+      | uniq -d -i \
+      | while read UUID
+        do
+          echo "INFO: VMs with '${UUID}' mac address:"
+          cd ${VM_DIR}
+          grep -r -i ${UUID} */*.conf \
+            | awk -F':' '{print $1}' \
+            | sed -e 's|.conf||g' \
+            | while read VM
+              do
+                echo "  ${VM##*/}"
+              done
+          echo
+        done
+    exit 0
+    ;;
+
 esac
 
 VM_LIST=$( doas vm list 2> /dev/null || sudo vm list 2> /dev/null )
@@ -68,6 +138,14 @@ do
     continue
   fi
 
+  # BLUE COLOR FOR 'Bootloader' MACHINES
+  if echo "${LINE}" | grep -q ' Bootloader (' 1> /dev/null 2> /dev/null
+  then
+    NEWLINE=$( echo "${LINE}" | sed "s/^/${COLU}/; s/$/${COLE}/" )
+    echo -e "${NEWLINE}"
+    continue
+  fi
+
   # RED COLOR FOR 'Locked' MACHINES
   if echo "${LINE}" | grep -q ' Locked (' 1> /dev/null 2> /dev/null
   then
@@ -76,7 +154,7 @@ do
     continue
   fi
 
-  # WHITE HEADER
+  # WHITE COLOR FOR HEADER
   if echo "${LINE}" | grep -q -E '^NAME.*STATE$' 1> /dev/null 2> /dev/null
   then
     NEWLINE=$( echo "${LINE}" | sed "s/^/${COLW}/; s/$/${COLE}/" )
@@ -89,4 +167,8 @@ do
 done << EOF
   $( echo "${VM_LIST}" )
 EOF
+
+
+
+
 

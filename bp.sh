@@ -32,16 +32,18 @@ __usage() {
   NAME=${0##*/}
   cat << HELP
 usage:
-  ${NAME} <OPTION> <VM>
+  ${NAME} <OPTION> [VM]
 
 option(s):
   -l  list paused VMs
   -p  VM pause
   -r  VM resume
+  -R  resumes ALL paused VMs to running state
   -t  VM toggle between pause and resume
 
 example(s):
   # ${NAME} -l
+  # ${NAME} -R
   # ${NAME} -p freebsd-14.1
   # ${NAME} -t netbsd-test-vm
 
@@ -52,6 +54,9 @@ HELP
 [ ${#} -ne 2 -a ${#} -ne 1 ] && __usage
 
 case ${1} in
+
+  (-R)
+    ;;
 
   (-p|-r|-t)
 
@@ -87,14 +92,17 @@ ECHO
 
   (-l)
 
-    echo "   PID VM"
+    (
+      echo "   PID VM"
 
-    ps -U root -o state,pid,command \
-      | grep 'bhyve:' \
-      | grep '^T' \
-      | grep -v '^Ts+' \
-      | sed 's|(bhyve)||g' \
-      | awk '{$1=""; print $0}'
+      ps -U root -o state,pid,command \
+        | grep 'bhyve:' \
+        | grep '^T' \
+        | grep -v '^Ts+' \
+        | sed -e 's|(bhyve)||g' \
+              -e 's|bhyve:||g' \
+        | awk '{$1=""; print $0}'
+    ) | column -t
 
     exit 0
     ;;
@@ -125,6 +133,20 @@ case ${1} in
     }
 
     echo "INFO: VM ${VM} - # kill -CONT ${PID}"
+    ;;
+
+  (-R)
+    ${0} -l \
+      | sed 1d \
+      | awk '{print $1}' \
+      | while read PID
+        do
+          kill -CONT ${PID} 2> /dev/null || {
+            echo "NOPE: permission denied"
+            exit 1
+          }
+          echo "INFO: VM ${VM} - # kill -CONT ${PID}"
+        done
     ;;
 
   (-t)

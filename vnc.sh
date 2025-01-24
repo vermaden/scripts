@@ -73,6 +73,9 @@ case ${1} in
         done | column -t
     exit 0
     ;;
+  (-h|--help|-help|help)
+    __usage
+    ;;
 esac
 
 VM=$( echo "${VM_LIST}" | grep -m 1 "^${1} " | awk '{print $1}' )
