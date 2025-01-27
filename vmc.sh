@@ -48,7 +48,7 @@ __usage() {
 usage:
   ${NAME}                -  list VMs
   ${NAME} -h | --help    -  print this help information
-  ${NAME} -l | --unlock  -  unlock are locked VMs
+  ${NAME} -l | --unlock  -  unlock all locked VMs
   ${NAME} -m | --mac     -  check for duplicated MAC addresses in VMs
   ${NAME} -u | --uuid    -  check for duplicated UUID values in VMs
 
