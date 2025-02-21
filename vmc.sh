@@ -110,15 +110,18 @@ case ${1} in
 
   # DESTROY MACHINE AND ITS RESOURCES
   (-d|--destroy)
-    if [ ${2} ]
+    if [ ! ${2} ]
     then
-      ${DOAS} bhyvectl --destroy --vm=${2}
-      if [ ${?} -eq 0 ]
-      then
-        echo "INFO: VMs '${2}' destroyed successfully"
-        exit 1
-      fi
+      echo "NOPE: pass VM name as argument"
+      exit 1
     fi
+    ${DOAS} bhyvectl --destroy --vm=${2}
+    if [ ${?} -eq 0 ]
+    then
+      echo "INFO: VMs '${2}' destroyed successfully"
+      exit 1
+    fi
+    exit 0
     ;;
 
   # UNLOCK ALL LOCKED VMS
