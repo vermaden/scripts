@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2018-2025 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2025 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -44,16 +44,5 @@ else
   BAT=${1}
 fi
 
-if acpiconf -i ${BAT} 1> /dev/null 2> /dev/null
-then
-  DATA=$( acpiconf -i ${BAT} )
-  MAX=$( echo "${DATA}" | grep '^Design\ capacity:'     | awk -F ':' '{print $2}' | tr -c -d '0-9' )
-  NOW=$( echo "${DATA}" | grep '^Last\ full\ capacity:' | awk -F ':' '{print $2}' | tr -c -d '0-9' )
-  MOD=$( echo "${DATA}" | grep '^Model\ number:'        | awk -F ':' '{print $2}' | awk '{print $1}' )
-  echo -n "Battery '${BAT}' model '${MOD}' has efficiency: "
-  printf '%1.0f%%\n' $( bc -l -e "scale = 2; ${NOW} / ${MAX} * 100" -e quit )
-else
-  echo "NOPE: Battery '${BAT}' does not exists on this system."
-  echo "INFO: Most systems has only '0' or '1' batteries."
-  exit 1
-fi
+acpiconf -i ${BAT} \
+    | awk -F ':' '{gsub(/[\t ]+/," ",$2); printf("%24s:%s\n", $1, $2 )}'
