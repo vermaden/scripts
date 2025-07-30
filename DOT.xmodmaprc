@@ -1,0 +1,9 @@
+!PAGE UP/PAGE DOWN
+! keycode 233 = Next
+! keycode 234 = Prior
+  keycode 167 = Next
+  keycode 166 = Prior
+
+!CLEAR CAPS LOCK KEY
+! clear lock
+

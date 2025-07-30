@@ -1,0 +1,66 @@
+  msgwait         0
+  startup_message off
+  vbell           off
+  defscrollback   51200
+  shell           -$SHELL
+  shelltitle      sh
+  autodetach      on
+  defutf8         on
+  logtstamp       on
+  logtstamp       after 1
+# utf8          on
+
+# enable SHIFT-PGUP / SHIFT-PGDOWN scroll
+# termcapinfo rxvt ti@:te@
+  termcapinfo xterm       ti@:te@
+  termcapinfo xterm-color ti@:te@
+
+# change window with ALT-. ALT-,
+# bindkey "^[," prev
+# bindkey "^[." next
+
+# change window with ALT-Q ALT-W
+  bindkey "^[q" prev
+  bindkey "^[w" next
+
+# F1-F4 switch
+# bindkey -k k1 select 1
+# bindkey -k k2 select 2
+# bindkey -k k3 select 3
+# bindkey -k k4 select 4
+
+# unbind defaults
+  bind ^g
+  bind ^m
+  bind ^i
+  bind ^f
+  bind ^s
+
+# keyboard shortcuts
+# bind ^g screen -t gg   env LC_ALL=pl_PL.ISO8859-2 luit ekg # C-a-g
+# bind ^m screen -t mpd  ncmpc                               # C-a-m
+# bind ^i screen -t icq  centerim                            # C-a-i
+# bind ^f screen -t fish fish                                # C-a-f
+# bind ^s screen -t fxp0 slurm -i fxp0                       # C-a-s
+
+# startup sessions
+# screen -t gg 0 env LC_ALL=pl_PL.ISO8859-2 luit ekg
+  screen -t sh 0
+  screen -t sh 1
+# select 0
+
+# status
+  hardstatus string "%{+2}%H%{-} %= %? %{.kW}%-w%{.bW}%{+9}%n%f%t%{-}%+w %= %{+4}%Y/%m/%d %{+3}%c"
+
+# add CPU idle/sustem/user/interrupt stats
+# backtick 100 5 5 tail -1 /var/tmp/vermaden_stats_top
+# caption always '%{= wk} %= %100` %='
+
+# vbell off                          # visual bell toggle 
+# vbell_msg "[[[ ding ]]]"           # visual bell message
+# bell "bell: %n (%t) [%w:%s]^G"     # bell message
+# activity "active: %n (%t) [%w:%s]" # activity message
+# defflow off                        # disable flow control
+# nethack on                         # nethackish status messages
+# altscreen on                       # restore window contents after vi(1) session
+
