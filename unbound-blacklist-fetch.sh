@@ -185,6 +185,7 @@ echo 'server:' > ${FILE}
 
 
 # CHECK CONFIG AND POTENTIALLY RESTART UNBOUND
+cd /tmp
 case ${UNAME} in
   (FreeBSD)
     [ "${ECHO}" != "0" ] && echo "/etc/rc.d/local_unbound configtest"

@@ -305,6 +305,10 @@ echo 'server:' > ${FILE}
 
 
 
+# ERROR FIX: unbound-checkconf: cannot chdir(/root/bin): Permission denied
+# ERROR FIX: unbound-checkconf: cannot chdir(/root):     Permission denied
+cd /tmp
+
 # CHECK CONFIG AND POTENTIALLY RESTART UNBOUND
 case ${UNAME} in
   (FreeBSD)

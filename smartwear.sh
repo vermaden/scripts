@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2018-2022 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2018-2025 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
