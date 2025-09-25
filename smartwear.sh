@@ -31,6 +31,12 @@
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
+if [ $( whoami ) != "root" ]
+then
+  echo "NOPE: You need to be root."
+  exit 1
+fi
+
 __usage() {
   cat << __EOF
 usage: $( basename ${0} ) DEVICE [TBW]
@@ -56,23 +62,51 @@ then
   exit 1
 fi
 
-SMARTCTL=$( smartctl -a "${1}" 2> /dev/null || smartctl -a "/dev/${1}" 2> /dev/null )
+TARGET=$( echo ${1} | sed s.nda.nvme.g )
 DISKINFO=$( diskinfo -v "${1}" 2> /dev/null || diskinfo -v "/dev/${1}" 2> /dev/null )
 DISK=$( echo "${DISKINFO}" | awk -F '#' '/Disk descr./ {print $1}' | tr -d '\t' )
-SECTOR=$( echo "${SMARTCTL}" | awk '/Sector Size/ {print $3}' )
-LBA=$( echo "${SMARTCTL}" | awk '/Total_LBAs_Written/ {print $NF}' )
+SECTOR=$( echo "${DISKINFO}" | awk '/# sectorsize/ {print $1}' )
+case ${TARGET} in
+  (nvme*)
+    SMARTCTL=$( smartctl -d nvme -a "${TARGET}" 2> /dev/null || smartctl -d nvme -a "/dev/${TARGET}" 2> /dev/null )
+    LBA=$( echo "${SMARTCTL}" | awk -F '[' '/Data Units Written/ {print $2}' | tr -d ']' )
+    ;;
+  (*)
+    SMARTCTL=$( smartctl -a "${TARGET}" 2> /dev/null || smartctl -a "/dev/${TARGET}" 2> /dev/null )
+    LBA=$( echo "${SMARTCTL}" | awk '/Total_LBAs_Written/ {print $NF}' )
+    ;;
+esac
 
 echo "Disk: ${DISK}"
 echo "Sector: ${SECTOR}"
 
-if ! echo "${SMARTCTL}" | grep -q Total_LBAs_Written
+if ! echo "${SMARTCTL}" | grep -q -e 'Total_LBAs_Written' -e 'Data Units Written'
 then
-  echo "Written (Sectors): [DATA NOT AVAILABLE]"
   echo "Written (TB): [DATA NOT AVAILABLE]"
 else
-  WRITTEN=$( echo "scale=1; ${SECTOR} * ${LBA} / 1024 / 1024 / 1024 / 1024" | bc -l )
-  echo "Written (Sectors): ${LBA}"
-  printf "Written (TB): %3.1f\n" ${WRITTEN}
+  case ${TARGET} in
+    (nvme*)
+      case ${LBA} in
+        (*TB)
+          LBA=$( echo ${LBA} | awk '{print $1}' )
+          WRITTEN=${LBA}
+          ;;
+        (*GB)
+          LBA=$( echo ${LBA} | awk '{print $1}' )
+          WRITTEN=$( echo "scale=1; ${LBA} / 1024" | bc -l )
+          ;;
+        (*MB)
+          LBA=$( echo ${LBA} | awk '{print $1}' )
+          WRITTEN=$( echo "scale=1; ${LBA} / 1024 / 1024" | bc -l )
+          ;;
+      esac
+      echo "Written (TB): ${WRITTEN}"
+      ;;
+    (*)
+      WRITTEN=$( echo "scale=1; ${SECTOR} * ${LBA} / 1024 / 1024 / 1024 / 1024" | bc -l )
+      printf "Written (TB): %3.1f\n" ${WRITTEN}
+      ;;
+  esac
 fi
 
 if [ ${2} ]
