@@ -12,8 +12,9 @@ then
 fi
 
 # CHECK DEVICE EXISTS
-[ -e /dev/${1} ] && DEV=/dev/${1}
-[ -e ${1}      ] && DEV=${1}
+DEVSET='0'
+[ "${DEVSET}" = "0" -a -e /dev/${1} ] && DEV=/dev/${1} && DEVSET=1
+[ "${DEVSET}" = "0" -a -e ${1}      ] && DEV=${1}      && DEVSET=1
 if [ -z ${DEV} ]
 then
   echo "NOPE: disk '${1}' does not exists"

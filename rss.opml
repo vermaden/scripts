@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<opml version="1.0">
+  <head>
+    <title>Liferea Feed List Export</title>
+  </head>
+  <body>
+    <outline title="sourceforge.net/p/bsdrp" text="sourceforge.net/p/bsdrp" description="sourceforge.net/p/bsdrp" type="rss" xmlUrl="https://sourceforge.net/p/bsdrp/activity/feed" htmlUrl="https://sourceforge.net/p/bsdrp/activity/" updateInterval="-1"/>
+    <outline title="atthis.link" text="atthis.link" description="atthis.link" type="rss" xmlUrl="https://atthis.link/rss.xml" htmlUrl="https://atthis.link" updateInterval="-1"/>
+    <outline title="briancallahan.net" text="briancallahan.net" description="briancallahan.net" type="rss" xmlUrl="https://briancallahan.net/blog/feed.xml" htmlUrl="https://briancallahan.net/blog" updateInterval="-1"/>
+    <outline title="blog.feld.me" text="blog.feld.me" description="blog.feld.me" type="atom" xmlUrl="https://blog.feld.me/feeds/all.atom.xml" htmlUrl="https://blog.feld.me/feeds/all.atom.xml" updateInterval="-1"/>
+    <outline title="binsh.dev" text="binsh.dev" description="binsh.dev" type="rss" xmlUrl="https://binsh.dev/author/binshdev/rss/" htmlUrl="https://binsh.dev/" updateInterval="-1"/>
+    <outline title="cambus.net" text="cambus.net" description="cambus.net" type="atom" xmlUrl="https://www.cambus.net/atom.xml" htmlUrl="https://www.cambus.net" updateInterval="-1"/>
+    <outline title="discoverbsd.com" text="discoverbsd.com" description="discoverbsd.com" type="atom" xmlUrl="https://discoverbsd.com/feeds/posts/default" htmlUrl="https://discoverbsd.com/feeds/posts/default" updateInterval="-1"/>
+    <outline title="evilham.com" text="evilham.com" description="evilham.com" type="atom" xmlUrl="https://evilham.com/en/blog/feed.xml" htmlUrl="https://evilham.eu/en/blog/feed.xml" updateInterval="-1"/>
+    <outline title="eugene-andrienko.com" text="eugene-andrienko.com" description="eugene-andrienko.com" type="atom" xmlUrl="https://eugene-andrienko.com/en/feed.xml" htmlUrl="https://eugene-andrienko.com/" updateInterval="-1"/>
+    <outline title="eoli3n.github.io" text="eoli3n.github.io" description="eoli3n.github.io" type="atom" xmlUrl="https://eoli3n.github.io/feed.xml" htmlUrl="https://eoli3n.github.io/" updateInterval="-1"/>
+    <outline title="freebsd.uw.cz" text="freebsd.uw.cz" description="freebsd.uw.cz" type="atom" xmlUrl="https://freebsd.uw.cz/feeds/posts/default" htmlUrl="http://pubsubhubbub.appspot.com/" updateInterval="-1"/>
+    <outline title="officialaptivi.wordpress.com" text="officialaptivi.wordpress.com" description="officialaptivi.wordpress.com" type="rss" xmlUrl="https://officialaptivi.wordpress.com/feed/" htmlUrl="https://officialaptivi.wordpress.com" updateInterval="-1"/>
+    <outline title="filfre.net" text="filfre.net" description="filfre.net" type="rss" xmlUrl="https://www.filfre.net/feed/rss/" htmlUrl="https://www.filfre.net" updateInterval="-1"/>
+    <outline title="hackernews/best/posts/100" text="hackernews/best/posts/100" description="hackernews/best/posts/100" type="rss" xmlUrl="https://hnrss.org/newest?points=100" htmlUrl="https://news.ycombinator.com/newest" updateInterval="-1"/>
+    <outline title="hackernews/best/comments" text="hackernews/best/comments" description="hackernews/best/comments" type="rss" xmlUrl="https://hnrss.org/bestcomments" htmlUrl="https://news.ycombinator.com/bestcomments" updateInterval="-1"/>
+    <outline title="honeyguide.eu" text="honeyguide.eu" description="honeyguide.eu" type="rss" xmlUrl="https://honeyguide.eu/posts/index.xml" htmlUrl="https://honeyguide.eu/posts/" updateInterval="-1"/>
+    <outline title="ipng.ch" text="ipng.ch" description="ipng.ch" type="rss" xmlUrl="https://ipng.ch/index.xml" htmlUrl="https://ipng.ch/" updateInterval="-1"/>
+    <outline title="laeran.pl.eu.org" text="laeran.pl.eu.org" description="laeran.pl.eu.org" type="rss" xmlUrl="https://www.laeran.pl.eu.org/blog.rss" htmlUrl="https://www.laeran.pl.eu.org/blog" updateInterval="-1"/>
+    <outline title="michal.sapka.pl" text="michal.sapka.pl" description="michal.sapka.pl" type="atom" xmlUrl="https://michal.sapka.pl/rss.xml" htmlUrl="https://michal.sapka.pl/rss.xml" updateInterval="-1"/>
+    <outline title="ounapuu.ee" text="ounapuu.ee" description="ounapuu.ee" type="rss" xmlUrl="https://ounapuu.ee/index.xml" htmlUrl="https://ounapuu.ee/" updateInterval="-1"/>
+    <outline title="pixelnerd.pl" text="pixelnerd.pl" description="pixelnerd.pl" type="rss" xmlUrl="https://pixelnerd.pl/rss" htmlUrl="https://pixelnerd.pl/" updateInterval="-1"/>
+    <outline title="pilledtexts.com" text="pilledtexts.com" description="pilledtexts.com" type="rss" xmlUrl="https://pilledtexts.com/index.xml" htmlUrl="https://pilledtexts.com/" updateInterval="-1"/>
+    <outline title="people.freebsd.org/~dch" text="people.freebsd.org/~dch" description="people.freebsd.org/~dch" type="rss" xmlUrl="https://people.freebsd.org/~dch/rss.xml" htmlUrl="https://people.freebsd.org/~dch/rss.xml" updateInterval="-1"/>
+    <outline title="sidneys1.com" text="sidneys1.com" description="sidneys1.com" type="atom" xmlUrl="https://sidneys1.com/feed.xml" htmlUrl="https://sidneys1.com/" updateInterval="-1"/>
+    <outline title="stafwag.github.io" text="stafwag.github.io" description="stafwag.github.io" type="atom" xmlUrl="https://stafwag.github.io/blog/atom.xml" htmlUrl="https://stafwag.github.io/blog/" updateInterval="-1"/>
+    <outline title="tumfatig.net" text="tumfatig.net" description="tumfatig.net" type="rss" xmlUrl="https://www.tumfatig.net/index.xml" htmlUrl="https://www.tumfatig.net/" updateInterval="-1"/>
+    <outline title="thejpster.org.uk" text="thejpster.org.uk" description="thejpster.org.uk" type="atom" xmlUrl="https://thejpster.org.uk/atom.xml" htmlUrl="https://thejpster.org.uk" updateInterval="-1"/>
+    <outline title="xkcd.com" text="xkcd.com" description="xkcd.com" type="atom" xmlUrl="https://xkcd.com/atom.xml" htmlUrl="https://xkcd.com/" updateInterval="-1"/>
+    <outline title="technophobeconfessions.wordpress.com" text="technophobeconfessions.wordpress.com" description="technophobeconfessions.wordpress.com" type="rss" xmlUrl="https://technophobeconfessions.wordpress.com/feed/" htmlUrl="https://technophobeconfessions.wordpress.com" updateInterval="-1"/>
+    <outline title="𝚟𝚎𝚛𝚖𝚊𝚍𝚎𝚗/posts" text="𝚟𝚎𝚛𝚖𝚊𝚍𝚎𝚗/posts" description="𝚟𝚎𝚛𝚖𝚊𝚍𝚎𝚗/posts" type="rss" xmlUrl="https://vermaden.wordpress.com/feed/" htmlUrl="https://vermaden.wordpress.com" updateInterval="-1"/>
+    <outline title="𝚟𝚎𝚛𝚖𝚊𝚍𝚎𝚗/comments" text="𝚟𝚎𝚛𝚖𝚊𝚍𝚎𝚗/comments" description="𝚟𝚎𝚛𝚖𝚊𝚍𝚎𝚗/comments" type="rss" xmlUrl="https://vermaden.wordpress.com/comments/feed/" htmlUrl="https://vermaden.wordpress.com" updateInterval="-1"/>
+  </body>
+</opml>
