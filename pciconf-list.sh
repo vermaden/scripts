@@ -1,6 +1,6 @@
-#!/bin/sh
+#! /bin/sh
 
-# Copyright (c) 2018-2025 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2025 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -26,52 +26,19 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # ------------------------------
-# DESKTOP BATTERY WARNING
+# LIST DEVICES WITH BUS AND DESC
 # ------------------------------
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-# SETTINGS
-export DISPLAY=:0
-export PATH=${PATH}:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
-
-# CHECK TOTAL TIME LEFT ON ALL BATTERIES
-STATE=$( sysctl -n hw.acpi.battery.time )
-
-# FreeBSD DOES REFRESH THAT INFO EVERY 6 SECONDS - IGNORE IF WE CATCH IT
-[ ${STATE} = "-1" ] && [ $( sysctl -n hw.acpi.acline ) -eq 0 ] && exit 0
-
-# DISPLAY WARNING WHEN LESS THEN 5 MINUTE OF BATTERY TIME LEFT
-[ ${STATE} -lt 6 ] && [ $( sysctl -n hw.acpi.acline ) -eq 0 ] && {
-
-  # TRY zenity(1)
-  if [ -e /usr/local/bin/zenity ]
-  then
-    zenity \
-      --title "WARNING!" \
-      --warning \
-      --text="BATTERY: 5 MINS LEFT" \
-      1> /dev/null 2> /dev/null
-    exit 0
-  fi
-
-  # TRY xmessage(1)
-  if [ -e /usr/local/bin/xmessage ]
-  then
-    echo "BATTERY: 5 MINS LEFT" | xmessage -title "WARNING!" -file - -center
-    exit 0
-  fi
-
-  # JUST beep(1)
-  echo "NOPE: both 'zenity' and 'xmessage' are not available"
-  echo
-  echo "WARNING!"
-  echo
-  echo "BATTERY: 5%"
-  echo
-  beep
-  beep
-  beep
-  exit 0
-}
+IFS='@'
+printf "%12s  %8s  %s\n" DEVICE BUS DESCRIPTION
+pciconf -l -v \
+  | awk '/^[^ ]/ {b=$1} /^ +device/ {print b,$0}' \
+  | perl -pe 's/:\s+device\s+=/\@/;s/\@pci[0-9]+:/\@/;' \
+  | tr -d \' \
+  | while read DEV BUS DESC
+    do
+      printf "%12s  %8s %s\n" ${DEV} ${BUS} ${DESC}
+    done
 
