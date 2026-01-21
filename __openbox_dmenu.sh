@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2018 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2018-2026 Slawomir Wojciech Wojtczak (vermaden)
 # All rights reserved.
 #
 # THIS SOFTWARE USES FREEBSD LICENSE (ALSO KNOWN AS 2-CLAUSE BSD LICENSE)
@@ -31,13 +31,50 @@
 # vermaden [AT] interia [DOT] pl
 # https://vermaden.wordpress.com
 
-CHOICE=$( dmenu_path | dmenu  -nb '#222222' -nf '#aaaaaa' -sb '#eeeeee' -sf '#dd0000' -fn 'Ubuntu Mono-10' ${1+"${@}"} )
+# find /usr/local/sbin \
+#      /usr/local/bin \
+#      /home/vermaden/scripts \
+#      /home/vermaden/scripts/bin \
+#      /home/vermaden/.cargo/bin \
+#      /home/vermaden/.local/bin \
+#      -type f 2> /dev/null \
+#   | while read I
+#     do
+#       builtin echo ${I##*/}
+#     done > ~/.cache/dmenu_run
 
+# CLEAR LIST OF APPS
+:> ~/.cache/dmenu_run
+
+# ADD APPS FROM GLOBAL /usr/local/share/applications PATH
+grep -h '^Exec=' /usr/local/share/applications/* \
+  | awk -F '=' '{print $2}' \
+  | awk '{print $1}' \
+  | sort -u \
+  | grep -v -e 'bin/sh' \
+  | while read APP
+    do
+      echo "${APP##*/}"
+    done >> ~/.cache/dmenu_run
+
+# ADD APPS FROM LOCAL ~/.cargo/bin PATH
+find /home/vermaden/.cargo/bin -type f 2> /dev/null \
+  | while read APP
+    do
+      ldd -f '%o ' "${APP}" 2> /dev/null \
+        | grep -q -e libgtk -e libQt -e libxcb && echo "${APP##*/}"
+    done >> ~/.cache/dmenu_run
+
+# RUN
+CHOICE=$( cat ~/.cache/dmenu_run | dmenu -i -nb '#222222' -nf '#aaaaaa' -sb '#eeeeee' -sf '#dd0000' -fn 'Ubuntu Mono-10' ${1+"${@}"} )
+
+# EXIT IF NO CHOICE
 if [ -z "${CHOICE}" ]
 then
   exit 0
 fi
 
+# EXECUTE
 CMD=$( which "${CHOICE}" )
 TITLE=${CMD##*/}
 
