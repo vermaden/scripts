@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2022-2023 Slawomir Wojciech Wojtczak (vermaden)
+# Copyright (c) 2022-2026 Slawomir Wojciech Wojtczak (vermaden)
 # Copyright (c) 2022 Trix Farrar
 # All rights reserved.
 #
@@ -72,7 +72,7 @@ then
   \__  \\\\  ___//  /  /\__  \\\\  \  \\\\   /  \__  \\\\ \ /  /  // /
  /_____/ \___//__/__//_____/ \____/ \__\ /_____/ \_\\\\____//_/
 
-sensors 0.3 2023/09/15
+sensors 0.4 2026/09/14
 
 VERSION
   exit 0
@@ -144,10 +144,10 @@ if sysctl -n hw.acpi.thermal.tz0._CRT 1> /dev/null 2> /dev/null
 then
   TEMP_MAX_ACPI=1
 fi
-echo "${SYSCTL}"                            \
-  | grep -e temperature                     \
-  | grep -v 'critical temperature detected' \
-  | sort -n -t . -k 3                       \
+echo "${SYSCTL}"                                    \
+  | grep -e 'temperature' -e 'dev\.amdtemp\..\.ccd' \
+  | grep -v 'critical temperature detected'         \
+  | sort -n -t . -k 3                               \
   | while read MIB VALUE
     do
       case ${MIB} in
