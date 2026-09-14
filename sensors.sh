@@ -34,6 +34,11 @@ __usage() {
   echo "USAGE:"
   echo "  ${NAME} (without any arguments)"
   echo
+  echo "OPTIONS(s):"
+  echo "  -d INTERVAL  run '${NAME}' every INTERVAL seconds like top(1)"
+  echo "  -h | --help  display help message"
+  echo "  --version    display version information"
+  echo
   echo "NOTES:"
   echo "  load these modules to get all the temperature data:"
   echo "    - amdtemp.ko"
@@ -49,6 +54,53 @@ __usage() {
   echo
   exit 1
 }
+
+__buffer() {
+  # GET ALL OUTPUT INTO VARIABLE FOR FAST DISPLAY
+  BUFFER="INFO: running '${NAME}' in INTERVAL mode every '${1}' seconds.
+EXIT: press and hold [CTRL]+[C] keys to end.
+$( ${0} )"
+  echo "${BUFFER}"
+  BACK=$( echo "${BUFFER}" | wc -l )
+
+  # MOVE CURSOR BACK TO BEGINING INSTEAD clear(1) BUILTIN
+  seq ${BACK} | xargs -I- tput cuu1
+}
+
+# INTERVAL RUN
+if [ "${1}" = "-d" ]
+then
+  # CHECK IF INTERVAL IS NATURAL NUMBER
+  REGEX_NUMBER=$( echo ${2} | grep -E -o "[0-9]+" )
+  if [ "${2}" != "${REGEX_NUMBER}" ]
+  then
+    echo "NOPE: the INTERVAL must be natural number"
+    exit 1
+  fi
+
+  # UNHIDE CURSOR ON EXIT
+  trap 'tput cnorm' SIGINT SIGQUIT SIGHUP SIGTRAP SIGABRT SIGTERM
+
+  # HIDE CURSOR
+  tput civis
+
+  # CLEAR SCREEN ONE TIME
+  clear
+
+  # GET basename(1) NAME OF PROGRAM
+  NAME=${0##*/}
+
+  # RUN 'INTERVAL' LOOP
+  __buffer ${2}
+  while sleep ${2}
+  do
+    __buffer ${2}
+  done
+  exit 0
+fi
+
+# GET sysctl(8) OUTPUT ONLY ONCE
+SYSCTL=$( sysctl dev hw.acpi 2> /dev/null )
 
 # DISPLAY HELP
 if [ "${1}" = "-h"    -o \
@@ -72,14 +124,13 @@ then
   \__  \\\\  ___//  /  /\__  \\\\  \  \\\\   /  \__  \\\\ \ /  /  // /
  /_____/ \___//__/__//_____/ \____/ \__\ /_____/ \_\\\\____//_/
 
-sensors 0.4 2026/09/14
+sensors 0.7 2026/09/14
 
 VERSION
   exit 0
 fi
 
-# GET sysctl(8) OUTPUT ONLY ONCE
-SYSCTL=$( sysctl dev hw.acpi 2> /dev/null )
+
 
 # HEADER: BATTERY/AC/TIME/FAN/SPEED
 echo
@@ -104,7 +155,7 @@ echo "${SYSCTL}"                   \
       printf "\n"
     done
 
-# CHECK IF power(8) IS RUNNING
+# CHECK IF powerd(8) IS RUNNING
 POWERD=0
 if pgrep -q -x -S "powerd" 1> /dev/null 2> /dev/null
 then
@@ -134,6 +185,11 @@ fi
 echo
 printf "%38s\n" 'SYSTEM/TEMPERATURES '
 printf "%38s\n" '------------------------------------ '
+
+if [ "$( kldstat -v | grep -e coretemp -e amdtemp )" = "" ]
+then
+  echo "   Load 'amdtemp' or 'coretemp' kernel module."
+fi
 
 # DISPLAY RELEVANT INFORMATION
 if sysctl -n dev.cpu.0.coretemp.tjmax 1> /dev/null 2> /dev/null
@@ -234,13 +290,21 @@ do
         | awk -v DISK=${I}     \
             '{MIB="smart." DISK "." tolower($1) ":"; printf("%38s %s.0C\n", MIB, $(NF-1))}'
       ;;
-    # SATA/ATA/SCSI/USB DISKS
-    (*)
+    # SATA/ATA/SCSI DISKS
+    (ada*)
       smartctl -a /dev/${I}    \
         | grep -e Temperature_ \
         | sed -E 's|\(.*\)||g' \
         | awk -v DISK=${I} \
             '{MIB="smart." DISK "." tolower($2) ":"; printf("%38s %s.0C\n", MIB, $NF)}'
+      ;;
+    # SCSI/USB DISKS
+    (da*)
+      smartctl -a /dev/${I}    \
+        | grep -e 'Temperature:' \
+        | awk '{print $(NF-1)}' \
+        | awk -v DISK=${I} \
+            '{MIB="smart." DISK ".temperature:"; printf("%38s %s.0C\n", MIB, $NF)}'
       ;;
   esac
 done
