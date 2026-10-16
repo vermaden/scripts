@@ -167,7 +167,7 @@ ${FETCHCMD} \
   https://v.firebog.net/hosts/static/w3kbl.txt                                                                                                                         \
   https://www.botvrij.eu/data/ioclist.hostname.raw                                                                                                                     \
   https://www.stopforumspam.com/downloads/toxic_domains_whole.txt                                                                                                      \
-  https://zonefiles.io/f/compromised/domains/live/                                                                                                                     \
+  https://netapi.com/zf-api/f/compromised/domains/live/                                                                                                                \
   https://v.firebog.net/hosts/BillStearns.txt                                                                                                                          \
   1> ${TEMP}/lists-domains 2> /dev/null
 
